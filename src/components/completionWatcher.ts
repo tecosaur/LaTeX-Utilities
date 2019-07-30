@@ -149,7 +149,7 @@ export class CompletionWatcher {
                     resolve('break')
                     return
                 } else if (snippet.body === 'SPECIAL_ACTION_FRACTION') {
-                    ;[matchRange, replacement] = this.getFraction(match, line)
+                    [matchRange, replacement] = this.getFraction(match, line)
                 } else {
                     matchRange = new vscode.Range(
                         new vscode.Position(line.lineNumber, match.index),
@@ -248,7 +248,7 @@ export class CompletionWatcher {
 
     private getUserSnippetsFile() {
         const codeFolder = vscode.version.indexOf('insider') >= 0 ? 'Code - Insiders' : 'Code'
-        const templateName = 'latexWorkshopLiveSnippets.json'
+        const templateName = 'latexUtilsLiveSnippets.json'
 
         if (process.platform === 'win32' && process.env.APPDATA) {
             return path.join(process.env.APPDATA, codeFolder, 'User', templateName)
@@ -358,10 +358,10 @@ export class Completer implements vscode.CompletionItemProvider {
     }
 
     provideCompletionItems(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
+        _document: vscode.TextDocument,
+        _position: vscode.Position,
+        _token: vscode.CancellationToken,
+        _context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
         return this.extension.completionWatcher.activeSnippets
     }

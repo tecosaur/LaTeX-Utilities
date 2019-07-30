@@ -32,9 +32,9 @@
     "contributes": {
         "commands": [
             {
-                "command": "latex-workshop.editLiveSnippetsFile",
+                "command": "latex-utilities.editLiveSnippetsFile",
                 "title": "Edit Live Snippets File",
-                "category": "LaTeX Workshop"
+                "category": "LaTeX Utilities"
             }
         ],
         "configuration": {
@@ -54,6 +54,7 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
+        "@types/fs-extra": "^8.0.0",
         "@types/glob": "^7.1.1",
         "@types/mocha": "^5.2.6",
         "@types/node": "^10.12.21",
@@ -65,5 +66,8 @@
         "mocha": "^6.1.4",
         "typescript": "^3.3.1",
         "vscode": "^1.1.14"
+    },
+    "dependencies": {
+        "fs-extra": "^8.1.0"
     }
 }
