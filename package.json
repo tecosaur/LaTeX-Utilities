@@ -1,0 +1,49 @@
+{
+    "name": "latex-utilities",
+    "displayName": "LaTeX Utilities",
+    "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
+    "icon": "icon.png",
+    "version": "0.0.1",
+    "publisher": "tecosaur",
+    "license": "MIT",
+    "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tecosaur/LaTeX-Utilities.git"
+    },
+    "engines": {
+        "vscode": "^1.36.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "keywords": [
+        "latex",
+        "tex",
+        "hint"
+    ],
+    "activationEvents": [
+        "onLanguage:tex",
+        "onLanguage:latex",
+        "onLanguage:doctex"
+    ],
+    "main": "./out/src/main.js",
+    "contributes": {},
+    "scripts": {
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
+        "@types/node": "^10.12.21",
+        "@types/vscode": "^1.36.0",
+        "glob": "^7.1.4",
+        "mocha": "^6.1.4",
+        "typescript": "^3.3.1",
+        "tslint": "^5.12.1",
+        "vscode-test": "^1.0.0-next.0"
+    }
+}
