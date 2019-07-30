@@ -29,7 +29,25 @@
         "onLanguage:doctex"
     ],
     "main": "./out/src/main.js",
-    "contributes": {},
+    "contributes": {
+        "commands": [
+            {
+                "command": "latex-workshop.editLiveSnippetsFile",
+                "title": "Edit Live Snippets File",
+                "category": "LaTeX Workshop"
+            }
+        ],
+        "configuration": {
+            "title": "LaTeX Utils",
+            "properties": {
+                "latex-utilities.liveReformat.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Apply live text replacements to make writing latex maths easier (e.g. `xx` → `\\times`). Also see the command \"Edit Live Snippets File\""
+                }
+            }
+        }
+    },
     "scripts": {
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
@@ -40,10 +58,12 @@
         "@types/mocha": "^5.2.6",
         "@types/node": "^10.12.21",
         "@types/vscode": "^1.36.0",
+        "@typescript-eslint/eslint-plugin": "^1.13.0",
+        "@typescript-eslint/parser": "^1.13.0",
+        "eslint": "^6.1.0",
         "glob": "^7.1.4",
         "mocha": "^6.1.4",
         "typescript": "^3.3.1",
-        "tslint": "^5.12.1",
-        "vscode-test": "^1.0.0-next.0"
+        "vscode": "^1.1.14"
     }
 }

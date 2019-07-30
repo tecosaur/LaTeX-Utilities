@@ -1,0 +1,40 @@
+import * as vscode from 'vscode'
+
+import { Extension } from '../main'
+
+export class Logger {
+    extension: Extension
+    logPanel: vscode.OutputChannel
+    compilerLogPanel: vscode.OutputChannel
+    status: vscode.StatusBarItem
+
+    constructor(extension: Extension) {
+        this.extension = extension
+        this.logPanel = vscode.window.createOutputChannel('LaTeX Utilities')
+        this.addLogMessage('Initializing LaTeX Utilities.')
+    }
+
+    addLogMessage(message: string) {
+        const configuration = vscode.workspace.getConfiguration('latex-utilities')
+        if (configuration.get('message.log.show')) {
+            this.logPanel.append(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${message}\n`)
+        }
+    }
+
+    showErrorMessage(message: string, ...args): Thenable<any> | undefined {
+        const configuration = vscode.workspace.getConfiguration('latex-utilities')
+        if (configuration.get('message.error.show')) {
+            return vscode.window.showErrorMessage(message, ...args)
+        } else {
+            return undefined
+        }
+    }
+
+    showLog() {
+        this.logPanel.show()
+    }
+
+    showCompilerLog() {
+        this.compilerLogPanel.show()
+    }
+}
