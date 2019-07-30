@@ -3,7 +3,7 @@
     "displayName": "LaTeX Utilities",
     "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
     "icon": "icon.png",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "tecosaur",
     "license": "MIT",
     "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
@@ -35,6 +35,11 @@
                 "command": "latex-utilities.editLiveSnippetsFile",
                 "title": "Edit Live Snippets File",
                 "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.pasteImage",
+                "title": "Paste an Image File",
+                "category": "LaTeX Utilities"
             }
         ],
         "configuration": {
@@ -44,6 +49,14 @@
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "Apply live text replacements to make writing latex maths easier (e.g. `xx` → `\\times`). Also see the command \"Edit Live Snippets File\""
+                },
+                "latex-utilities.imagePaste.template": {
+                    "type": [
+                        "string",
+                        "array"
+                    ],
+                    "default": "\\includegraphics{${imageFileName}}",
+                    "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFileName}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
                 }
             }
         }

@@ -4,6 +4,9 @@ An add-on to [LaTeX Workshop](https://github.com/James-Yu/LaTeX-Workshop) that p
 
 ## Features
 
+-   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
+-   Live Snippets (auto-activating, with regex)
+
 ## Requirements
 
 -   [LaTeX Workshop](https://github.com/James-Yu/LaTeX-Workshop)

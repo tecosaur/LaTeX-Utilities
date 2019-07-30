@@ -6,5 +6,5 @@
 
 ### Added
 
--   Image Pasting (via `ctrl`+`shift`+`v`)
+-   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
