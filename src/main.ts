@@ -4,6 +4,7 @@ import * as path from 'path'
 import { Logger } from './components/logger'
 import { CompletionWatcher, Completer } from './components/completionWatcher'
 import { Paster as ImagePaster } from './components/imagePaster'
+import { WordCounter } from './components/wordCounter'
 
 export function activate(context: vscode.ExtensionContext) {
     const extension = new Extension()
@@ -16,7 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
             extension.completionWatcher.editSnippetsFile()
         ),
-        vscode.commands.registerCommand('latex-utilities.pasteImage', () => extension.imagePaster.pasteImage())
+        vscode.commands.registerCommand('latex-utilities.pasteImage', () => extension.imagePaster.pasteImage()),
+        vscode.commands.registerCommand('latex-utilities.countWord', () => extension.wordCounter.count())
     )
 
     context.subscriptions.push(
@@ -47,11 +49,12 @@ export function deactivate() {}
 
 export class Extension {
     extensionRoot: string
-    workshop: vscode.Extension<{ getGraphicsPath: () => string | string[] }>
+    workshop: vscode.Extension<any>
     logger: Logger
     completionWatcher: CompletionWatcher
     completer: Completer
     imagePaster: ImagePaster
+    wordCounter: WordCounter
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
@@ -64,5 +67,6 @@ export class Extension {
         this.completionWatcher = new CompletionWatcher(this)
         this.completer = new Completer(this)
         this.imagePaster = new ImagePaster(this)
+        this.wordCounter = new WordCounter(this)
     }
 }
