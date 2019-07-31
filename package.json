@@ -40,6 +40,11 @@
                 "command": "latex-utilities.pasteImage",
                 "title": "Paste an Image File",
                 "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.countWord",
+                "title": "Count words in LaTeX document",
+                "category": "LaTeX Utilities"
             }
         ],
         "configuration": {
@@ -57,6 +62,16 @@
                     ],
                     "default": "\\includegraphics{${imageFileName}}",
                     "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFileName}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
+                },
+                "latex-utilities.countWord.path": {
+                    "type": "string",
+                    "default": "texcount",
+                    "markdownDescription": "Define the location of TeXCount executive file/script.\nThis command will be joint with `latex-workshop.texcount.args` and required arguments to form a complete command of TeXCount."
+                },
+                "latex-utilities.countWord.args": {
+                    "type": "array",
+                    "default": [],
+                    "markdownDescription": "TeXCount arguments to count words in LaTeX document of the entire project from the root file, or the current document.\nArguments must be in separate strings in the array. Additional arguments, i.e., `-merge %DOC%` for the project and the current document path for counting current file will be appended when constructing the command."
                 }
             }
         }
