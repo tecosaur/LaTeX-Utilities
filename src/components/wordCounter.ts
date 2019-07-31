@@ -13,7 +13,7 @@ export class WordCounter {
     }
 
     async count(merge: boolean = true) {
-        const file = this.extension.workshop.exports.manager.rootFile
+        const file = this.extension.workshop.exports.getRootFile()
         if (file === undefined) {
             this.extension.logger.addLogMessage('LaTeX Workshop does not provide a valid root file.')
             return
@@ -25,7 +25,7 @@ export class WordCounter {
         }
         let command = configuration.get('path') as string
         if (configuration.get('docker.enabled')) {
-            this.extension.workshop.exports.manager.setEnvVar()
+            this.extension.workshop.exports.setEnvVar()
             if (process.platform === 'win32') {
                 command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat')
             } else {
@@ -49,13 +49,13 @@ export class WordCounter {
 
         proc.on('error', err => {
             this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`)
-            this.extension.logger.showErrorMessage('TeXCount failed. Please refer to LaTeX Workshop Output for details.')
+            this.extension.logger.showErrorMessage('TeXCount failed. Please refer to LaTeX Utilities Output for details.')
         })
 
         proc.on('exit', exitCode => {
             if (exitCode !== 0) {
                 this.extension.logger.addLogMessage(`Cannot count words, code: ${exitCode}, ${stderr}`)
-                this.extension.logger.showErrorMessage('TeXCount failed. Please refer to LaTeX Workshop Output for details.')
+                this.extension.logger.showErrorMessage('TeXCount failed. Please refer to LaTeX Utilities Output for details.')
             } else {
                 const words = /Words in text: ([0-9]*)/g.exec(stdout)
                 const floats = /Number of floats\/tables\/figures: ([0-9]*)/g.exec(stdout)

@@ -66,7 +66,7 @@
                 "latex-utilities.countWord.path": {
                     "type": "string",
                     "default": "texcount",
-                    "markdownDescription": "Define the location of TeXCount executive file/script.\nThis command will be joint with `latex-workshop.texcount.args` and required arguments to form a complete command of TeXCount."
+                    "markdownDescription": "Define the location of TeXCount executive file/script.\nThis command will be joint with `latex-utilities.countWord.args` and required arguments to form a complete command of TeXCount."
                 },
                 "latex-utilities.countWord.args": {
                     "type": "array",

@@ -49,7 +49,7 @@ export function deactivate() {}
 
 export class Extension {
     extensionRoot: string
-    workshop: vscode.Extension<any>
+    workshop: vscode.Extension<LaTeXWorkshopAPI>
     logger: Logger
     completionWatcher: CompletionWatcher
     completer: Completer
@@ -69,4 +69,10 @@ export class Extension {
         this.imagePaster = new ImagePaster(this)
         this.wordCounter = new WordCounter(this)
     }
+}
+
+interface LaTeXWorkshopAPI {
+    getRootFile: () => string
+    getGraphicsPath: () => string[]
+    setEnvVar: () => void
 }
