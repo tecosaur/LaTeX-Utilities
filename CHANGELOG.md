@@ -24,9 +24,12 @@
 
 -   Live Snippets: Big! bug with environment (text/maths) detection code
 
-## [0.1.0]
+## [0.1.0] — 2019-07-31
 
 ### Added
 
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
+
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/tecosaur/latex-utilities/releases/tag/v0.1.0
