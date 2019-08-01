@@ -36,10 +36,40 @@ export class TypeFinder {
             type: 'start',
             pair: '\\end{equation}'
         },
+        '\\begin{displaymath}': {
+            mode: 'maths',
+            type: 'start',
+            pair: '\\end{displaymath}'
+        },
         '\\begin{align}': {
             mode: 'maths',
             type: 'start',
             pair: '\\end{align}'
+        },
+        '\\begin{gather}': {
+            mode: 'maths',
+            type: 'start',
+            pair: '\\end{gather}'
+        },
+        '\\begin{flalign}': {
+            mode: 'maths',
+            type: 'start',
+            pair: '\\end{flalign}'
+        },
+        '\\begin{multline}': {
+            mode: 'maths',
+            type: 'start',
+            pair: '\\end{multline}'
+        },
+        '\\begin{alignat}': {
+            mode: 'maths',
+            type: 'start',
+            pair: '\\end{alignat}'
+        },
+        '\\begin{split}': {
+            mode: 'maths',
+            type: 'start',
+            pair: '\\end{split}'
         },
         '\\text': {
             mode: 'text',
