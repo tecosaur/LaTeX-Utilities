@@ -121,7 +121,7 @@ export class Paster {
         }, true)
         if (!isConsistent) {
             throw new Error('Table is not consistent')
-        } else if (cells.length === 1 && cells[0].length === 1) {
+        } else if (cells.length === 1 || cells[0].length === 1) {
             this.pasteNormal(editor, content)
 
             return
