@@ -37,8 +37,8 @@
                 "category": "LaTeX Utilities"
             },
             {
-                "command": "latex-utilities.pasteImage",
-                "title": "Paste an Image File",
+                "command": "latex-utilities.formattedPaste",
+                "title": "Paste formatted content",
                 "category": "LaTeX Utilities"
             },
             {
@@ -47,21 +47,39 @@
                 "category": "LaTeX Utilities"
             }
         ],
+        "keybindings": [
+            {
+                "key": "ctrl+shift+v",
+                "mac": "cmd+shift+v",
+                "command": "latex-utilities.formattedPaste",
+                "when": "editorTextFocus && editorLangId == 'latex'"
+            }
+        ],
         "configuration": {
             "title": "LaTeX Utils",
             "properties": {
-                "latex-utilities.liveReformat.enabled": {
-                    "type": "boolean",
-                    "default": false,
-                    "markdownDescription": "Apply live text replacements to make writing latex maths easier (e.g. `xx` → `\\times`). Also see the command \"Edit Live Snippets File\""
+                "latex-utilities.formattedPaste.tableColumnType": {
+                    "type": "string",
+                    "default": "l",
+                    "markdownDescription": "Tabular column type to use, e.g. **`l`**/**`r`**/**`c`**…"
                 },
-                "latex-utilities.imagePaste.template": {
+                "latex-utilities.formattedPaste.tableBooktabsStyle": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Use the booktabs commands `\\toprule`, `\\midrule`, and `\\bottomrule`"
+                },
+                "latex-utilities.formattedPaste.tableHeaderRows": {
+                    "type": "integer",
+                    "default": 1,
+                    "markdownDescription": "Number of header rows to assume. Set to **`0`** to disable."
+                },
+                "latex-utilities.formattedPaste.image.template": {
                     "type": [
                         "string",
                         "array"
                     ],
-                    "default": "\\includegraphics{${imageFileName}}",
-                    "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFileName}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
+                    "default": "\\includegraphics{${imageFilePath}}",
+                    "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFilePath}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
                 },
                 "latex-utilities.countWord.path": {
                     "type": "string",
@@ -96,6 +114,7 @@
         "vscode": "^1.1.14"
     },
     "dependencies": {
+        "csv-parser": "^2.3.0",
         "fs-extra": "^8.1.0"
     }
 }

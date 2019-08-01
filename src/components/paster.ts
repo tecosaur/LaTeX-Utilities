@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import { spawn } from 'child_process'
+import * as csv from 'csv-parser'
 
 import { Extension } from '../main'
 import { promisify } from 'util'
@@ -16,26 +17,8 @@ export class Paster {
         this.extension = extension
     }
 
-    // Image pasting code below from https://github.com/mushanshitiancai/vscode-paste-image/
-    // Copyright 2016 mushanshitiancai
-    // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-    // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-    PATH_VARIABLE_GRAPHICS_PATH = /\$\{graphicsPath\}/g
-    PATH_VARIABLE_CURRNET_FILE_DIR = /\$\{currentFileDir\}/g
-
-    PATH_VARIABLE_IMAGE_FILE_PATH = /\$\{imageFilePath\}/g
-    PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH = /\$\{imageOriginalFilePath\}/g
-    PATH_VARIABLE_IMAGE_FILE_NAME = /\$\{imageFileName\}/g
-    PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT = /\$\{imageFileNameWithoutExt\}/g
-
-    pasteTemplate: string
-    basePathConfig = '${graphicsPath}'
-    graphicsPathFallback = '${currentFileDir}'
-
-    public async pasteImage(imgFile?: string) {
-        this.extension.logger.addLogMessage('Pasting an image')
+    public async paste() {
+        this.extension.logger.addLogMessage('Performing formatted paste')
 
         // get current edit file path
         const editor = vscode.window.activeTextEditor
@@ -50,19 +33,219 @@ export class Paster {
 
         const clipboardContents = await vscode.env.clipboard.readText()
 
+        // if empty try pasting an image from clipboard
         if (clipboardContents === '') {
             if (fileUri.scheme === 'untitled') {
                 vscode.window.showInformationMessage('You need to the save the current editor before pasting an image')
 
                 return
             }
-        } else if (imgFile === undefined) {
-            vscode.window.showInformationMessage("You don't seem to have an image in the clipboard")
+            this.pasteImage(editor, fileUri.fsPath)
+        }
+
+        if (clipboardContents.split('\n').length === 1) {
+            let filePath: string
+            let basePath: string
+            if (fileUri.scheme === 'untitled') {
+                filePath = clipboardContents
+                basePath = ''
+            } else {
+                filePath = path.resolve(fileUri.fsPath, clipboardContents)
+                basePath = fileUri.fsPath
+            }
+
+            if (fs.existsSync(filePath)) {
+                this.pasteFile(editor, basePath, clipboardContents)
+
+                return
+            }
+        }
+        // if not pasting file
+        try {
+            this.pasteTable(editor, clipboardContents)
+        } catch (error) {
+            this.pasteNormal(editor, this.reformatText(clipboardContents))
+        }
+    }
+
+    public pasteNormal(editor: vscode.TextEditor, content: string) {
+        editor.edit(edit => {
+            const current = editor.selection
+
+            if (current.isEmpty) {
+                edit.insert(current.start, content)
+            } else {
+                edit.replace(current, content)
+            }
+        })
+    }
+
+    public pasteFile(editor: vscode.TextEditor, baseFile: string, file: string) {
+        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.eps', '.pdf']
+        const TABLE_FORMATS = ['.csv']
+        const extension = path.extname(file)
+
+        if (IMAGE_EXTENSIONS.indexOf(extension) !== -1) {
+            this.pasteImage(editor, baseFile, file)
+        } else if (TABLE_FORMATS.indexOf(extension) !== -1) {
+            if (extension === '.csv') {
+                const rows: string[] = []
+
+                fs.createReadStream(path.resolve(baseFile, file))
+                    .pipe(csv())
+                    .on('data', data => rows.push(Object.values(data).join('\t')))
+                    .on('end', () => {
+                        const body = rows.join('\n')
+                        this.pasteTable(editor, body)
+                    })
+            }
+        }
+    }
+
+    public pasteTable(editor: vscode.TextEditor, content: string) {
+        this.extension.logger.addLogMessage('Pasting: Table')
+        const trimUnwantedWhitespace = (s: string) =>
+            s.replace(/^[^\S\t]+|[^\S\t]+$/gm, '').replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
+        content = trimUnwantedWhitespace(content)
+        content = this.reformatText(content, false)
+        const lines = content.split('\n')
+        const cells = lines.map(l => l.split('\t'))
+
+        // determine if all rows have same number of cells
+        const isConsistent = cells.reduce((accumulator, current, _index, array) => {
+            if (current.length === array[0].length) {
+                return accumulator
+            } else {
+                return false
+            }
+        }, true)
+        if (!isConsistent) {
+            throw new Error('Table is not consistent')
+        } else if (cells.length === 1 && cells[0].length === 1) {
+            this.pasteNormal(editor, content)
 
             return
         }
 
-        const baseFile = fileUri.fsPath
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
+
+        const columnType: string = configuration.tableColumnType
+        const booktabs: boolean = configuration.tableBooktabsStyle
+        const headerRows: number = configuration.tableHeaderRows
+
+        const tabularRows = cells.map(row => '\t' + row.join(' & '))
+
+        if (headerRows && tabularRows.length > headerRows) {
+            const eol = editor.document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n'
+            const headSep = '\t' + (booktabs ? '\\midrule' : '\\hline') + eol
+            tabularRows[headerRows] = headSep + tabularRows[headerRows]
+        }
+        let tabularContents = tabularRows.join(' \\\\\n')
+        if (booktabs) {
+            tabularContents = '\t\\toprule\n' + tabularContents + ' \\\\\n\t\\bottomrule'
+        }
+        const tabular = `\\begin{tabular}{${columnType.repeat(cells[0].length)}}\n${tabularContents}\n\\end{tabular}`
+
+        editor.edit(edit => {
+            const current = editor.selection
+
+            if (current.isEmpty) {
+                edit.insert(current.start, tabular)
+            } else {
+                edit.replace(current, tabular)
+            }
+        })
+    }
+
+    public reformatText(text: string, removeBonusWhitespace = true) {
+        function doRemoveBonusWhitespace(str: string) {
+            str = str.replace(/\u200B/g, '') // get rid of zero-width spaces
+            str = str.replace(/\n{2,}/g, '\uE000') // 'save' multi-newlines to private use character
+            str = str.replace(/\s+/g, ' ') // replace all whitespace with normal space
+            str = str.replace(/\uE000/g, '\n\n')
+
+            return str
+        }
+
+        if (removeBonusWhitespace) {
+            text = doRemoveBonusWhitespace(text)
+        }
+
+        const textReplacements = {
+            // escape latex special characters
+            '\\\\': '\\textbackslash',
+            '&/': '\\&',
+            '%/': '\\%',
+            '$/': '\\$',
+            '#/': '\\#',
+            '_/': '\\_',
+            '^/': '\\textasciicircum',
+            '{/': '\\{',
+            '}/': '\\}',
+            '~/': '\\textasciitilde',
+            // dumb quotes
+            '"([^"]+)"': "``$1''",
+            "'([^']+)'": "`$1'",
+            // 'smart' quotes
+            '“': '``',
+            '”': "''",
+            '‘': '`',
+            '’': "'",
+            // unicode symbols
+            '—': '---', // em dash
+            '–': '--', // en dash
+            '−': '-', // minus sign
+            '…': '\\ldots', // elipses
+            '‐': '-', // hyphen
+            '™': '\\texttrademark', // trade mark
+            '®': '\\textregistered', // registered trade mark
+            '©': '\\textcopyright', // copyright
+            '¢': '\\cent', // copyright
+            '£': '\\pound', // copyright
+            // unicode math
+            '×': '\\(\\times \\)',
+            '÷': '\\(\\div \\)',
+            '±': '\\(\\pm \\)',
+            '→': '\\(\\to \\)',
+            '°': '\\(^\\circ \\)',
+            '≤': '\\(\\leq \\)',
+            '≥': '\\(\\geq \\)',
+            // typographic approximations
+            '\\.\\.\\.': '\\ldots',
+            '-{20,}': '\\hline',
+            '-{2,3}>': '\\(\\longrightarrow \\)',
+            '->': '\\(\\to \\)',
+            '<-{2,3}': '\\(\\longleftarrow \\)',
+            '<-': '\\(\\leftarrow \\)'
+        }
+
+        for (const pattern in textReplacements) {
+            text = text.replace(new RegExp(pattern, 'g'), textReplacements[pattern])
+        }
+
+        return text
+    }
+
+    // Image pasting code below from https://github.com/mushanshitiancai/vscode-paste-image/
+    // Copyright 2016 mushanshitiancai
+    // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+    PATH_VARIABLE_GRAPHICS_PATH = /\$\{graphicsPath\}/g
+    PATH_VARIABLE_CURRNET_FILE_DIR = /\$\{currentFileDir\}/g
+
+    PATH_VARIABLE_IMAGE_FILE_PATH = /\$\{imageFilePath\}/g
+    PATH_VARIABLE_IMAGE_FILE_PATH_WITHOUT_EXT = /\$\{imageFilePathWithoutExt\}/g
+    PATH_VARIABLE_IMAGE_FILE_NAME = /\$\{imageFileName\}/g
+    PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT = /\$\{imageFileNameWithoutExt\}/g
+
+    pasteTemplate: string
+    basePathConfig = '${graphicsPath}'
+    graphicsPathFallback = '${currentFileDir}'
+
+    public pasteImage(editor: vscode.TextEditor, baseFile: string, imgFile?: string) {
+        this.extension.logger.addLogMessage('Pasting: Image')
 
         const folderPath = path.dirname(baseFile)
         const projectPath = vscode.workspace.workspaceFolders
@@ -120,7 +303,7 @@ export class Paster {
     }
 
     public loadImageConfig(projectPath: string, filePath: string) {
-        const config = vscode.workspace.getConfiguration('latex-utilities.imagePaste')
+        const config = vscode.workspace.getConfiguration('latex-utilities.formattedPaste.image')
 
         // load other config
         const pasteTemplate: string | string[] | undefined = config.get('template')
@@ -367,15 +550,15 @@ export class Paster {
             imageFilePath = path.relative(basePath, imageFilePath)
         }
 
-        const originalImagePath = imageFilePath
-        const ext = path.extname(originalImagePath)
-        const fileName = path.basename(originalImagePath)
-        const fileNameWithoutExt = path.basename(originalImagePath, ext)
+        const ext = path.extname(imageFilePath)
+        const imageFilePathWithoutExt = imageFilePath.replace(/\.\w+$/, '')
+        const fileName = path.basename(imageFilePath)
+        const fileNameWithoutExt = path.basename(imageFilePath, ext)
 
         let result = this.pasteTemplate
 
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_PATH, imageFilePath)
-        result = result.replace(this.PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH, originalImagePath)
+        result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_PATH_WITHOUT_EXT, imageFilePathWithoutExt)
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME, fileName)
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt)
 

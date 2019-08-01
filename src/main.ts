@@ -3,7 +3,7 @@ import * as path from 'path'
 
 import { Logger } from './components/logger'
 import { CompletionWatcher, Completer } from './components/completionWatcher'
-import { Paster as ImagePaster } from './components/imagePaster'
+import { Paster } from './components/paster'
 import { WordCounter } from './components/wordCounter'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
             extension.completionWatcher.editSnippetsFile()
         ),
-        vscode.commands.registerCommand('latex-utilities.pasteImage', () => extension.imagePaster.pasteImage()),
+        vscode.commands.registerCommand('latex-utilities.formattedPaste', () => extension.paster.paste()),
         vscode.commands.registerCommand('latex-utilities.countWord', () => extension.wordCounter.count())
     )
 
@@ -37,12 +37,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'latex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'doctex' }, extension.completer)
     )
-
-    const api = {
-        pasteImage: (imgFile?: string) => extension.imagePaster.pasteImage(imgFile)
-    }
-
-    return api
 }
 
 export function deactivate() {}
@@ -53,7 +47,7 @@ export class Extension {
     logger: Logger
     completionWatcher: CompletionWatcher
     completer: Completer
-    imagePaster: ImagePaster
+    paster: Paster
     wordCounter: WordCounter
 
     constructor() {
@@ -66,7 +60,7 @@ export class Extension {
         this.logger = new Logger(this)
         this.completionWatcher = new CompletionWatcher(this)
         this.completer = new Completer(this)
-        this.imagePaster = new ImagePaster(this)
+        this.paster = new Paster(this)
         this.wordCounter = new WordCounter(this)
     }
 }
