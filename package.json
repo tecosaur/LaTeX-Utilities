@@ -124,6 +124,9 @@
             }
         }
     },
+    "extensionDependencies": [
+        "james-yu.latex-workshop"
+    ],
     "scripts": {
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
