@@ -45,6 +45,11 @@
                 "command": "latex-utilities.countWord",
                 "title": "Count words in LaTeX document",
                 "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.viewtikzpicture",
+                "title": "View TikzPicture",
+                "category": "LaTeX Workshop"
             }
         ],
         "keybindings": [
@@ -90,6 +95,26 @@
                     "type": "array",
                     "default": [],
                     "markdownDescription": "TeXCount arguments to count words in LaTeX document of the entire project from the root file, or the current document.\nArguments must be in separate strings in the array. Additional arguments, i.e., `-merge %DOC%` for the project and the current document path for counting current file will be appended when constructing the command."
+                },
+                "latex-utilities.tikzpreview.enabled": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Identify tikzpictures, and add a codelense that allows you to preview them"
+                },
+                "latex-utilities.tikzpreview.preambleContents": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "Set the path of a file containing LaTeX code to be included in the preamble of standalone documents for tikzpicture preview. If the path is relative, it is joined with the root dir."
+                },
+                "latex-utilities.tikzpreview.parseTeXFile": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Enable important tikz code in the current TeX file to be included in tikzpreview standalone file."
+                },
+                "latex-utilities.tikzpreview.delay": {
+                    "type": "number",
+                    "default": 100,
+                    "markdownDescription": "Defines the delay in milliseconds to wait after typing stops. Set to 0 to disable."
                 }
             }
         }

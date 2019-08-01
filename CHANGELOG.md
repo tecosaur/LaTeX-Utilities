@@ -2,7 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
 -   Word Count
+-   TikZ Preview
+    -   Adds a code lense above `\begin{tikzpicture}` that allows for live previewing
+
+### Improved
+
 -   Full formatted paste features, `ctrl`+`shift`+`v`
     -   Reformats some Unicode text for LaTeX
     -   Table cells are turned into a `tabular`
