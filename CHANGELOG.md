@@ -17,6 +17,10 @@
     -   Paste an image from the clipboard (as in 0.1.0)
     -   Formatted paste the path to a csv (adds tabular) or image file (links to file)
 
+### Fixed
+
+-   Big! bug with environment (text/maths) detection code (live snippets)
+
 ## [0.1.0]
 
 ### Added

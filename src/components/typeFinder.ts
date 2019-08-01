@@ -136,7 +136,7 @@ export class TypeFinder {
         }
 
         regexStrs.push(`\\\\begin{(?:${properStartEnvs.join('|')})\\*?}`)
-        regexStrs.push(`\\\\begin{(?:${properCloseEnvs.join('|')})\\*?}`)
+        regexStrs.push(`\\\\end{(?:${properCloseEnvs.join('|')})\\*?}`)
 
         return new RegExp(`(?:^|[^\\\\])(${regexStrs.join('|')})`, 'g')
     }
