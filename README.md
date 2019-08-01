@@ -22,6 +22,21 @@ This currently only adds a small number of features, however that going to grow 
     -   Paste location of CSVs/images to have them included
 -   Live Snippets (auto-activating, with regex)
 -   Count Words in a LaTeX Document
+-   TikZ Preview
+
+## Demos
+
+### Formatted Paste (image)
+
+<img src="demo-media/formattedPasteImage.gif" height="160px">
+
+### Live Snippets
+
+<img src="demo-media/liveSnippets.gif" height="30px">
+
+### TikZ Preview
+
+<img src="demo-media/tikz-preview.gif" height="120px">
 
 ## Requirements
 
