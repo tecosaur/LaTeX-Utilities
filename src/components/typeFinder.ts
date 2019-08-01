@@ -173,7 +173,7 @@ export class TypeFinder {
                     tokens.push(match)
                 }
             } while (match)
-            if (tokens === null || tokens.length === 0) {
+            if (tokens.length === 0) {
                 if (lineNo + 1 === minLine && 0 <= minChar && lastKnown) {
                     // if last seen token closes the 'last known' environment, then we DON'T want to use it
                     if (tokenStack.length > 0) {
