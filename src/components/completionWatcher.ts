@@ -63,8 +63,7 @@ export class CompletionWatcher {
             }
         }
         this.snippets.sort((a, b) => {
-            // @ts-ignore
-            return b.priority - a.priority
+            return (b.priority === undefined ? 0 : b.priority) - (a.priority === undefined ? 0 : a.priority)
         })
     }
 
@@ -172,7 +171,9 @@ export class CompletionWatcher {
                         )
                         .then(
                             () => {
-                                // @ts-ignore
+                                if (!vscode.window.activeTextEditor) {
+                                    return
+                                }
                                 vscode.window.activeTextEditor
                                     .insertSnippet(new vscode.SnippetString(replacement), undefined, {
                                         undoStopBefore: true,
