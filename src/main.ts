@@ -12,6 +12,8 @@ import * as utils from './utils'
 export function activate(context: vscode.ExtensionContext) {
     const extension = new Extension()
 
+    extension.logger.addLogMessage('LaTeX Utilities Started')
+
     context.subscriptions.push(
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
             extension.completionWatcher.editSnippetsFile()
@@ -85,7 +87,6 @@ export class Extension {
 interface LaTeXWorkshopAPI {
     getRootFile: () => string
     getGraphicsPath: () => string[]
-    setEnvVar: () => void
     viewer: {
         clients: {
             [key: string]: {
@@ -98,6 +99,7 @@ interface LaTeXWorkshopAPI {
         openTab(sourceFile: string, respectOutDir: boolean, sideColumn: boolean): void
     }
     manager: {
+        setEnvVar: () => void
         findRoot: () => Promise<string | undefined>
         rootDir: () => string
         rootFile: () => string

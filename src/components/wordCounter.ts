@@ -13,7 +13,7 @@ export class WordCounter {
     }
 
     async count(merge: boolean = true) {
-        const file = this.extension.workshop.manager.rootFile
+        const file = this.extension.workshop.manager.rootFile()
         if (file === undefined) {
             this.extension.logger.addLogMessage('LaTeX Workshop does not provide a valid root file.')
             return

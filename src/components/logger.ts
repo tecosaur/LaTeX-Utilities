@@ -15,10 +15,7 @@ export class Logger {
     }
 
     addLogMessage(message: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-utilities')
-        if (configuration.get('message.log.show')) {
-            this.logPanel.append(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${message}\n`)
-        }
+        this.logPanel.append(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${message}\n`)
     }
 
     showErrorMessage(message: string, ...args): Thenable<any> | undefined {

@@ -47,6 +47,7 @@ export class CompletionWatcher {
             extension: path.join(this.extension.extensionRoot, 'resources', 'liveSnippets.json')
         }
         this.loadSnippets()
+        extension.logger.addLogMessage('Completion Watcher Initialised')
     }
 
     private processSnippets() {
@@ -245,6 +246,7 @@ export class CompletionWatcher {
             this.snippets = snippets
             this.processSnippets()
         }
+        this.extension.logger.addLogMessage('Live Snippets Loaded')
     }
 
     private getUserSnippetsFile() {

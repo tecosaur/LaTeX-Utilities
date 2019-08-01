@@ -38,6 +38,8 @@ export class TikzPictureView {
     }
 
     public async view(document: vscode.TextDocument, range: vscode.Range) {
+        this.extension.logger.addLogMessage(`Viewing TikZ Picture starting on line ${range.start.line + 1}`)
+
         if (!this.initalised) {
             await this.cleanupTempDir()
             if (!fs.existsSync(path.join(tmpdir(), this.TEMPFOLDER_NAME))) {
