@@ -13,7 +13,7 @@ export class WordCounter {
     }
 
     async count(merge: boolean = true) {
-        const file = this.extension.workshop.getRootFile()
+        const file = this.extension.workshop.manager.rootFile
         if (file === undefined) {
             this.extension.logger.addLogMessage('LaTeX Workshop does not provide a valid root file.')
             return
@@ -25,7 +25,7 @@ export class WordCounter {
         }
         let command = configuration.get('path') as string
         if (configuration.get('docker.enabled')) {
-            this.extension.workshop.setEnvVar()
+            this.extension.workshop.manager.setEnvVar()
             if (process.platform === 'win32') {
                 command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat')
             } else {
