@@ -86,6 +86,11 @@
                     "default": "\\includegraphics{${imageFilePath}}",
                     "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFilePath}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
                 },
+                "latex-utilities.liveReformat.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Apply live text replacements to make writing latex maths easier (e.g. `xx` → `\\times`). Also see the command \"Edit Live Snippets File\""
+                },
                 "latex-utilities.countWord.path": {
                     "type": "string",
                     "default": "texcount",
