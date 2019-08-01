@@ -12,10 +12,6 @@ import * as utils from './utils'
 export function activate(context: vscode.ExtensionContext) {
     const extension = new Extension()
 
-    if (extension.workshop === undefined) {
-        throw new Error('LaTeX Workshop required, not found')
-    }
-
     context.subscriptions.push(
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
             extension.completionWatcher.editSnippetsFile()
@@ -57,7 +53,7 @@ export function deactivate() {}
 
 export class Extension {
     extensionRoot: string
-    workshop: vscode.Extension<LaTeXWorkshopAPI>
+    workshop: LaTeXWorkshopAPI
     logger: Logger
     completionWatcher: CompletionWatcher
     completer: Completer
@@ -67,10 +63,15 @@ export class Extension {
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
-        // @ts-ignore
-        this.workshop = vscode.extensions.getExtension('james-yu.latex-workshop')
-        if (this.workshop !== undefined && this.workshop.isActive === false) {
-            this.workshop.activate()
+        const workshop = vscode.extensions.getExtension('james-yu.latex-workshop')
+        if (workshop === undefined) {
+            throw new Error('LaTeX Workshop required, not found')
+        } else {
+            if (workshop.isActive === false) {
+                workshop.activate().then(() => (this.workshop = workshop.exports))
+            } else {
+                this.workshop = workshop.exports
+            }
         }
         this.logger = new Logger(this)
         this.completionWatcher = new CompletionWatcher(this)

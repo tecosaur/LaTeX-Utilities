@@ -87,7 +87,7 @@ export class TikzPictureView {
 
         for (const tikzPicture of tikzPictures) {
             if (
-                this.extension.workshop.exports.viewer.clients[
+                this.extension.workshop.viewer.clients[
                     tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase()
                 ].length === 0
             ) {
@@ -195,16 +195,16 @@ export class TikzPictureView {
         }
 
         if (
-            this.extension.workshop.exports.viewer.clients[
+            this.extension.workshop.viewer.clients[
                 tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase()
             ] !== undefined
         ) {
-            const refreshed = this.extension.workshop.exports.viewer.refreshExistingViewer(tikzPicture.tempFile)
+            const refreshed = this.extension.workshop.viewer.refreshExistingViewer(tikzPicture.tempFile)
             if (!refreshed) {
-                this.extension.workshop.exports.viewer.openTab(tikzPicture.tempFile, false, true)
+                this.extension.workshop.viewer.openTab(tikzPicture.tempFile, false, true)
             }
         } else {
-            this.extension.workshop.exports.viewer.openTab(tikzPicture.tempFile, false, true)
+            this.extension.workshop.viewer.openTab(tikzPicture.tempFile, false, true)
         }
     }
 
@@ -281,10 +281,10 @@ export class TikzPictureView {
                     commandsString = await fs.readFileSync(newCommandFile, { encoding: 'utf8' })
                 }
             } else {
-                if (this.extension.workshop.exports.manager.rootFile() === undefined) {
-                    await this.extension.workshop.exports.manager.findRoot()
+                if (this.extension.workshop.manager.rootFile() === undefined) {
+                    await this.extension.workshop.manager.findRoot()
                 }
-                const rootDir = this.extension.workshop.exports.manager.rootDir()
+                const rootDir = this.extension.workshop.manager.rootDir()
                 const newCommandFileAbs = path.join(rootDir, newCommandFile)
                 if (fs.existsSync(newCommandFileAbs)) {
                     commandsString = await fs.readFileSync(newCommandFileAbs, { encoding: 'utf8' })

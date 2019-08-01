@@ -572,7 +572,7 @@ export class Paster {
         postFunction: (str: string) => string = x => x
     ): string {
         const currentFileDir = path.dirname(curFilePath)
-        let graphicsPath: string | string[] = this.extension.workshop.exports.getGraphicsPath()
+        let graphicsPath: string | string[] = this.extension.workshop.getGraphicsPath()
         graphicsPath = graphicsPath.length !== 0 ? graphicsPath[0] : this.graphicsPathFallback
         graphicsPath = path.resolve(currentFileDir, graphicsPath)
 
