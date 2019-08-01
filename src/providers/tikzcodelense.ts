@@ -5,7 +5,7 @@ export class TikzCodeLense implements vscode.CodeLensProvider {
     onDidChangeCodeLenses?: vscode.Event<void> | undefined
 
     async provideCodeLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
-        if (!vscode.workspace.getConfiguration('latex-workshop.tikzpreview').get('enabled') as boolean) {
+        if (!vscode.workspace.getConfiguration('latex-utilities.tikzpreview').get('enabled') as boolean) {
             return []
         }
 
@@ -15,7 +15,7 @@ export class TikzCodeLense implements vscode.CodeLensProvider {
                 new vscode.CodeLens(match.range, {
                     title: 'View TikZ Picture',
                     tooltip: 'Open view of this TikZ Picture',
-                    command: 'latex-workshop.viewtikzpicture',
+                    command: 'latex-utilities.viewtikzpicture',
                     arguments: [match.document, match.range]
                 })
         )

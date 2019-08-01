@@ -67,7 +67,7 @@ export class TikzPictureView {
     ) {
         const tikzFileCollection = this.tikzCollections[document.uri.fsPath]
 
-        const changeDelay = vscode.workspace.getConfiguration('latex-workshop.tikzpreview').get('delay') as number
+        const changeDelay = vscode.workspace.getConfiguration('latex-utilities.tikzpreview').get('delay') as number
         if (changeDelay === 0 || tikzFileCollection === undefined) {
             return
         } else if (+new Date() - tikzFileCollection.lastChange < changeDelay) {
@@ -272,7 +272,7 @@ export class TikzPictureView {
     }
 
     private async generatePreamble(fileTikzCollection: IFileTikzCollection) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop.tikzpreview')
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.tikzpreview')
         let commandsString = ''
         const newCommandFile = configuration.get('preambleContents') as string
         if (newCommandFile !== '') {
