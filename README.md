@@ -1,6 +1,6 @@
 # <img src="icon.png" height="26px"> LaTeX Utilities
 
-[![version](https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities)
+[![version](https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&)
 [![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg)
 [![installs](https://vsmarketplacebadge.apphb.com/installs-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities)
 [![rating](https://vsmarketplacebadge.apphb.com/rating-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities)
@@ -15,8 +15,13 @@ This currently only adds a small number of features, however that going to grow 
 
 ## Features
 
--   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
+-   Formatted Pastes
+    -   Unicode characters 🡒 LaTeX characters (e.g. `“is this… a test”` 🡒 ` ``is this\ldots a test'' `)
+    -   Paste table cells (from spreadsheet programs or similar) 🡒 tabular
+    -   Paste images, customisable template
+    -   Paste location of CSVs/images to have them included
 -   Live Snippets (auto-activating, with regex)
+-   Count Words in a LaTeX Document
 
 ## Requirements
 
