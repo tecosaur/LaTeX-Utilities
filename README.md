@@ -11,7 +11,7 @@
 
 An add-on to the vscode extension [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.
 
-This currently only adds a small number of features, however that going to grow fairly quickly over the next few months.
+This currently only adds a small number of features, however that expected to grow over the next few months.
 
 ## Features
 
@@ -23,6 +23,11 @@ This currently only adds a small number of features, however that going to grow 
 -   Live Snippets (auto-activating, with regex)
 -   Count Words in a LaTeX Document
 -   TikZ Preview
+
+## Requirements
+
+-   ![LaTeX Workshop](https://vsmarketplacebadge.apphb.com/version/James-Yu.latex-workshop.svg?subject=LaTeX%20Workshop&color=597297&style=flat-square)
+-   A LaTeX instillation in your path
 
 ## Demos
 
@@ -37,8 +42,3 @@ This currently only adds a small number of features, however that going to grow 
 ### TikZ Preview
 
 <img src="demo-media/tikz-preview.gif" height="120px">
-
-## Requirements
-
--   ![LaTeX Workshop](https://vsmarketplacebadge.apphb.com/version/James-Yu.latex-workshop.svg?subject=LaTeX%20Workshop&color=597297&style=flat-square)
--   A LaTeX instillation in your path
