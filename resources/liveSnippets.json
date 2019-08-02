@@ -1,20 +1,20 @@
 [
     {
-        "prefix": "([A-Za-z])(\\d)$",
+        "prefix": "([A-Za-z}\\)\\]])(\\d)$",
         "body": "$1_$2",
         "mode": "maths",
         "triggerWhenComplete": true,
         "description": "auto subscript"
     },
     {
-        "prefix": "([A-Za-z]) ?_(\\d\\d)$",
+        "prefix": "([A-Za-z}\\)\\]]) ?_(\\d\\d)$",
         "body": "$1_{$2}",
         "mode": "maths",
         "triggerWhenComplete": true,
         "description": "auto subscript 2"
     },
     {
-        "prefix": "([A-Za-z]) ?\\^ ?([\\d\\+-] ?\\d)$",
+        "prefix": "([A-Za-z}\\)\\]]) ?\\^ ?([\\d\\+-] ?\\d)$",
         "body": "$1^{$2}",
         "mode": "maths",
         "triggerWhenComplete": true,
@@ -77,7 +77,7 @@
         "prefix": "sympy$",
         "body": "sympy $1 sympy",
         "mode": "maths",
-        "triggerWhenComplete": true
+        "triggerWhenComplete": false
     },
     {
         "prefix": "sympy.+$",
