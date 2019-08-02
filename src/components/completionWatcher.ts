@@ -12,6 +12,7 @@ interface ISnippet {
     priority?: number
     triggerWhenComplete?: boolean
     mode?: 'maths' | 'text' | 'any'
+    noPlaceholders?: boolean
 }
 
 export class CompletionWatcher {
@@ -53,6 +54,12 @@ export class CompletionWatcher {
     private processSnippets() {
         for (let i = 0; i < this.snippets.length; i++) {
             const snippet = this.snippets[i]
+            if (!/\$\.\d/.test(snippet.body)) {
+                snippet.noPlaceholders = true
+                if (snippet.priority === undefined) {
+                    snippet.priority = -1
+                }
+            }
             if (snippet.priority === undefined) {
                 snippet.priority = 0
             }
@@ -79,7 +86,8 @@ export class CompletionWatcher {
             e.contentChanges.length === 0 ||
             this.currentlyExecutingChange ||
             this.sameChanges(e) ||
-            !this.enabled
+            !this.enabled ||
+            !vscode.window.activeTextEditor
         ) {
             return
         }
@@ -149,7 +157,7 @@ export class CompletionWatcher {
                     resolve('break')
                     return
                 } else if (snippet.body === 'SPECIAL_ACTION_FRACTION') {
-                    [matchRange, replacement] = this.getFraction(match, line)
+                    ;[matchRange, replacement] = this.getFraction(match, line)
                 } else {
                     matchRange = new vscode.Range(
                         new vscode.Position(line.lineNumber, match.index),
@@ -163,39 +171,67 @@ export class CompletionWatcher {
                 }
                 if (snippet.triggerWhenComplete) {
                     this.currentlyExecutingChange = true
-                    vscode.window.activeTextEditor
-                        .edit(
-                            editBuilder => {
-                                editBuilder.delete(matchRange)
-                            },
-                            { undoStopBefore: true, undoStopAfter: false }
-                        )
-                        .then(
-                            () => {
-                                if (!vscode.window.activeTextEditor) {
-                                    return
-                                }
-                                vscode.window.activeTextEditor
-                                    .insertSnippet(new vscode.SnippetString(replacement), undefined, {
-                                        undoStopBefore: true,
-                                        undoStopAfter: true
-                                    })
-                                    .then(
-                                        () => {
-                                            this.currentlyExecutingChange = false
-                                            resolve(replacement.length - match[0].length)
-                                        },
-                                        (reason: any) => {
-                                            this.currentlyExecutingChange = false
-                                            reject(reason)
-                                        }
+                    const changeStart = +new Date()
+                    if (snippet.noPlaceholders) {
+                        vscode.window.activeTextEditor
+                            .edit(
+                                editBuilder => {
+                                    editBuilder.replace(matchRange, replacement)
+                                },
+                                { undoStopBefore: true, undoStopAfter: true }
+                            )
+                            .then(() => {
+                                const offset = replacement.length - match[0].length
+                                if (vscode.window.activeTextEditor) {
+                                    vscode.window.activeTextEditor.selection = new vscode.Selection(
+                                        vscode.window.activeTextEditor.selection.anchor.translate(0, offset),
+                                        vscode.window.activeTextEditor.selection.anchor.translate(0, offset)
                                     )
-                            },
-                            (reason: any) => {
+                                }
                                 this.currentlyExecutingChange = false
-                                reject(reason)
-                            }
-                        )
+                                console.log(
+                                    ` ▹ Watcher took ${+new Date() - changeStart}ms to perform text replacement`
+                                )
+                                resolve(offset)
+                            })
+                    } else {
+                        vscode.window.activeTextEditor
+                            .edit(
+                                editBuilder => {
+                                    editBuilder.delete(matchRange)
+                                },
+                                { undoStopBefore: true, undoStopAfter: false }
+                            )
+                            .then(
+                                () => {
+                                    if (!vscode.window.activeTextEditor) {
+                                        return
+                                    }
+                                    vscode.window.activeTextEditor
+                                        .insertSnippet(new vscode.SnippetString(replacement), undefined, {
+                                            undoStopBefore: true,
+                                            undoStopAfter: true
+                                        })
+                                        .then(
+                                            () => {
+                                                this.currentlyExecutingChange = false
+                                                console.log(
+                                                    ` ▹ Watcher took ${+new Date() - changeStart}ms to insert snippet`
+                                                )
+                                                resolve(replacement.length - match[0].length)
+                                            },
+                                            (reason: any) => {
+                                                this.currentlyExecutingChange = false
+                                                reject(reason)
+                                            }
+                                        )
+                                },
+                                (reason: any) => {
+                                    this.currentlyExecutingChange = false
+                                    reject(reason)
+                                }
+                            )
+                    }
                 } else {
                     this.activeSnippets.push({
                         label: replacement,

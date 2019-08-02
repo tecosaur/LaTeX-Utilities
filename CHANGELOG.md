@@ -19,6 +19,7 @@
     -   Formatted paste the path to a csv (adds tabular) or image file (links to file)
 
 -   Live Snippets: added more mathematics environments to environment (text/maths) detection code
+-   Live Snippets: may now be _marginally_ faster due to some behind-the-scenes reworking
 
 ### Fixed
 
