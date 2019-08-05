@@ -1,4 +1,4 @@
-# <img src="icon.png" height="26px"> LaTeX Utilities
+# <img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/icon.png" height="26px"> LaTeX Utilities
 
 [![version](https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&)
 [![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg)
@@ -33,12 +33,12 @@ This currently only adds a small number of features, however that expected to gr
 
 ### Formatted Paste (image)
 
-<img src="demo-media/formattedPasteImage.gif" height="160px">
+<img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/demo-media/formattedPasteImage.gif" height="160px">
 
 ### Live Snippets
 
-<img src="demo-media/liveSnippets.gif" height="30px">
+<img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/demo-media/liveSnippets.gif" height="30px">
 
 ### TikZ Preview
 
-<img src="demo-media/tikz-preview.gif" height="120px">
+<img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/demo-media/tikz-preview.gif" height="120px">
