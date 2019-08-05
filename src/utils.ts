@@ -1,3 +1,6 @@
+import * as vscode from 'vscode'
+import { execSync } from 'child_process'
+
 /**
  * Remove the comments if any
  */
@@ -12,4 +15,14 @@ export function stripComments(text: string, commentSign: string): string {
  */
 export function hasTexId(id: string) {
     return id === 'tex' || id === 'latex' || id === 'doctex'
+}
+
+export function checkCommandExists(command: string) {
+    try {
+        execSync(`${command} --version`)
+    } catch (error) {
+        if (error.status === 127) {
+            vscode.window.showErrorMessage(`Command ${command} not found`)
+        }
+    }
 }

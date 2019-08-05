@@ -6,6 +6,7 @@ import { CompletionWatcher, Completer } from './components/completionWatcher'
 import { Paster } from './components/paster'
 import { WordCounter } from './components/wordCounter'
 import { TikzCodeLense } from './providers/tikzcodelense'
+import { MacroDefinitions } from './providers/macroDefinitions'
 import { TikzPictureView } from './components/tikzpreview'
 import * as utils from './utils'
 
@@ -47,7 +48,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'tex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'latex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'doctex' }, extension.completer),
-        vscode.languages.registerCodeLensProvider({ language: 'latex', scheme: 'file' }, new TikzCodeLense())
+        vscode.languages.registerCodeLensProvider({ language: 'latex', scheme: 'file' }, new TikzCodeLense()),
+        vscode.languages.registerDefinitionProvider(
+            { language: 'latex', scheme: 'file' },
+            new MacroDefinitions(extension)
+        )
     )
 }
 
@@ -103,5 +108,10 @@ interface LaTeXWorkshopAPI {
         findRoot: () => Promise<string | undefined>
         rootDir: () => string
         rootFile: () => string
+    }
+    completer: {
+        command: {
+            usedPackages: () => string[]
+        }
     }
 }
