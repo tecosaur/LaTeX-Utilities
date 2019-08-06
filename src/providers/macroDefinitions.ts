@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 import { Extension } from '../main'
 import { checkCommandExists } from '../utils'
 import { spawn } from 'child_process'
-import { Writable } from 'stream'
 
 export class MacroDefinitions implements vscode.DefinitionProvider {
     extension: Extension
@@ -35,30 +34,31 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
 
         checkCommandExists('texdef')
 
-        let texdefCommand = 'texdef --source --Find --tex latex'
+        const texdefOptions = ['--source', '--Find', '--tex', 'latex']
         const packages = this.extension.workshop.completer.command.usedPackages()
         if (/\.sty$/.test(document.uri.fsPath)) {
-            packages.push('"' + document.uri.fsPath.replace(/\.sty$/, '') + '"')
+            texdefOptions.push(document.uri.fsPath.replace(/\.sty$/, ''))
         }
-        texdefCommand += packages.map(p => ` -p ${p}`).join('')
+        texdefOptions.push(...packages.map(p => ['-p', p]).reduce((prev, next) => prev.concat(next), []))
         const documentClass = this.getDocumentClass(document)
-        texdefCommand += ` --class "${documentClass !== null ? documentClass : 'article'}"`
-        texdefCommand += ` ${document.getText(command)}`
+        texdefOptions.push('--class', documentClass !== null ? documentClass : 'article')
+        texdefOptions.push(document.getText(command))
 
-        const texdefResult = await this.getFirstLineOfOutut(texdefCommand)
+        const texdefResult = await this.getFirstLineOfOutput('texdef', texdefOptions)
 
         const resultPattern = /% (.+), line (\d+):/
         let result: RegExpMatchArray | null
         if ((result = texdefResult.match(resultPattern)) !== null) {
             return new vscode.Location(vscode.Uri.file(result[1]), new vscode.Position(parseInt(result[2]) - 1, 0))
         } else {
+            vscode.window.showWarningMessage(`Could not find definition for ${document.getText(command)}`)
             this.extension.logger.addLogMessage(`Could not find definition for ${document.getText(command)}`)
             return
         }
     }
 
     private getDocumentClass(document: vscode.TextDocument): string | null {
-        const documentClassPattern = /\\documentclass((?:\[[\w-,]+\])?{[\w-]+)}/
+        const documentClassPattern = /\\documentclass((?:\[[\w-,]*\])?{[\w-]+)}/
         let documentClass: RegExpMatchArray | null
         let line = 0
         while (line < 50 && line < document.lineCount) {
@@ -70,17 +70,20 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
         return null
     }
 
-    private async getFirstLineOfOutut(command: string): Promise<string> {
+    private async getFirstLineOfOutput(command: string, options: string[]): Promise<string> {
         return new Promise(resolve => {
-            const stream = new Writable()
-            stream._write = (chunk, encoding, done) => {
+            const startTime = +new Date()
+            this.extension.logger.addLogMessage(`Running command ${command} ${options.join(' ')}`)
+            const cmdProcess = spawn(command, options)
+            cmdProcess.stdout.on('data', data => {
+                this.extension.logger.addLogMessage(
+                    `Took ${+new Date() - startTime}ms to find definition for ${options[options.length - 1]}`
+                )
                 cmdProcess.kill()
-                resolve(chunk.toString().split('\n')[0])
-                done()
-            }
-            const cmdProcess = spawn(command, { shell: true, stdio: 'pipe' })
-            cmdProcess.stdout.pipe(stream)
+                resolve(data.toString())
+            })
             cmdProcess.stdout.on('error', () => {
+                this.extension.logger.addLogMessage(`Error running texdef for ${options[options.length - 1]}}`)
                 resolve('')
             })
             cmdProcess.stdout.on('end', () => {
@@ -88,7 +91,7 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
             })
             setTimeout(() => {
                 cmdProcess.kill()
-            }, 5000)
+            }, 6000)
         })
     }
 }
