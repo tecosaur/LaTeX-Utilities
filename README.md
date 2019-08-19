@@ -1,4 +1,4 @@
-# <img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/icon.png" height="26px"> LaTeX Utilities
+# <img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/icon.png" height="26px"> LaTeX Utilities
 
 [![version](https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&)
 [![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg)
