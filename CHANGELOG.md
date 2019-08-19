@@ -1,12 +1,13 @@
 # Change Log
 
-## [Unreleased]
+## [0.2.0] — 2019-08-19
 
 ### Added
 
 -   Word Count
 -   TikZ Preview
     -   Adds a code lense above `\begin{tikzpicture}` that allows for live previewing
+-   Command Definitions
 
 ### Improved
 
@@ -32,5 +33,6 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/tecosaur/latex-utilities/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tecosaur/latex-utilities/releases/tag/v0.1.0
