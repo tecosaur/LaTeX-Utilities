@@ -33,12 +33,12 @@ This currently only adds a small number of features, however that expected to gr
 
 ### Formatted Paste (image)
 
-<img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/demo-media/formattedPasteImage.gif" height="160px">
+<img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/formattedPasteImage.gif" height="160px">
 
 ### Live Snippets
 
-<img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/demo-media/liveSnippets.gif" height="30px">
+<img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/liveSnippets.gif" height="30px">
 
 ### TikZ Preview
 
-<img src="https://github.com/tecosaur/LaTeX-Utilities/blob/master/demo-media/tikz-preview.gif" height="120px">
+<img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/tikz-preview.gif" height="120px">
