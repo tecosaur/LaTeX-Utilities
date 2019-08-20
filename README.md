@@ -28,6 +28,7 @@ This currently only adds a small number of features, however that expected to gr
 
 -   ![LaTeX Workshop](https://vsmarketplacebadge.apphb.com/version/James-Yu.latex-workshop.svg?subject=LaTeX%20Workshop&color=597297&style=flat-square)
 -   A LaTeX instillation in your path
+-   The [`texcount`](https://app.uio.no/ifi/texcount/) script (only necessary for the word-count function). Configure using the `latex-utilities.countWord.path` and `latex-utilities.countWord.args` settings.
 
 ## Demos
 
