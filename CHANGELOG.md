@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.2.2] — 2019-08-19
+
+### Added
+
+-   Toggle for the define command with `texdef` feature
+
 ## [0.2.1] — 2019-08-19
 
 ### Fixed
@@ -39,7 +45,8 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.2.1...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.2.2...HEAD
+[0.2.1]: https://github.com/tecosaur/latex-utilities/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/tecosaur/latex-utilities/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/tecosaur/latex-utilities/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tecosaur/latex-utilities/compare/bc5bf4f...v0.1.0

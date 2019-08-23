@@ -11,6 +11,11 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
     }
 
     async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+        const enabled = vscode.workspace.getConfiguration('latex-utilities.texdef').get('enabled')
+        if (!enabled) {
+            return
+        }
+
         const line = document.lineAt(position.line)
         let command: vscode.Range | undefined
 
