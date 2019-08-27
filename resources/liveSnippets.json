@@ -57,13 +57,13 @@
     },
     {
         "prefix": "//$",
-        "body": "\\frac{$.1}{$.2} ",
+        "body": "\\frac{$$1}{$$2} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "(([\\d\\.]+)|([\\d\\.]*)(\\\\)?([A-Za-z]+)((\\^|_)(\\{\\d+\\}|\\d))*)\\/$",
-        "body": "\\frac{$1}{$.1}$.0",
+        "body": "\\frac{$1}{$$1}$$0",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -76,7 +76,7 @@
     },
     {
         "prefix": "sympy$",
-        "body": "sympy $.1 sympy",
+        "body": "sympy $$1 sympy",
         "mode": "maths",
         "triggerWhenComplete": false
     },
@@ -205,7 +205,7 @@
     },
     {
         "prefix": "\\bbar$",
-        "body": "\\overline{$.1} ",
+        "body": "\\overline{$$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -217,7 +217,7 @@
     },
     {
         "prefix": "\\bhat$",
-        "body": "\\hat{$.1} ",
+        "body": "\\hat{$$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -241,25 +241,25 @@
     },
     {
         "prefix": "\\bpmat$",
-        "body": "\\begin{pmatrix} $.1 \\end{pmatrix} $.0 ",
+        "body": "\\begin{pmatrix} $$1 \\end{pmatrix} $$0 ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bbmat$",
-        "body": "\\begin{bmatrix} $.1 \\end{bmatrix} ",
+        "body": "\\begin{bmatrix} $$1 \\end{bmatrix} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bpart$",
-        "body": "\\frac{\\partial $.{1:V}}{\\partial $.{2:x}} ",
+        "body": "\\frac{\\partial $${1:V}}{\\partial $${2:x}} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bsq$",
-        "body": "\\sqrt{$.1} ",
+        "body": "\\sqrt{$$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -302,13 +302,13 @@
     },
     {
         "prefix": "\\bdint$",
-        "body": "\\int_{$.{1:-\\infty}}^{$.{2:\\infty}} ",
+        "body": "\\int_{$${1:-\\infty}}^{$${2:\\infty}} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bset$",
-        "body": "\\\\{$.1\\\\} ",
+        "body": "\\\\{$$1\\\\} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -326,7 +326,7 @@
     },
     {
         "prefix": "\\bcase$",
-        "body": "\\begin{cases} $.1 \\end{cases} ",
+        "body": "\\begin{cases} $$1 \\end{cases} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },

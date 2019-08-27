@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Improved
+
+-   Change placeholder style in snippets from `$.` to `$$`, because it seems cleaner.
+
 ### Fixed
 
 -   Some of the default live snippets were a bit dodgy

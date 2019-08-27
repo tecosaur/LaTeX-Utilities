@@ -54,7 +54,7 @@ export class CompletionWatcher {
     private processSnippets() {
         for (let i = 0; i < this.snippets.length; i++) {
             const snippet = this.snippets[i]
-            if (!/\$\.\d/.test(snippet.body) && snippet.noPlaceholders === undefined) {
+            if (!/\$\$\d/.test(snippet.body) && snippet.noPlaceholders === undefined) {
                 snippet.noPlaceholders = true
                 if (snippet.priority === undefined) {
                     snippet.priority = -1
@@ -157,7 +157,7 @@ export class CompletionWatcher {
                     resolve('break')
                     return
                 } else if (snippet.body === 'SPECIAL_ACTION_FRACTION') {
-                    ;[matchRange, replacement] = this.getFraction(match, line)
+                    [matchRange, replacement] = this.getFraction(match, line)
                 } else {
                     matchRange = new vscode.Range(
                         new vscode.Position(line.lineNumber, match.index),
@@ -166,7 +166,7 @@ export class CompletionWatcher {
                     if (snippet.body === 'SPECIAL_ACTION_SYMPY') {
                         replacement = this.execSympy(match, line)
                     } else {
-                        replacement = match[0].replace(snippet.prefix, snippet.body).replace(/\$\./g, '$')
+                        replacement = match[0].replace(snippet.prefix, snippet.body).replace(/\$\$/g, '$')
                     }
                 }
                 if (snippet.triggerWhenComplete) {
