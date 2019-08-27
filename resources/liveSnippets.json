@@ -22,7 +22,7 @@
         "priority": 2
     },
     {
-        "prefix": "([^ &\\\\])([\\+\\-=])$",
+        "prefix": "([^ &\\\\])([\\+\\-=<>])$",
         "body": "$1 $2",
         "mode": "maths",
         "priority": -1,
@@ -30,7 +30,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "([\\+\\-=])([^ ])$",
+        "prefix": "([\\+\\-=<>])([^ ])$",
         "body": "$1 $2",
         "mode": "maths",
         "priority": -1,
@@ -57,12 +57,12 @@
     },
     {
         "prefix": "//$",
-        "body": "\\fraction{$1}{$2} ",
+        "body": "\\frac{$.1}{$.2} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "((\\d+)|(\\d*)(\\\\)?([A-Za-z]+)((\\^|_)(\\{\\d+\\}|\\d))*)/$",
+        "prefix": "(([\\d\\.]+)|([\\d\\.]*)(\\\\)?([A-Za-z]+)((\\^|_)(\\{\\d+\\}|\\d))*)\\/$",
         "body": "\\frac{$1}{$.1}$.0",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -71,11 +71,12 @@
         "prefix": "([\\)\\]}]) ?/$",
         "body": "SPECIAL_ACTION_FRACTION",
         "mode": "maths",
-        "triggerWhenComplete": true
+        "triggerWhenComplete": true,
+        "noPlaceholders": false
     },
     {
         "prefix": "sympy$",
-        "body": "sympy $1 sympy",
+        "body": "sympy $.1 sympy",
         "mode": "maths",
         "triggerWhenComplete": false
     },
@@ -173,7 +174,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])(to|->)$",
+        "prefix": "(^|[^\\\\]\\w*)(to|->)$",
         "body": "$1\\to ",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -204,7 +205,7 @@
     },
     {
         "prefix": "\\bbar$",
-        "body": "\\overline{$1} ",
+        "body": "\\overline{$.1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -216,7 +217,7 @@
     },
     {
         "prefix": "\\bhat$",
-        "body": "\\overline{$1} ",
+        "body": "\\hat{$.1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -240,25 +241,25 @@
     },
     {
         "prefix": "\\bpmat$",
-        "body": "\\begin{pmatrix} $1 \\end{pmatrix} $0 ",
+        "body": "\\begin{pmatrix} $.1 \\end{pmatrix} $.0 ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bbmat$",
-        "body": "\\begin{bmatrix} $1 \\end{bmatrix} ",
+        "body": "\\begin{bmatrix} $.1 \\end{bmatrix} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bpart$",
-        "body": "\\frac{\\partial ${1:V}}{\\partial ${2:x}} ",
+        "body": "\\frac{\\partial $.{1:V}}{\\partial $.{2:x}} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bsq$",
-        "body": "\\sqrt{$1} ",
+        "body": "\\sqrt{$.1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -287,13 +288,13 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m){2}$",
+        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m)\\1$",
         "body": "$1_$2 ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m|x|y|z){1,2}p1$",
+        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m|x|y|z)\\1?p1$",
         "body": "$1_{$2+1} ",
         "mode": "maths",
         "priority": 2,
@@ -301,13 +302,13 @@
     },
     {
         "prefix": "\\bdint$",
-        "body": "\\int_{${1:-\\infty}}^{${2:\\infty}} ",
+        "body": "\\int_{$.{1:-\\infty}}^{$.{2:\\infty}} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bset$",
-        "body": "\\\\{$1\\\\} ",
+        "body": "\\\\{$.1\\\\} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -318,19 +319,19 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "<>$",
+        "prefix": "< ?>$",
         "body": "\\diamond ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\bcase$",
-        "body": "\\begin{cases} $1 \\end{cases} ",
+        "body": "\\begin{cases} $.1 \\end{cases} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "st$",
+        "prefix": "\\bst$",
         "body": "\\text{s.t.} ",
         "mode": "maths",
         "triggerWhenComplete": true
