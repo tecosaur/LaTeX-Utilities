@@ -6,7 +6,8 @@
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -21,7 +22,7 @@
         "no-undef": "off",
         "no-unused-vars": "off",
         "no-constant-condition": "off",
-        "@typescript-eslint/ban-ts-ignore": "warn",
+        "@typescript-eslint/ban-ts-ignore": "error",
         "@typescript-eslint/prefer-interface": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-member-accessibility": "off",
@@ -37,6 +38,8 @@
         "prefer-arrow-callback": ["error", { "allowUnboundThis": false }],
         "@typescript-eslint/no-parameter-properties": "off",
         "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/prefer-regexp-exec": "off",
         "curly": "error",
         "eol-last": "error",
         "no-caller": "error",
@@ -56,7 +59,13 @@
         "prefer-const": "error",
         "quotes": ["error", "single", { "avoidEscape": true }],
         "@typescript-eslint/semi": ["error", "never"],
-        "@typescript-eslint/member-delimiter-style": 0,
+        "@typescript-eslint/member-delimiter-style": [
+            "error",
+            {
+                "multiline": { "delimiter": "comma", "requireLast": false },
+                "singleline": { "delimiter": "comma", "requireLast": false }
+            }
+        ],
         "default-case": "error",
         "eqeqeq": ["error", "always"],
         "space-before-function-paren": ["error", { "anonymous": "always", "named": "never", "asyncArrow": "always" }],

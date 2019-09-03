@@ -2,9 +2,10 @@
     "compilerOptions": {
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
-        "lib": ["es2017", "dom"],
+        "lib": ["es2017"],
         "module": "commonjs",
         "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "noUnusedLocals": true,
@@ -12,8 +13,13 @@
         "outDir": "out",
         "rootDir": ".",
         "sourceMap": true,
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
         "strictNullChecks": true,
-        "target": "es6"
+        "strictPropertyInitialization": true,
+        "target": "es2017",
+        "baseUrl": "./",
+        "typeRoots": ["./types", "./node_modules/@types"]
     },
     "exclude": ["node_modules"]
 }
