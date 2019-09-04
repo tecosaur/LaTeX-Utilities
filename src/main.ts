@@ -8,6 +8,7 @@ import { WordCounter } from './components/wordCounter'
 import { TikzCodeLense } from './providers/tikzcodelense'
 import { MacroDefinitions } from './providers/macroDefinitions'
 import { TikzPictureView } from './components/tikzpreview'
+import { Zotero } from './components/zotero'
 import * as utils from './utils'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -23,7 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('latex-utilities.countWord', () => extension.wordCounter.count()),
         vscode.commands.registerCommand('latex-utilities.viewtikzpicture', (document, range) =>
             extension.tikzPreview.view(document, range)
-        )
+        ),
+        vscode.commands.registerCommand('latex-utilities.citeZotero', () => extension.zotero.cite()),
+        vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation())
     )
 
     context.subscriptions.push(
@@ -67,6 +70,7 @@ export class Extension {
     paster: Paster
     wordCounter: WordCounter
     tikzPreview: TikzPictureView
+    zotero: Zotero
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
@@ -86,6 +90,7 @@ export class Extension {
         this.paster = new Paster(this)
         this.wordCounter = new WordCounter(this)
         this.tikzPreview = new TikzPictureView(this)
+        this.zotero = new Zotero(this)
     }
 }
 
