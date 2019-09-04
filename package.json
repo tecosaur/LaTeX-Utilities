@@ -145,6 +145,13 @@
                     "type": "string",
                     "default": "autocite",
                     "markdownDescription": "LaTeX citation command to use (`cite`, `parencite`, `autocite`, etc.)"
+                },
+                "latex-utilities.zotero.citeMethod": {
+                    "type": "string",
+                    "enum": ["zotero", "vscode"],
+                    "enumDescriptions": ["Use the Zotero Cite as you Write popup", "Use a picker within VS Code"],
+                    "default": "zotero",
+                    "markdownDescription": "Controls how Zotero citations are chosen"
                 }
             }
         }
