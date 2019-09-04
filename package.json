@@ -50,6 +50,16 @@
                 "command": "latex-utilities.viewtikzpicture",
                 "title": "View TikzPicture",
                 "category": "LaTeX Workshop"
+            },
+            {
+                "command": "latex-utilities.citeZotero",
+                "title": "Cite from Zotero",
+                "category": "LaTeX Workshop"
+            },
+            {
+                "command": "latex-utilities.openInZotero",
+                "title": "Open in Zotero",
+                "category": "LaTeX Workshop"
             }
         ],
         "keybindings": [
@@ -125,6 +135,16 @@
                     "type": "boolean",
                     "default": "true",
                     "markdownDescription": "Use `texdef` to find definitions for LaTeX macros"
+                },
+                "latex-utilities.zotero.zoteroUrl": {
+                    "type": "string",
+                    "default": "http://localhost:23119",
+                    "markdownDescription": "URL for the Zotero HTTP server"
+                },
+                "latex-utilities.zotero.latexCommand": {
+                    "type": "string",
+                    "default": "autocite",
+                    "markdownDescription": "LaTeX citation command to use (`cite`, `parencite`, `autocite`, etc.)"
                 }
             }
         }
@@ -140,6 +160,7 @@
     "devDependencies": {
         "@types/fs-extra": "^8.0.0",
         "@types/glob": "^7.1.1",
+        "@types/got": "^9.6.7",
         "@types/mocha": "^5.2.6",
         "@types/node": "^12.7.3",
         "@types/vscode": "^1.37.0",
@@ -153,6 +174,7 @@
     },
     "dependencies": {
         "csv-parser": "^2.3.0",
-        "fs-extra": "^8.1.0"
+        "fs-extra": "^8.1.0",
+        "got": "^9.6.0"
     }
 }
