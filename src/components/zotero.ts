@@ -70,7 +70,7 @@ export class Zotero {
                 input.canSelectMany = true
                 input.placeholder = 'Type to insert citations'
                 
-                let req: { cancel(): void } | undefined = undefined
+                let req: { cancel(): void } | undefined
 
                 disposables.push(input.onDidChangeValue(value => {
                     if (value) {
@@ -101,8 +101,8 @@ export class Zotero {
                     const items = input.selectedItems
                         .filter(i => i instanceof EntryItem)
                         .map(i => (i as EntryItem).result)
+                    input.hide()
                     resolve(items)
-                    input.hide
                 }))
 
                 disposables.push(input.onDidHide(() => {
