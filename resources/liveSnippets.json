@@ -11,14 +11,22 @@
         "body": "$1_{$2}",
         "mode": "maths",
         "triggerWhenComplete": true,
-        "description": "auto subscript 2"
+        "description": "auto escape subscript"
+    },
+    {
+        "prefix": "(\\S) ([\\^_])$",
+        "body": "$1$2",
+        "mode": "maths",
+        "triggerWhenComplete": true,
+        "description": "remove extraneous sub/superscript space",
+        "priority": 2
     },
     {
         "prefix": "([A-Za-z}\\)\\]]) ?\\^ ?([\\d\\+-] ?\\d)$",
         "body": "$1^{$2}",
         "mode": "maths",
         "triggerWhenComplete": true,
-        "description": "auto superscript",
+        "description": "auto escape superscript",
         "priority": 2
     },
     {
