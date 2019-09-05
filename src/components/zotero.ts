@@ -39,23 +39,27 @@ export class Zotero {
         }
     }
 
-    private search(terms: string): Promise<SearchResult[]> & { cancel(): void } {
+    // Search the Zotero library for entries matching `terms`.
+    // Returns a promise for search results and a function to cancel the search
+    private search(terms: string): [Promise<SearchResult[]>, () => void] {
         const configuration = vscode.workspace.getConfiguration('latex-utilities.zotero')
         const zoteroUrl = configuration.get('zoteroUrl') as string
 
-        this.extension.logger.addLogMessage(`Searching Zotero for '${terms}'`)
-        return got.post(`${zoteroUrl}/better-bibtex/json-rpc`, {
+        this.extension.logger.addLogMessage(`Searching Zotero for "${terms}"`)
+        const req = got.post(`${zoteroUrl}/better-bibtex/json-rpc`, {
             body: {
                 jsonrpc: "2.0",
                 method: "item.search",
                 params: [terms]
             },
             json: true
-        }).then(response => {
+        })
+        
+        return [req.then(response => {
             const results = response.body.result as SearchResult[]
-            this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero`)
+            this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
             return results
-        }) as Promise<SearchResult[]> & { cancel(): void }
+        }), req.cancel.bind(req)]
     }
 
     // Get a citation from a built-in quick picker
@@ -69,29 +73,36 @@ export class Zotero {
                 input.matchOnDetail = true
                 input.canSelectMany = true
                 input.placeholder = 'Type to insert citations'
-                
-                let req: { cancel(): void } | undefined
+
+                let cancel: (() => void) | undefined
 
                 disposables.push(input.onDidChangeValue(value => {
                     if (value) {
                         input.busy = true
 
-                        if (req) {
-                            req.cancel()
+                        if (cancel) {
+                            cancel()
+                            cancel = undefined
                         }
 
-                        // Bit weird, but this holds on to the cancellable promise
-                        const search = this.search(value)
-                        req = search
-                        search.then(results => {
-                            input.items = results.map(r => new EntryItem(r))
-                        })
-                        .catch(error => {
-                            input.items = [new ErrorItem(error)]
-                        })
-                        .finally(() => {
-                            input.busy = false
-                        })
+                        const [r, c] = this.search(value)
+                        cancel = c
+                        r.then(results => {
+                                input.items = results.map(r => new EntryItem(r))
+                            })
+                            .catch(error => {
+                                if (!error.isCanceled) {
+                                    if (error.code === 'ECONNREFUSED') {
+                                        this.extension.logger.showErrorMessage('Could not connect to Zotero. Is it running with the Better BibTeX extension installed?')
+                                    } else {
+                                        this.extension.logger.addLogMessage(`Searching Zotero failed: ${error.message}`)
+                                        input.items = [new ErrorItem(error)]
+                                    }                        
+                                }
+                            })
+                            .finally(() => {
+                                input.busy = false
+                            }) as unknown as { cancel(): void }
                     } else {
                         input.items = []
                     }
@@ -106,8 +117,8 @@ export class Zotero {
                 }))
 
                 disposables.push(input.onDidHide(() => {
-                    if (req) {
-                        req.cancel()
+                    if (cancel) {
+                        cancel()
                     }
 
                     resolve([])
@@ -117,7 +128,7 @@ export class Zotero {
                 input.show()
             })
 
-            if (entries) {
+            if (entries && entries.length > 0) {
                 const configuration = vscode.workspace.getConfiguration('latex-utilities.zotero')
                 const latexCommand = configuration.get('latexCommand') as string
 
