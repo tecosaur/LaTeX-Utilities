@@ -182,7 +182,7 @@ export class CompletionWatcher {
                             )
                             .then(() => {
                                 const offset = replacement.length - match[0].length
-                                if (vscode.window.activeTextEditor) {
+                                if (vscode.window.activeTextEditor && offset > 0) {
                                     vscode.window.activeTextEditor.selection = new vscode.Selection(
                                         vscode.window.activeTextEditor.selection.anchor.translate(0, offset),
                                         vscode.window.activeTextEditor.selection.anchor.translate(0, offset)

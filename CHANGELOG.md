@@ -9,6 +9,7 @@
 ### Fixed
 
 -   Some of the default live snippets were a bit dodgy
+-   Fixed #17 (cursor moving backwards too far with some live snippets)
 
 ## [0.2.2] — 2019-08-23
 
