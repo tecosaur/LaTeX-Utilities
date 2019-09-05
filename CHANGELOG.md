@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+-   Add Zotero integration with BBT (Better BibTeX)
+
 ### Improved
 
 -   Change placeholder style in snippets from `$.` to `$$`, because it seems cleaner.
