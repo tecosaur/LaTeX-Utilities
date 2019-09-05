@@ -266,8 +266,12 @@ export class Paster {
         if (imgFile && !selectText) {
             const imagePath = this.renderImagePaste(path.dirname(baseFile), imgFile)
 
-            editor.edit(edit => {
-                edit.insert(editor.selection.start, imagePath)
+            if (!vscode.window.activeTextEditor) {
+                return
+            }
+            vscode.window.activeTextEditor.insertSnippet(new vscode.SnippetString(imagePath), editor.selection.start, {
+                undoStopBefore: true,
+                undoStopAfter: true
             })
 
             return
@@ -386,15 +390,27 @@ export class Paster {
                     fsCopy(oldPath, imagePath)
                     const imageString = this.renderImagePaste(this.basePathConfig, imagePath)
 
-                    editor.edit(edit => {
-                        const current = editor.selection
+                    const current = editor.selection
+                    if (!current.isEmpty) {
+                        editor.edit(
+                            editBuilder => {
+                                editBuilder.delete(current)
+                            },
+                            { undoStopBefore: true, undoStopAfter: false }
+                        )
+                    }
 
-                        if (current.isEmpty) {
-                            edit.insert(current.start, imageString)
-                        } else {
-                            edit.replace(current, imageString)
+                    if (!vscode.window.activeTextEditor) {
+                        return
+                    }
+                    vscode.window.activeTextEditor.insertSnippet(
+                        new vscode.SnippetString(imageString),
+                        editor.selection.start,
+                        {
+                            undoStopBefore: true,
+                            undoStopAfter: true
                         }
-                    })
+                    )
                 } else {
                     this.saveClipboardImageToFileAndGetPath(imagePath, (_imagePath, imagePathReturnByScript) => {
                         if (!imagePathReturnByScript) {
@@ -408,15 +424,27 @@ export class Paster {
 
                         const imageString = this.renderImagePaste(this.basePathConfig, imagePath)
 
-                        editor.edit(edit => {
-                            const current = editor.selection
+                        const current = editor.selection
+                        if (!current.isEmpty) {
+                            editor.edit(
+                                editBuilder => {
+                                    editBuilder.delete(current)
+                                },
+                                { undoStopBefore: true, undoStopAfter: false }
+                            )
+                        }
 
-                            if (current.isEmpty) {
-                                edit.insert(current.start, imageString)
-                            } else {
-                                edit.replace(current, imageString)
+                        if (!vscode.window.activeTextEditor) {
+                            return
+                        }
+                        vscode.window.activeTextEditor.insertSnippet(
+                            new vscode.SnippetString(imageString),
+                            editor.selection.start,
+                            {
+                                undoStopBefore: true,
+                                undoStopAfter: true
                             }
-                        })
+                        )
                     })
                 }
             })
