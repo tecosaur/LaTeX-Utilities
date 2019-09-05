@@ -97,7 +97,7 @@ export class Zotero {
                                     } else {
                                         this.extension.logger.addLogMessage(`Searching Zotero failed: ${error.message}`)
                                         input.items = [new ErrorItem(error)]
-                                    }                        
+                                    }
                                 }
                             })
                             .finally(() => {
