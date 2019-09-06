@@ -109,11 +109,9 @@ export class Zotero {
                 }))
 
                 disposables.push(input.onDidAccept(() => {
-                    const items = input.selectedItems
-                        .filter(i => i instanceof EntryItem)
-                        .map(i => (i as EntryItem).result)
+                    const items = input.selectedItems.length > 0 ? input.selectedItems : input.activeItems
                     input.hide()
-                    resolve(items)
+                    resolve(items.filter(i => i instanceof EntryItem).map(i => (i as EntryItem).result))
                 }))
 
                 disposables.push(input.onDidHide(() => {
