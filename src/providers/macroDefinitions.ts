@@ -10,7 +10,11 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
         this.extension = extension
     }
 
-    async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+    async provideDefinition(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        _token: vscode.CancellationToken
+    ) {
         const enabled = vscode.workspace.getConfiguration('latex-utilities.texdef').get('enabled')
         if (!enabled) {
             return

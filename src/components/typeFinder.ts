@@ -1,13 +1,6 @@
 import * as vscode from 'vscode'
 import { stripComments } from '../utils'
 
-interface ITypeCacheItem extends vscode.Range {
-    type: 'maths' | 'text'
-}
-interface ITypeCache {
-    [endLine: number]: ITypeCacheItem
-}
-
 interface IEnvInfo {
     [token: string]: {
         mode: 'maths' | 'text'
@@ -17,9 +10,6 @@ interface IEnvInfo {
 }
 
 export class TypeFinder {
-    private cache: {
-        [documentUri: string]: ITypeCache
-    } = {}
     private envs: IEnvInfo = {
         '\\(': {
             mode: 'maths',
@@ -307,13 +297,5 @@ export class TypeFinder {
                 lineNo} lines to determine: 𝘁𝗲𝘅𝘁 by default`
         )
         return 'text'
-    }
-
-    private getDocumentCache(document: vscode.TextDocument) {
-        if (this.cache[document.uri.toString()] === undefined) {
-            this.cache[document.uri.toString()] = {}
-        }
-
-        return this.cache[document.uri.toString()]
     }
 }

@@ -63,6 +63,7 @@ export function deactivate() {}
 
 export class Extension {
     extensionRoot: string
+    // @ts-ignore
     workshop: LaTeXWorkshopAPI
     logger: Logger
     completionWatcher: CompletionWatcher
