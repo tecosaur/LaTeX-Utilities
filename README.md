@@ -20,7 +20,7 @@ This currently only adds a small number of features, however that expected to gr
     -   Paste table cells (from spreadsheet programs or similar) 🡒 tabular
     -   Paste images, customisable template
     -   Paste location of CSVs/images to have them included
--   Live Snippets (auto-activating, with regex)
+-   Live Snippets (auto-activating, with regex) [see here](https://github.com/tecosaur/LaTeX-Utilities/wiki/Live-Snippets) for documentation
 -   Count Words in a LaTeX Document
 -   TikZ Preview
 -   Zotero citation management
