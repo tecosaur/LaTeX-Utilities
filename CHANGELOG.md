@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [0.3.0] — 2019-09-06
 
 ### Added
 
@@ -14,6 +14,8 @@
 
 -   Some of the default live snippets were a bit dodgy
 -   Fixed #17 (cursor moving backwards too far with some live snippets)
+-   TikZ Preview no longer grabs lines after `\begin{document}`
+-   Fix up some of the text replacements done by formatted paste
 
 ## [0.2.2] — 2019-08-23
 
@@ -60,7 +62,8 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.2.2...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/tecosaur/latex-utilities/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/tecosaur/latex-utilities/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/tecosaur/latex-utilities/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/tecosaur/latex-utilities/compare/v0.1.0...v0.2.0
