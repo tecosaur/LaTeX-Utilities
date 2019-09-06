@@ -298,7 +298,7 @@ export class TikzPictureView {
         const commands: string[] = []
 
         const content = await fs.readFileSync(fileTikzCollection.location, { encoding: 'utf8' })
-        const noCommentContent = content.replace(/([^\\]|^)%.*$/gm, '$1') // Strip comments
+        const noCommentContent = content.replace(/([^\\]|^)%.*$/gm, '$1').split('\\begin{document}')[0] // Strip comments
 
         let result: RegExpExecArray | null
         do {
