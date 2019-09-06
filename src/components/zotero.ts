@@ -162,7 +162,7 @@ export class Zotero {
         const configuration = vscode.workspace.getConfiguration('latex-utilities.zotero')
         const citeMethod = configuration.get('citeMethod')
 
-        if (!this.checkZotero()) {
+        if (!await this.checkZotero()) {
             return
         }
 
@@ -190,7 +190,7 @@ export class Zotero {
     }
 
     async openCitation() {
-        if (!this.checkZotero()) {
+        if (!await this.checkZotero()) {
             return
         }
 
