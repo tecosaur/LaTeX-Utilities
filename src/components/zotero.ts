@@ -25,7 +25,7 @@ export class Zotero {
             const res = await got(`${zoteroUrl}/better-bibtex/cayw`, {
                 query: options,
             })
-    
+
             return res.body
         } catch (error) {
             if (error.code === 'ECONNREFUSED') {
@@ -54,7 +54,7 @@ export class Zotero {
             },
             json: true
         })
-        
+
         return [req.then(response => {
             const results = response.body.result as SearchResult[]
             this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
@@ -151,7 +151,7 @@ export class Zotero {
                     edit.insert(editor.selection.start, citation)
                 }
             })
-            
+
             this.extension.logger.addLogMessage(`Added citation: ${citation}`)
         } else {
             this.extension.logger.addLogMessage('Could not insert citation: no active text editor')
@@ -161,6 +161,10 @@ export class Zotero {
     async cite() {
         const configuration = vscode.workspace.getConfiguration('latex-utilities.zotero')
         const citeMethod = configuration.get('citeMethod')
+
+        if (!this.checkZotero()) {
+            return
+        }
 
         let citation = null
         if (citeMethod === 'zotero') {
@@ -186,6 +190,10 @@ export class Zotero {
     }
 
     async openCitation() {
+        if (!this.checkZotero()) {
+            return
+        }
+
         const editor = vscode.window.activeTextEditor
         if (!editor) {
             return
@@ -196,6 +204,22 @@ export class Zotero {
 
         const uri = vscode.Uri.parse(`zotero://select/items/bbt:${citeKey}`)
         await vscode.env.openExternal(uri)
+    }
+
+    private async checkZotero() {
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.zotero')
+        const zoteroUrl = configuration.get('zoteroUrl') as string
+
+        try {
+            await got.get(`${zoteroUrl}/connector/ping`)
+            return true
+        } catch (e) {
+            if (e.code === 'ECONNREFUSED') {
+                vscode.window.showWarningMessage("Zotero doesn't appear to be running.")
+                return false
+            }
+        }
+        return false
     }
 }
 
