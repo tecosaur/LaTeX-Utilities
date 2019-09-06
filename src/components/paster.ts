@@ -171,21 +171,21 @@ export class Paster {
             text = doRemoveBonusWhitespace(text)
         }
 
-        const textReplacements = {
+        const textReplacements: { [key: string]: string } = {
             // escape latex special characters
-            '\\\\': '\\textbackslash',
+            '\\\\': '\\textbackslash ',
             '&/': '\\&',
             '%/': '\\%',
             '$/': '\\$',
             '#/': '\\#',
             '_/': '\\_',
-            '^/': '\\textasciicircum',
+            '^/': '\\textasciicircum ',
             '{/': '\\{',
             '}/': '\\}',
-            '~/': '\\textasciitilde',
+            '~/': '\\textasciitilde ',
             // dumb quotes
-            '"([^"]+)"': "``$1''",
-            "'([^']+)'": "`$1'",
+            '\\b"([^"]+)"\\b': "``$1''",
+            "\\b'([^']+)'\\b": "`$1'",
             // 'smart' quotes
             '“': '``',
             '”': "''",
@@ -195,13 +195,13 @@ export class Paster {
             '—': '---', // em dash
             '–': '--', // en dash
             '−': '-', // minus sign
-            '…': '\\ldots', // elipses
+            '…': '\\ldots ', // elipses
             '‐': '-', // hyphen
-            '™': '\\texttrademark', // trade mark
-            '®': '\\textregistered', // registered trade mark
-            '©': '\\textcopyright', // copyright
-            '¢': '\\cent', // copyright
-            '£': '\\pound', // copyright
+            '™': '\\texttrademark ', // trade mark
+            '®': '\\textregistered ', // registered trade mark
+            '©': '\\textcopyright ', // copyright
+            '¢': '\\cent ', // copyright
+            '£': '\\pound ', // copyright
             // unicode math
             '×': '\\(\\times \\)',
             '÷': '\\(\\div \\)',
@@ -211,7 +211,7 @@ export class Paster {
             '≤': '\\(\\leq \\)',
             '≥': '\\(\\geq \\)',
             // typographic approximations
-            '\\.\\.\\.': '\\ldots',
+            '\\.\\.\\.': '\\ldots ',
             '-{20,}': '\\hline',
             '-{2,3}>': '\\(\\longrightarrow \\)',
             '->': '\\(\\to \\)',
@@ -240,7 +240,7 @@ export class Paster {
     PATH_VARIABLE_IMAGE_FILE_NAME = /\$\{imageFileName\}/g
     PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT = /\$\{imageFileNameWithoutExt\}/g
 
-    pasteTemplate: string
+    pasteTemplate: string = ''
     basePathConfig = '${graphicsPath}'
     graphicsPathFallback = '${currentFileDir}'
 
@@ -277,7 +277,7 @@ export class Paster {
             return
         }
 
-        this.getImagePath(baseFile, imgFile, selectText, this.basePathConfig, (_err: Error, imagePath) => {
+        this.getImagePath(baseFile, imgFile, selectText, this.basePathConfig, (_err: Error | null, imagePath) => {
             try {
                 // does the file exist?
                 const existed = fs.existsSync(imagePath)
@@ -448,7 +448,7 @@ export class Paster {
                     })
                 }
             })
-            .catch(err => {
+            .catch((err: Error) => {
                 vscode.window.showErrorMessage(`Failed make folder. message=${err.message}`)
 
                 return
@@ -486,7 +486,7 @@ export class Paster {
 
     // TODO: turn into async function, and raise errors internally
     private saveClipboardImageToFileAndGetPath(
-        imagePath,
+        imagePath: string,
         cb: (imagePath: string, imagePathFromScript: string) => void
     ) {
         if (!imagePath) {
