@@ -576,6 +576,9 @@ export class Paster {
     public renderImagePaste(basePath: string, imageFilePath: string): string {
         if (basePath) {
             imageFilePath = path.relative(basePath, imageFilePath)
+            if (process.platform === 'win32') {
+                imageFilePath = imageFilePath.replace(/\\/g, '/')
+            }
         }
 
         const ext = path.extname(imageFilePath)
