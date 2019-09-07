@@ -10,8 +10,7 @@
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/tecosaur/LaTeX-Utilities.svg)](https://github.com/tecosaur/LaTeX-Utilities/issues) -->
 
 An add-on to the vscode extension [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.
-
-This currently only adds a small number of features, however that expected to grow over the next few months.
+The feature should continue to expand at a gradually decreasing rate.
 
 ## Features
 
@@ -46,3 +45,7 @@ This currently only adds a small number of features, however that expected to gr
 ### TikZ Preview
 
 <img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/tikz-preview.gif" height="120px">
+
+### Zotero Integration
+
+<img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/zotero-integration.gif" height="100px">
