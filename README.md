@@ -24,6 +24,10 @@ The feature should continue to expand at a gradually decreasing rate.
 -   TikZ Preview
 -   Zotero citation management
 
+## Documentation
+
+-   See the [wiki](https://github.com/tecosaur/LaTeX-Utilities/wiki)
+
 ## Requirements
 
 -   ![LaTeX Workshop](https://vsmarketplacebadge.apphb.com/version/James-Yu.latex-workshop.svg?subject=LaTeX%20Workshop&color=597297&style=flat-square)
