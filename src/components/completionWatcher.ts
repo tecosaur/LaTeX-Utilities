@@ -347,7 +347,7 @@ export class CompletionWatcher {
         exec(
             `python3 -c "from sympy import *
 import re
-x, y, z, t = symbols('x y z t')
+a, b, c, x, y, z, t = symbols('a b c x y z t')
 k, m, n = symbols('k m n', integer=True)
 f, g, h = symbols('f g h', cls=Function)
 init_printing()
