@@ -5,6 +5,7 @@
 ### Fixed
 
 -   Some formatted-paste text replacements
+-   LiveSnippets now recognise placeholder tabstops
 
 ## [0.3.0] — 2019-09-06
 

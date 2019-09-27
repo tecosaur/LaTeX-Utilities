@@ -54,7 +54,7 @@ export class CompletionWatcher {
     private processSnippets() {
         for (let i = 0; i < this.snippets.length; i++) {
             const snippet = this.snippets[i]
-            if (!/\$\$\d/.test(snippet.body) && snippet.noPlaceholders === undefined) {
+            if (!/\$\$(?:\d|{\d)/.test(snippet.body) && snippet.noPlaceholders === undefined) {
                 snippet.noPlaceholders = true
                 if (snippet.priority === undefined) {
                     snippet.priority = -1
