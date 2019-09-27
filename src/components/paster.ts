@@ -176,9 +176,9 @@ export class Paster {
             '\\\\': '\\textbackslash ',
             '&': '\\&',
             '%': '\\%',
-            '$': '\\$',
+            $: '\\$',
             '#': '\\#',
-            '_': '\\_',
+            _: '\\_',
             '^': '\\textasciicircum ',
             '{': '\\{',
             '}': '\\}',
@@ -385,6 +385,7 @@ export class Paster {
 
     public async saveAndPaste(editor: vscode.TextEditor, imgPath: string, oldPath?: string) {
         this.ensureImgDirExists(imgPath)
+            // @ts-ignore: Type 'unknown' is not assignable to type 'string'.ts(2345)
             .then((imagePath: string) => {
                 // save image and insert to current edit file
 
