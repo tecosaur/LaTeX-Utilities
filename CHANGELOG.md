@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+### Improved
+
+-   Live snippets are now a bit better again (see #42)
+
 ### Fixed
 
 -   Some formatted-paste text replacements

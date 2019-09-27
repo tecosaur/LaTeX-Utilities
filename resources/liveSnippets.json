@@ -30,7 +30,7 @@
         "priority": 2
     },
     {
-        "prefix": "([^ &\\\\])([\\+\\-=<>])$",
+        "prefix": "([^ &\\\\\\+\\-=<>\\|!~@])([\\+\\-=<>])$",
         "body": "$1 $2",
         "mode": "maths",
         "priority": -1,
@@ -38,7 +38,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "([\\+\\-=<>])([^ ])$",
+        "prefix": "([\\+\\-=<>])([^ &\\\\\\+\\-=<>\\|!~@])$",
         "body": "$1 $2",
         "mode": "maths",
         "priority": -1,
@@ -103,19 +103,19 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\biff$",
+        "prefix": "(?:^|[^\\\\])\\biff$",
         "body": "\\iff ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\binn$",
+        "prefix": "(?:^|[^\\\\])\\binn$",
         "body": "\\in ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\bnotin$",
+        "prefix": "(?:^|[^\\\\])\\bnotin$",
         "body": "\\not\\in ",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -182,7 +182,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\]\\w*)(to|->)$",
+        "prefix": "(^|[^\\\\]\\b|[ ,\\)\\]\\}]\\w*)(to|->)$",
         "body": "$1\\to ",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -191,6 +191,7 @@
         "prefix": " ?(?:\\|->|!>)$",
         "body": " \\mapsto ",
         "mode": "maths",
+        "priority": 1.1,
         "triggerWhenComplete": true
     },
     {
@@ -224,7 +225,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\bhat$",
+        "prefix": "(?:^|[^\\\\])\\bhat$",
         "body": "\\hat{$$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -272,13 +273,13 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "sr$",
+        "prefix": " ?sr$",
         "body": "^2 ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "cb$",
+        "prefix": " ?cb$",
         "body": "^3 ",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -321,8 +322,8 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\|\\|$",
-        "body": "\\mid ",
+        "prefix": " ?\\|\\|$",
+        "body": " \\mid ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
