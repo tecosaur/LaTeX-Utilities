@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [0.3.1] — 2019-09-27
 
 ### Improved
 
@@ -73,7 +73,8 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/tecosaur/latex-utilities/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/tecosaur/latex-utilities/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/tecosaur/latex-utilities/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/tecosaur/latex-utilities/compare/v0.2.0...v0.2.1
