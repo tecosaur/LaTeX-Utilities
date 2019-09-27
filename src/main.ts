@@ -26,7 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
             extension.tikzPreview.view(document, range)
         ),
         vscode.commands.registerCommand('latex-utilities.citeZotero', () => extension.zotero.cite()),
-        vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation())
+        vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation()),
+        vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () => extension.wordCounter.pickFormat())
     )
 
     context.subscriptions.push(
@@ -43,6 +44,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
             if (e.uri.fsPath === extension.completionWatcher.snippetFile.user) {
                 extension.completionWatcher.loadSnippets(true)
+            } else {
+                extension.wordCounter.setStatus()
+            }
+        }),
+        vscode.workspace.onDidCloseTextDocument((e: vscode.TextDocument) => {
+            if (utils.hasTexId(e.languageId)) {
+                extension.wordCounter.setStatus()
             }
         })
     )

@@ -1,5 +1,11 @@
 # Change Log
 
+## [unreleased]
+
+### Added
+
+-   Customisable wordcount status
+
 ## [0.3.1] — 2019-09-27
 
 ### Improved

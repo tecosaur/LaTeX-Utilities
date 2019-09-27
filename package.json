@@ -49,17 +49,22 @@
             {
                 "command": "latex-utilities.viewtikzpicture",
                 "title": "View TikzPicture",
-                "category": "LaTeX Workshop"
+                "category": "LaTeX Utilities"
             },
             {
                 "command": "latex-utilities.citeZotero",
                 "title": "Cite from Zotero",
-                "category": "LaTeX Workshop"
+                "category": "LaTeX Utilities"
             },
             {
                 "command": "latex-utilities.openInZotero",
                 "title": "Open in Zotero",
-                "category": "LaTeX Workshop"
+                "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.selectWordcountFormat",
+                "title": "Select wordcount format",
+                "category": "LaTeX Utilities"
             }
         ],
         "keybindings": [
@@ -110,6 +115,11 @@
                     "type": "array",
                     "default": [],
                     "markdownDescription": "TeXCount arguments to count words in LaTeX document of the entire project from the root file, or the current document.\nArguments must be in separate strings in the array. Additional arguments, i.e., `-merge %DOC%` for the project and the current document path for counting current file will be appended when constructing the command."
+                },
+                "latex-utilities.countWord.format": {
+                    "type": "string",
+                    "default": "${words} Words",
+                    "markdownDescription": "Format of the statusbar item. Set empty (`\"\"`) to disable."
                 },
                 "latex-utilities.tikzpreview.enabled": {
                     "type": "boolean",
