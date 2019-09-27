@@ -1,5 +1,11 @@
 # Change Log
 
+## [unreleased]
+
+### Fixed
+
+-   Some formatted-paste text replacements
+
 ## [0.3.0] — 2019-09-06
 
 ### Added

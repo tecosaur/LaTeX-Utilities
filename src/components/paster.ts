@@ -174,15 +174,15 @@ export class Paster {
         const textReplacements: { [key: string]: string } = {
             // escape latex special characters
             '\\\\': '\\textbackslash ',
-            '&/': '\\&',
-            '%/': '\\%',
-            '$/': '\\$',
-            '#/': '\\#',
-            '_/': '\\_',
-            '^/': '\\textasciicircum ',
-            '{/': '\\{',
-            '}/': '\\}',
-            '~/': '\\textasciitilde ',
+            '&': '\\&',
+            '%': '\\%',
+            '$': '\\$',
+            '#': '\\#',
+            '_': '\\_',
+            '^': '\\textasciicircum ',
+            '{': '\\{',
+            '}': '\\}',
+            '~': '\\textasciitilde ',
             // dumb quotes
             '\\B"([^"]+)"\\B': "``$1''",
             "\\B'([^']+)'\\B": "`$1'",
@@ -191,6 +191,8 @@ export class Paster {
             '”': "''",
             '‘': '`',
             '’': "'",
+            // hyphenated lines
+            '(\\w+)-\\s?$\\s?\\n(\\w+)': '$1$2',
             // unicode symbols
             '—': '---', // em dash
             '–': '--', // en dash
@@ -220,7 +222,7 @@ export class Paster {
         }
 
         for (const pattern in textReplacements) {
-            text = text.replace(new RegExp(pattern, 'g'), textReplacements[pattern])
+            text = text.replace(new RegExp(pattern, 'gm'), textReplacements[pattern])
         }
 
         return text
