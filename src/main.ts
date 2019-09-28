@@ -48,10 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
                 extension.wordCounter.setStatus()
             }
         }),
-        vscode.workspace.onDidCloseTextDocument((e: vscode.TextDocument) => {
-            if (utils.hasTexId(e.languageId)) {
-                extension.wordCounter.setStatus()
-            }
+        vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+            extension.wordCounter.setStatus()
         })
     )
 

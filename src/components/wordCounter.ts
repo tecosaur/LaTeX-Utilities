@@ -33,11 +33,10 @@ export class WordCounter {
         this.setStatus()
     }
 
-    async counts(merge: boolean = true): Promise<TexCount> {
+    async counts(merge: boolean = true, file = this.extension.workshop.manager.rootFile()): Promise<TexCount> {
         return new Promise((resolve, reject) => {
-            const file = this.extension.workshop.manager.rootFile()
             if (file === undefined) {
-                this.extension.logger.addLogMessage('LaTeX Workshop does not provide a valid root file.')
+                this.extension.logger.addLogMessage('A valid file was not give for TexCount')
                 return
             }
             const configuration = vscode.workspace.getConfiguration('latex-utilities.countWord')
@@ -165,7 +164,7 @@ export class WordCounter {
                 this.status.hide()
                 return
             }
-            const texCount = await this.counts()
+            const texCount = await this.counts(undefined, vscode.window.activeTextEditor.document.fileName)
             this.status.show()
             this.status.text = this.formatString(texCount, template)
         }
