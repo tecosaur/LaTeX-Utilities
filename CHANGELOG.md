@@ -6,6 +6,10 @@
 
 -   Customisable wordcount status
 
+### Improved
+
+-   Formatted paste now shapes text to line length
+
 ## [0.3.1] — 2019-09-27
 
 ### Improved

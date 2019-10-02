@@ -64,7 +64,7 @@ export class Paster {
         try {
             this.pasteTable(editor, clipboardContents)
         } catch (error) {
-            this.pasteNormal(editor, this.reformatText(clipboardContents))
+            this.pasteNormal(editor, this.reformatText(clipboardContents, true, 80))
         }
     }
 
@@ -122,9 +122,7 @@ export class Paster {
         if (!isConsistent) {
             throw new Error('Table is not consistent')
         } else if (cells.length === 1 || cells[0].length === 1) {
-            this.pasteNormal(editor, content)
-
-            return
+            throw 'Doesn\'t look like a table'
         }
 
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
@@ -157,14 +155,48 @@ export class Paster {
         })
     }
 
-    public reformatText(text: string, removeBonusWhitespace = true) {
+    public reformatText(text: string, removeBonusWhitespace = true, maxLineLength: number | null = null) {
         function doRemoveBonusWhitespace(str: string) {
             str = str.replace(/\u200B/g, '') // get rid of zero-width spaces
             str = str.replace(/\n{2,}/g, '\uE000') // 'save' multi-newlines to private use character
             str = str.replace(/\s+/g, ' ') // replace all whitespace with normal space
-            str = str.replace(/\uE000/g, '\n\n')
+            str = str.replace(/\uE000/g, '\n\n') // re-insert multi-newlines
 
             return str
+        }
+        function fitToLineLength(lineLength: number, str: string, splitChars = [' ', ',', '.', ':', ';', '?', '!']) {
+            const lines = []
+            let lastNewlinePosition = 0
+            let lastSplitCharPosition = 0
+            let i
+            for (i = 0; i < str.length; i++) {
+                if (str[i] === '\n') {
+                    lastNewlinePosition = i
+                }
+                if (splitChars.indexOf(str[i]) !== -1) {
+                    lastSplitCharPosition = i
+                }
+                if (i - lastNewlinePosition > lineLength) {
+                    lines.push(
+                        str
+                            .slice(lastNewlinePosition, lastSplitCharPosition)
+                            .replace(/^ /, '')
+                            .replace(/\s+$/, '')
+                    )
+                    lastNewlinePosition = lastSplitCharPosition
+                    i = lastSplitCharPosition
+                }
+            }
+            if (lastNewlinePosition < i) {
+                lines.push(
+                    str
+                        .slice(lastNewlinePosition, i)
+                        .replace(/^ /, '')
+                        .replace(/\s+$/, '')
+                )
+            }
+            console.log(lines.map(l => lineLength - l.length))
+            return lines.join('\n')
         }
 
         if (removeBonusWhitespace) {
@@ -176,10 +208,10 @@ export class Paster {
             '\\\\': '\\textbackslash ',
             '&': '\\&',
             '%': '\\%',
-            $: '\\$',
+            '\\$': '\\$',
             '#': '\\#',
             _: '\\_',
-            '^': '\\textasciicircum ',
+            '\\^': '\\textasciicircum ',
             '{': '\\{',
             '}': '\\}',
             '~': '\\textasciitilde ',
@@ -223,6 +255,10 @@ export class Paster {
 
         for (const pattern in textReplacements) {
             text = text.replace(new RegExp(pattern, 'gm'), textReplacements[pattern])
+        }
+
+        if (maxLineLength !== null) {
+            text = fitToLineLength(maxLineLength, text)
         }
 
         return text
