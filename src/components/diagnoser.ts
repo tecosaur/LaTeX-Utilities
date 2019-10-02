@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { Extension } from '../main'
 import { execFile } from 'child_process'
+import { vale } from './linters/vale'
 
 export interface IDiagnosticSource {
     command: (fileName: string) => string[]
@@ -13,7 +14,7 @@ const diagnosticSources: { [name: string]: IDiagnosticSource } = { vale }
 
 export class Diagnoser {
     extension: Extension
-    enabledLinters = [] // todo: get from user setting
+    enabledLinters = ['vale'] // todo: get from user setting
 
     constructor(extension: Extension) {
         this.extension = extension
