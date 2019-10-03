@@ -297,13 +297,13 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m)\\1$",
+        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m)\\2$",
         "body": "$1_$2 ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m|x|y|z)\\1?p1$",
+        "prefix": "\\b(x|y|n|m|a|b|c)(i|j|k|n|m|x|y|z)\\2?p1$",
         "body": "$1_{$2+1} ",
         "mode": "maths",
         "priority": 2,
