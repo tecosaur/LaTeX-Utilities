@@ -5,15 +5,16 @@ import { vale } from './linters/vale'
 
 export interface IDiagnosticSource {
     command: (fileName: string) => string[]
-    parser: (file: vscode.Uri, commandOutput: string) => void
-    codeAction: (document: vscode.TextDocument, range: vscode.Range, code: number, message: string) => void
+    parser: (file: vscode.TextDocument, commandOutput: string) => void
+    codeAction: (document: vscode.TextDocument, range: vscode.Range, source: string, message: string) => void
     diagnostics: vscode.DiagnosticCollection
+    actions: Map<vscode.Range, vscode.CodeAction>
+    [other: string]: any
 }
-
-const diagnosticSources: { [name: string]: IDiagnosticSource } = { vale }
 
 export class Diagnoser {
     extension: Extension
+    diagnosticSources: { [name: string]: IDiagnosticSource } = { vale }
     enabledLinters = ['vale'] // todo: get from user setting
 
     constructor(extension: Extension) {
@@ -22,13 +23,13 @@ export class Diagnoser {
 
     public lintDocument(document: vscode.TextDocument) {
         for (const linterName of this.enabledLinters) {
-            const linter = diagnosticSources[linterName]
+            const linter = this.diagnosticSources[linterName]
             const command = linter.command(document.fileName)
             execFile(command[0], command.slice(1), (error, stdout) => {
                 if (error) {
                     console.error('Command error', command, error)
                 } else {
-                    linter.parser(document.uri, stdout)
+                    linter.parser(document, stdout)
                 }
             })
         }

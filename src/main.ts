@@ -10,6 +10,7 @@ import { MacroDefinitions } from './providers/macroDefinitions'
 import { TikzPictureView } from './components/tikzpreview'
 import { Zotero } from './components/zotero'
 import { Diagnoser } from './components/diagnoser'
+import { CodeActions } from './providers/codeActions'
 import * as utils from './utils'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -28,7 +29,12 @@ export function activate(context: vscode.ExtensionContext) {
         ),
         vscode.commands.registerCommand('latex-utilities.citeZotero', () => extension.zotero.cite()),
         vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation()),
-        vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () => extension.wordCounter.pickFormat())
+        vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () =>
+            extension.wordCounter.pickFormat()
+        ),
+        vscode.commands.registerCommand('latex-utilities.code-action', (d, r, c, m) =>
+            extension.codeActions.runCodeAction(d, r, c, m)
+        )
     )
 
     context.subscriptions.push(
@@ -65,7 +71,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerDefinitionProvider(
             { language: 'latex', scheme: 'file' },
             new MacroDefinitions(extension)
-        )
+        ),
+        vscode.languages.registerCodeActionsProvider({ scheme: 'file', language: 'latex' }, extension.codeActions)
     )
 }
 
@@ -83,6 +90,7 @@ export class Extension {
     tikzPreview: TikzPictureView
     zotero: Zotero
     diagnoser: Diagnoser
+    codeActions: CodeActions
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
@@ -104,6 +112,7 @@ export class Extension {
         this.tikzPreview = new TikzPictureView(this)
         this.zotero = new Zotero(this)
         this.diagnoser = new Diagnoser(this)
+        this.codeActions = new CodeActions(this)
     }
 }
 
