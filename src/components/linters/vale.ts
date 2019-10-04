@@ -18,41 +18,21 @@ const ISSUE_MAP: {
 }[] = [
     {
         conditions: {
-            Check: /^vale\.Editorializing/
-        },
-        implications: _issue => ({ tags: [vscode.DiagnosticTag.Deprecated], replacement: '' })
-    },
-    {
-        conditions: {
-            Check: /^write-good\.So/
-        },
-        implications: _issue => ({ tags: [vscode.DiagnosticTag.Deprecated], replacement: '' })
-    },
-    {
-        conditions: {
-            Check: /^write-good\.Weasel/
-        },
-        implications: _issue => ({ tags: [vscode.DiagnosticTag.Unnecessary] })
-    },
-    {
-        conditions: {
-            Check: /^write-good\.Illusions/
-        },
-        implications: _issue => ({ tags: [vscode.DiagnosticTag.Deprecated], replacement: '' })
-    },
-    {
-        conditions: {
-            Check: /^TheEconomist\.Terms/
+            Message: /^(?:Consider using|Prefer|Use) '(.+)' (?:instead|over)(?: of)? '(.+)'$/i
+            // catches: TheEconomist.(Terms,Punctuation),
+            // PlainLanguage.(ComplexWords,Contractions,Wordiness,Words)
+            // proselint.(AnimalLabels,Diacritical,GenderBias,GroupTerms,Nonwords)
+            // 18F.(Abbreviations,Brands,Contractions,Terms)
         },
         implications: issue => {
-            const match = issue.Message.match(/Prefer '(.+)' over of '(.+)'$/)
+            const match = issue.Message.match(/(?:Consider using|Prefer|Use) '(.+)' (?:instead|over)(?: of)? '(.+)'$/i)
             if (match) {
                 let replacement = match[1]
                 // make capitalisation match
                 if (match[2][0].toUpperCase() === match[2][0]) {
                     replacement = replacement[0].toUpperCase() + replacement.slice(1)
                 }
-                return { replacement, tags: [vscode.DiagnosticTag.Unnecessary] }
+                return { replacement, tags: [vscode.DiagnosticTag.Deprecated] }
             } else {
                 return {}
             }
@@ -60,22 +40,22 @@ const ISSUE_MAP: {
     },
     {
         conditions: {
-            Check: /^TheEconomist\.UnnecessaryWords/
+            Check: /^vale\.Editorializing|write-good\.(?:So|Illusions)|TheEconomist\.UnnecessaryWords|proselint\.But/
         },
         implications: _issue => ({ tags: [vscode.DiagnosticTag.Deprecated], replacement: '' })
     },
     {
         conditions: {
-            Check: /^PlainLanguage\.(?:Wordiness|ComplexWords)/
+            Message: /^Avoid using '(.+)'$/i
+            // catches most of Joblint
         },
-        implications: issue => {
-            const match = issue.Message.match(/Consider using '(.+)' instead of '(.+)'$/)
-            if (match) {
-                return { replacement: match[1] }
-            } else {
-                return {}
-            }
-        }
+        implications: _issue => ({ tags: [vscode.DiagnosticTag.Unnecessary] })
+    },
+    {
+        conditions: {
+            Check: /^write-good\.Weasel/
+        },
+        implications: _issue => ({ tags: [vscode.DiagnosticTag.Unnecessary] })
     }
 ]
 
