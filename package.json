@@ -168,6 +168,11 @@
                     ],
                     "default": "zotero",
                     "markdownDescription": "Controls how Zotero citations are chosen"
+                },
+                "latex-utilities.vale.path": {
+                    "type": "string",
+                    "default": "vale",
+                    "markdownDescription": "Path to vale"
                 }
             }
         }
