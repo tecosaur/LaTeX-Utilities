@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { Extension } from '../main'
 import { execFile } from 'child_process'
 import { vale } from './linters/vale'
+import { LanguageTool } from './linters/languagetool'
 
 export interface IDiagnosticSource {
     command: (fileName: string) => string[]
