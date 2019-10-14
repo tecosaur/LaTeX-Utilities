@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { Extension } from '../main'
 import { execFile } from 'child_process'
 import { vale } from './linters/vale'
+import { LanguageTool } from './linters/languagetool'
 
 export interface IDiagnosticSource {
     command: (fileName: string) => string[]
@@ -14,8 +15,8 @@ export interface IDiagnosticSource {
 
 export class Diagnoser {
     extension: Extension
-    diagnosticSources: { [name: string]: IDiagnosticSource } = { vale }
-    enabledLinters = ['vale'] // todo: get from user setting
+    diagnosticSources: { [name: string]: IDiagnosticSource } = { 'vale':vale, 'LanguageTool':LanguageTool }
+    enabledLinters = ['LanguageTool'] // todo: get from user setting
 
     constructor(extension: Extension) {
         this.extension = extension

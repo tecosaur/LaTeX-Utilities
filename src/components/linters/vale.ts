@@ -78,7 +78,7 @@ function findIssueImplications(issue: IValeJSON) {
 }
 
 export const vale: IDiagnosticSource = {
-    command: (fileName: string) => [`vale`, '--no-exit', '--output', 'JSON', fileName],
+    command: (fileName: string) => ['vale', '--no-exit', '--output', 'JSON', fileName],
     actions: new Map(),
     diagnostics: vscode.languages.createDiagnosticCollection('vale'),
     codeAction: (document, range, _code, replacement) => {
