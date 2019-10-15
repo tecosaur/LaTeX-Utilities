@@ -207,8 +207,26 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b(\\\\?\\w+)(,\\.|\\.,)$",
+        "prefix": "\\b(\\\\?\\w{1,7})(,\\.|\\.,)$",
         "body": "\\vec{$1} ",
+        "mode": "maths",
+        "triggerWhenComplete": true
+    },
+    {
+        "prefix": "(\\\\?[\\w\\^{}]{1,7})~ $",
+        "body": "\\tilde{$1} ",
+        "mode": "maths",
+        "triggerWhenComplete": true
+    },
+    {
+        "prefix": "(\\\\?[\\w\\^{}]{1,7})\\. $",
+        "body": "\\dot{$1} ",
+        "mode": "maths",
+        "triggerWhenComplete": true
+    },
+    {
+        "prefix": "(\\\\?[\\w\\^{}]{1,7})\\.\\. $",
+        "body": "\\ddot{$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
     },
@@ -219,7 +237,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b([A-Za-z]{1,3})bar$",
+        "prefix": "\\b(\\\\?[\\w\\^{}]{1,3})bar$",
         "body": "\\overline{$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
@@ -231,7 +249,7 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "\\b([A-Za-z])hat$",
+        "prefix": "\\b([\\w\\^{}])hat$",
         "body": "\\hat{$1} ",
         "mode": "maths",
         "triggerWhenComplete": true
