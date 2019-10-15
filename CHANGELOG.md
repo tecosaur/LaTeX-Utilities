@@ -9,6 +9,7 @@
 ### Improved
 
 -   Formatted paste now shapes text to line length
+-   Live snippets now do so more accents, and spaces
 
 ### Fixed
 
