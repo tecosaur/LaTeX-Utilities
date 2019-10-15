@@ -257,7 +257,7 @@
     {
         "prefix": "\\\\\\)(\\w)$",
         "body": "\\) $1",
-        "mode": "text",
+        "mode": "any",
         "triggerWhenComplete": true
     },
     {
