@@ -64,7 +64,12 @@ export class Paster {
         try {
             this.pasteTable(editor, clipboardContents)
         } catch (error) {
-            this.pasteNormal(editor, this.reformatText(clipboardContents, true, 80))
+            this.pasteNormal(
+                editor,
+                this.reformatText(clipboardContents, true, vscode.workspace
+                    .getConfiguration('latex-utilities.formattedPaste')
+                    .get('maxLineLength') as number)
+            )
         }
     }
 

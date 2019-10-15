@@ -93,6 +93,11 @@
                     "default": 1,
                     "markdownDescription": "Number of header rows to assume. Set to **`0`** to disable."
                 },
+                "latex-utilities.formattedPaste.maxLineLength": {
+                    "type": "integer",
+                    "default": 80,
+                    "markdownDescription": "Try to fit within the given line length"
+                },
                 "latex-utilities.formattedPaste.image.template": {
                     "type": [
                         "string",
