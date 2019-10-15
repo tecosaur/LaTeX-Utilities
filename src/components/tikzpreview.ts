@@ -31,7 +31,7 @@ export class TikzPictureView {
     tikzCollections: { [filePath: string]: IFileTikzCollection } = {}
     initalised = false
 
-    private TEMPFOLDER_NAME = 'vscode-latexworkshop'
+    private TEMPFOLDER_NAME = 'vscode-latexutils'
 
     constructor(extension: Extension) {
         this.extension = extension
