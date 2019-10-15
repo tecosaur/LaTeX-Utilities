@@ -23,6 +23,7 @@ The feature should continue to expand at a gradually decreasing rate.
 -   Count Words in a LaTeX Document
 -   TikZ Preview
 -   Zotero citation management
+-   Plaintext linter integration (see [Requirements](##Requirements))
 
 ## Documentation
 
@@ -35,6 +36,9 @@ The feature should continue to expand at a gradually decreasing rate.
 -   The [`texcount`](https://app.uio.no/ifi/texcount/) script (only necessary for the word-count function). Configure using the `latex-utilities.countWord.path` and `latex-utilities.countWord.args` settings.
 -   Zotero with the [Better BibTeX extension](https://retorque.re/zotero-better-bibtex/) (only necessary for Zotero
     functions).
+-   For plaintext linting (pick what you want)
+    -   [vale](https://github.com/errata-ai/vale)
+    -   [languagetool](https://languagetool.org/#standalone)
 
 ## Demos
 

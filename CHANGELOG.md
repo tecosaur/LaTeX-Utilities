@@ -5,6 +5,9 @@
 ### Added
 
 -   Customisable wordcount status
+-   Support for plaintext linting with various backends
+    -   vale
+    -   languagetool
 
 ## [0.3.1] — 2019-09-27
 
