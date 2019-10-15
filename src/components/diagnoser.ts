@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { Extension } from '../main'
-import { execFile } from 'child_process'
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process'
 import { vale } from './linters/vale'
 import { LanguageTool } from './linters/languagetool'
 
@@ -11,6 +11,7 @@ export interface IDiagnosticSource {
     diagnostics: vscode.DiagnosticCollection
     actions: Map<vscode.Range, vscode.CodeAction>
     [other: string]: any
+    currentProcess?: ChildProcessWithoutNullStreams
 }
 
 export class Diagnoser {
@@ -26,12 +27,33 @@ export class Diagnoser {
         for (const linterName of this.enabledLinters) {
             const linter = this.diagnosticSources[linterName]
             const command = linter.command(document.fileName)
-            execFile(command[0], command.slice(1), (error, stdout) => {
-                if (error) {
-                    console.error('Command error', command, error)
-                } else {
-                    linter.parser(document, stdout)
+            if (linter.currentProcess === undefined) {
+                this.extension.logger.addLogMessage(`Running ${linterName} on ${document.fileName}`)
+            } else {
+                this.extension.logger.addLogMessage(
+                    `Refusing to run ${linterName} on ${document.fileName} as this process is already running`
+                )
+                return
+            }
+            linter.currentProcess = spawn(command[0], command.slice(1))
+            let output = ''
+            linter.currentProcess.stdout.on('data', data => {
+                output += data
+            })
+            linter.currentProcess.stdout.on('close', (exitCode: number, _signal: string) => {
+                this.extension.logger.addLogMessage(
+                    `Running ${linterName} on ${document.fileName} finished with exit code ${exitCode}`
+                )
+                if (linter.currentProcess !== undefined) {
+                    linter.currentProcess.kill()
                 }
+                linter.currentProcess = undefined
+                linter.parser(document, output)
+            })
+            linter.currentProcess.stdout.on('exit', (exitCode: number, _signal: string) => {
+                this.extension.logger.addLogMessage(
+                    `Running ${linterName} on ${document.fileName} exited with exit code ${exitCode}`
+                )
             })
         }
     }
