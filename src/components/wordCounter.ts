@@ -83,7 +83,12 @@ export class WordCounter {
                         'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
                     )
                 } else {
-                    this.extension.logger.addLogMessage(`TeXCount log:\n${stdout}`)
+                    // just get the last line, ignoring errors
+                    stdout = stdout
+                        .replace(/\n\(errors:\d+\)\n$/, '')
+                        .split('\n')
+                        .slice(-1)[0]
+                    this.extension.logger.addLogMessage(`TeXCount output: ${stdout}`)
                     resolve(this.parseTexCount(stdout))
                 }
             })
