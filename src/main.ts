@@ -51,11 +51,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
             if (e.uri.fsPath === extension.completionWatcher.snippetFile.user) {
                 extension.completionWatcher.loadSnippets(true)
-            } else {
-                extension.wordCounter.setStatus()
-                if (utils.hasTexId(e.languageId)) {
-                    extension.diagnoser.lintDocument(e)
-                }
+                return
+            }
+            extension.wordCounter.setStatus()
+            if (utils.hasTexId(e.languageId)) {
+                extension.diagnoser.lintDocument(e)
             }
         }),
         vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
