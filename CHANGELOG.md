@@ -1,14 +1,14 @@
 # Change Log
 
-## [unreleased]
+## [0.3.2] — 2019-10-16
 
 ### Added
 
 -   Customisable wordcount status
+-   Formatted paste now shapes text to (configurable) line length
 
 ### Improved
 
--   Formatted paste now shapes text to line length
 -   Live snippets now do so more accents, and spaces
 
 ### Fixed
@@ -88,7 +88,8 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.1...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/tecosaur/latex-utilities/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/tecosaur/latex-utilities/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/tecosaur/latex-utilities/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/tecosaur/latex-utilities/compare/v0.2.1...v0.2.2
