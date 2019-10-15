@@ -5,7 +5,7 @@ import { vale } from './linters/vale'
 import { LanguageTool } from './linters/languagetool'
 
 export interface IDiagnosticSource {
-    command: (fileName: string) => string[]
+    command: (fileName: string, extraArguments?: string[]) => string[]
     parser: (file: vscode.TextDocument, commandOutput: string) => void
     codeAction: (document: vscode.TextDocument, range: vscode.Range, source: string, message: string) => void
     diagnostics: vscode.DiagnosticCollection
@@ -15,7 +15,7 @@ export interface IDiagnosticSource {
 
 export class Diagnoser {
     extension: Extension
-    diagnosticSources: { [name: string]: IDiagnosticSource } = { 'vale':vale, 'LanguageTool':LanguageTool }
+    diagnosticSources: { [name: string]: IDiagnosticSource } = { vale: vale, LanguageTool: LanguageTool }
     enabledLinters = ['LanguageTool'] // todo: get from user setting
 
     constructor(extension: Extension) {
