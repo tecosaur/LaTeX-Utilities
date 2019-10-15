@@ -22,7 +22,7 @@ export class Diagnoser {
         this.extension = extension
     }
 
-    public lintDocument(document: vscode.TextDocument) {
+    public async lintDocument(document: vscode.TextDocument) {
         for (const linterName of this.enabledLinters) {
             const linter = this.diagnosticSources[linterName]
             const command = linter.command(document.fileName)
