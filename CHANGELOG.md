@@ -10,6 +10,10 @@
 
 -   Formatted paste now shapes text to line length
 
+### Fixed
+
+-   Live snippets can no longer do dodgy stuff when the replacement is the same length as the original
+
 ## [0.3.1] — 2019-09-27
 
 ### Improved

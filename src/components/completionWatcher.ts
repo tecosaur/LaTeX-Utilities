@@ -107,7 +107,7 @@ export class CompletionWatcher {
                         const newColumnOffset = await this.execSnippet(this.snippets[i], line, change, columnOffset)
                         if (newColumnOffset === 'break') {
                             break
-                        } else if (newColumnOffset !== 0) {
+                        } else if (newColumnOffset !== undefined) {
                             columnOffset += newColumnOffset
                             line = e.document.lineAt(change.range.start.line)
                         }
@@ -157,7 +157,7 @@ export class CompletionWatcher {
                     resolve('break')
                     return
                 } else if (snippet.body === 'SPECIAL_ACTION_FRACTION') {
-                    [matchRange, replacement] = this.getFraction(match, line)
+                    ;[matchRange, replacement] = this.getFraction(match, line)
                 } else {
                     matchRange = new vscode.Range(
                         new vscode.Position(line.lineNumber, match.index),
@@ -243,7 +243,7 @@ export class CompletionWatcher {
                     })
                 }
             } else {
-                resolve(0)
+                resolve(undefined)
             }
         })
     }
