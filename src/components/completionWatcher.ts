@@ -57,7 +57,7 @@ export class CompletionWatcher {
             if (!/\$\$(?:\d|{\d)/.test(snippet.body) && snippet.noPlaceholders === undefined) {
                 snippet.noPlaceholders = true
                 if (snippet.priority === undefined) {
-                    snippet.priority = -1
+                    snippet.priority = -0.1
                 }
             }
             if (snippet.priority === undefined) {
