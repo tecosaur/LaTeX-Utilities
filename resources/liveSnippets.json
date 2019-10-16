@@ -292,13 +292,13 @@
     },
     {
         "prefix": " ?sr$",
-        "body": "^2 ",
+        "body": "^2",
         "mode": "maths",
         "triggerWhenComplete": true
     },
     {
         "prefix": " ?cb$",
-        "body": "^3 ",
+        "body": "^3",
         "mode": "maths",
         "triggerWhenComplete": true
     },
