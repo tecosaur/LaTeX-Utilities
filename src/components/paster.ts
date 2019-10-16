@@ -102,7 +102,6 @@ export class Paster {
 
     public async pasteTable(editor: vscode.TextEditor, content: string, delimiter?: string|undefined) {
         this.extension.logger.addLogMessage('Pasting: Table')
-
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
         let columnDelimiter: string = delimiter || configuration.tableDelimiterDefault
@@ -124,9 +123,8 @@ export class Paster {
             }
             columnDelimiter = columnDelimiterNew
         }
-
         const trimUnwantedWhitespace = (s: string) =>
-            s.replace(/^[^\S\t]+|[^\S\t]+$/gm, '').replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
+            s.replace('\r\n', '\n').replace(/^[^\S\t]+|[^\S\t]+$/gm, '').replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
         content = trimUnwantedWhitespace(content)
         content = this.reformatText(content, false)
         const lines = content.split('\n')
