@@ -109,12 +109,20 @@ export class Paster {
 
     public pasteTable(editor: vscode.TextEditor, content: string) {
         this.extension.logger.addLogMessage('Pasting: Table')
+
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
+
+        const columnDelimiter: string = configuration.tableColumnDelimiter
+        const columnType: string = configuration.tableColumnType
+        const booktabs: boolean = configuration.tableBooktabsStyle
+        const headerRows: number = configuration.tableHeaderRows
+
         const trimUnwantedWhitespace = (s: string) =>
             s.replace(/^[^\S\t]+|[^\S\t]+$/gm, '').replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
         content = trimUnwantedWhitespace(content)
         content = this.reformatText(content, false)
         const lines = content.split('\n')
-        const cells = lines.map(l => l.split('\t'))
+        const cells = lines.map(l => l.split(columnDelimiter))
 
         // determine if all rows have same number of cells
         const isConsistent = cells.reduce((accumulator, current, _index, array) => {
@@ -129,12 +137,6 @@ export class Paster {
         } else if (cells.length === 1 || cells[0].length === 1) {
             throw 'Doesn\'t look like a table'
         }
-
-        const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
-
-        const columnType: string = configuration.tableColumnType
-        const booktabs: boolean = configuration.tableBooktabsStyle
-        const headerRows: number = configuration.tableHeaderRows
 
         const tabularRows = cells.map(row => '\t' + row.join(' & '))
 
