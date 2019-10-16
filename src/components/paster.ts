@@ -3,12 +3,12 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import { spawn } from 'child_process'
-import * as csv from 'csv-parser'
 
 import { Extension } from '../main'
 import { promisify } from 'util'
 
 const fsCopy = promisify(fs.copyFile)
+const readFile = promisify(fs.readFile)
 
 export class Paster {
     extension: Extension
@@ -55,14 +55,14 @@ export class Paster {
             }
 
             if (fs.existsSync(filePath)) {
-                this.pasteFile(editor, basePath, clipboardContents)
+                await this.pasteFile(editor, basePath, clipboardContents)
 
                 return
             }
         }
         // if not pasting file
         try {
-            this.pasteTable(editor, clipboardContents)
+            await this.pasteTable(editor, clipboardContents)
         } catch (error) {
             this.pasteNormal(
                 editor,
@@ -85,7 +85,7 @@ export class Paster {
         })
     }
 
-    public pasteFile(editor: vscode.TextEditor, baseFile: string, file: string) {
+    public async pasteFile(editor: vscode.TextEditor, baseFile: string, file: string) {
         const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.eps', '.pdf']
         const TABLE_FORMATS = ['.csv']
         const extension = path.extname(file)
@@ -94,28 +94,34 @@ export class Paster {
             this.pasteImage(editor, baseFile, file)
         } else if (TABLE_FORMATS.indexOf(extension) !== -1) {
             if (extension === '.csv') {
-                const rows: string[] = []
-
-                fs.createReadStream(path.resolve(baseFile, file))
-                    .pipe(csv())
-                    .on('data', data => rows.push(Object.values(data).join('\t')))
-                    .on('end', () => {
-                        const body = rows.join('\n')
-                        this.pasteTable(editor, body)
-                    })
+                const fileContent = await readFile(path.resolve(baseFile, file));
+                await this.pasteTable(editor, fileContent.toString(), ",")
             }
         }
     }
 
-    public pasteTable(editor: vscode.TextEditor, content: string) {
+    public async pasteTable(editor: vscode.TextEditor, content: string, delimiter: string|undefined = undefined) {
         this.extension.logger.addLogMessage('Pasting: Table')
 
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
-        const columnDelimiter: string = configuration.tableColumnDelimiter
+        const columnDelimiterDefault: string = delimiter || configuration.tableColumnDelimiter
         const columnType: string = configuration.tableColumnType
         const booktabs: boolean = configuration.tableBooktabsStyle
         const headerRows: number = configuration.tableHeaderRows
+
+        const columnDelimiter = await vscode.window.showInputBox({
+            prompt: "Please specify the table cell delimiter",
+            value: columnDelimiterDefault,
+            placeHolder: columnDelimiterDefault,
+            validateInput: (text: string) => {
+                return text === '' ? 'No delimiter specified!' : null;
+            }
+        });
+
+        if(columnDelimiter === undefined){
+            throw 'no table cell delimiter set'
+        }
 
         const trimUnwantedWhitespace = (s: string) =>
             s.replace(/^[^\S\t]+|[^\S\t]+$/gm, '').replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
