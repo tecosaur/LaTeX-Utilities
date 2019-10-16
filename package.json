@@ -78,11 +78,16 @@
         "configuration": {
             "title": "LaTeX Utils",
             "properties": {
-                "latex-utilities.formattedPaste.tableColumnDelimiter": {
+                "latex-utilities.formattedPaste.tableDelimiterDefault": {
                     "type": "string",
                     "default": "\t",
                     "minLength": 1,
                     "markdownDescription": "The default delimiter to use for splitting table cells."
+                },
+                "latex-utilities.formattedPaste.tableDelimiterPrompt": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Whether to be prompted to confirm the table cell delimiter."
                 },
                 "latex-utilities.formattedPaste.tableColumnType": {
                     "type": "string",

@@ -105,22 +105,24 @@ export class Paster {
 
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
-        const columnDelimiterDefault: string = delimiter || configuration.tableColumnDelimiter
+        let columnDelimiter: string = delimiter || configuration.tableDelimiterDefault
         const columnType: string = configuration.tableColumnType
         const booktabs: boolean = configuration.tableBooktabsStyle
         const headerRows: number = configuration.tableHeaderRows
 
-        const columnDelimiter = await vscode.window.showInputBox({
-            prompt: "Please specify the table cell delimiter",
-            value: columnDelimiterDefault,
-            placeHolder: columnDelimiterDefault,
-            validateInput: (text: string) => {
-                return text === '' ? 'No delimiter specified!' : null;
+        if (configuration.tableDelimiterPrompt) {
+            const columnDelimiterNew = await vscode.window.showInputBox({
+                prompt: "Please specify the table cell delimiter",
+                value: columnDelimiter,
+                placeHolder: columnDelimiter,
+                validateInput: (text: string) => {
+                    return text === '' ? 'No delimiter specified!' : null;
+                }
+            });
+            if(columnDelimiterNew === undefined){
+                throw new Error('no table cell delimiter set')
             }
-        });
-
-        if(columnDelimiter === undefined){
-            throw new Error('no table cell delimiter set')
+            columnDelimiter = columnDelimiterNew
         }
 
         const trimUnwantedWhitespace = (s: string) =>
