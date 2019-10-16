@@ -12,7 +12,7 @@ import { stripComments } from '../utils'
 const removeDir = promisify(fse.remove)
 
 interface IFileTikzCollection {
-    location: string
+    texFileLocation: string
     tempDir: string
     tikzPictures: IFileTikzPicture[]
     preamble: string
@@ -217,7 +217,7 @@ export class TikzPictureView {
             )
 
             const thisFileTikzCollection: IFileTikzCollection = {
-                location: document.uri.fsPath,
+                texFileLocation: document.uri.fsPath,
                 tempDir,
                 tikzPictures: [],
                 preamble: '',
@@ -297,7 +297,7 @@ export class TikzPictureView {
         const regex = /(\\usepackage(?:\[[^\]]*\])?{(?:tikz|pgfplots|xcolor)}|\\(?:tikzset|pgfplotsset){(?:[^{}]+|{(?:[^{}]+|{(?:[^{}]+|{[^{}]+})+})+})+}|\\(?:usetikzlibrary|usepgfplotslibrary){[^}]+}|\\definecolor{[^}]+}{[^}]+}{[^}]+}|\\colorlet{[^}]+}{[^}]+})/gm
         const commands: string[] = []
 
-        const content = await fs.readFileSync(fileTikzCollection.location, { encoding: 'utf8' })
+        const content = await fs.readFileSync(fileTikzCollection.texFileLocation, { encoding: 'utf8' })
         const noCommentContent = content.replace(/([^\\]|^)%.*$/gm, '$1').split('\\begin{document}')[0] // Strip comments
 
         let result: RegExpExecArray | null
