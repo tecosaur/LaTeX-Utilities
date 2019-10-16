@@ -334,42 +334,42 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])  $",
+        "prefix": "([^ \\\\])  $",
         "body": "$1\\, ",
         "mode": "maths",
         "priority": -1,
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])\\\\, {2,4}$",
+        "prefix": "([^ \\\\])\\\\, {2,4}$",
         "body": "$1\\: ",
         "mode": "maths",
         "priority": 0.1,
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])\\\\: {2,4}$",
+        "prefix": "([^ \\\\])\\\\: {2,4}$",
         "body": "$1\\; ",
         "mode": "maths",
         "priority": 0.2,
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])\\\\; {2,4}$",
+        "prefix": "([^ \\\\])\\\\; {2,4}$",
         "body": "$1\\ ",
         "mode": "maths",
         "priority": 0.3,
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])\\\\ {2,4}$",
+        "prefix": "([^ \\\\])\\\\ {2,4}$",
         "body": "$1\\quad ",
         "mode": "maths",
         "priority": 0.4,
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])\\\\quad {2,4}$",
+        "prefix": "([^ \\\\])\\\\quad {2,4}$",
         "body": "$1\\qquad ",
         "mode": "maths",
         "priority": 0.5,
