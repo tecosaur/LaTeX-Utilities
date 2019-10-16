@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+### Improved
+
+-   More tweaks to live snippets (`sr`, `cb` and superscripts)
+
 ## [0.3.2] — 2019-10-16
 
 ### Added

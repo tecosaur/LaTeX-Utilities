@@ -22,7 +22,7 @@
         "priority": 2
     },
     {
-        "prefix": "([A-Za-z}\\)\\]]) ?\\^ ?([\\d\\+-] ?\\d)$",
+        "prefix": "([A-Za-z}\\)\\]]) ?\\^ ?(\\d\\d|[\\+\\-] ?(?:\\d|[A-Za-z]|\\\\\\w+))$",
         "body": "$1^{$2}",
         "mode": "maths",
         "triggerWhenComplete": true,
