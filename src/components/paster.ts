@@ -100,7 +100,7 @@ export class Paster {
         }
     }
 
-    public async pasteTable(editor: vscode.TextEditor, content: string, delimiter: string|undefined = undefined) {
+    public async pasteTable(editor: vscode.TextEditor, content: string, delimiter?: string|undefined) {
         this.extension.logger.addLogMessage('Pasting: Table')
 
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
@@ -120,7 +120,7 @@ export class Paster {
         });
 
         if(columnDelimiter === undefined){
-            throw 'no table cell delimiter set'
+            throw new Error('no table cell delimiter set')
         }
 
         const trimUnwantedWhitespace = (s: string) =>
