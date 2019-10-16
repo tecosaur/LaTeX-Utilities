@@ -108,7 +108,7 @@ export class Paster {
     }
 
     public pasteTable(editor: vscode.TextEditor, content: string) {
-        this.extension.logger.addLogMessage('Pasting: Table hi')
+        this.extension.logger.addLogMessage('Pasting: Table')
 
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
