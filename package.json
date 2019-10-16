@@ -81,7 +81,8 @@
                 "latex-utilities.formattedPaste.tableColumnDelimiter": {
                     "type": "string",
                     "default": "\t",
-                    "markdownDescription": "Delimiter to use for splitting table cells."
+                    "minLength": 1,
+                    "markdownDescription": "The default delimiter to use for splitting table cells."
                 },
                 "latex-utilities.formattedPaste.tableColumnType": {
                     "type": "string",
