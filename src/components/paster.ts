@@ -118,7 +118,7 @@ export class Paster {
                 .replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
         content = trimUnwantedWhitespace(content)
 
-        const TEST_DELIMITERS = ['\t', ',']
+        const TEST_DELIMITERS = new Set([columnDelimiter, '\t', ','])
         const tables: string[][][] = []
 
         for (const delimiter of TEST_DELIMITERS) {
@@ -143,7 +143,6 @@ export class Paster {
                 if (columnDelimiterNew === undefined) {
                     throw new Error('no table cell delimiter set')
                 }
-                columnDelimiter = columnDelimiterNew
 
                 try {
                     const table = await this.processTable(content, columnDelimiterNew)
