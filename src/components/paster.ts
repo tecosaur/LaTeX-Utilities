@@ -118,7 +118,7 @@ export class Paster {
                 .replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
         content = trimUnwantedWhitespace(content)
 
-        const TEST_DELIMITERS = new Set([columnDelimiter, '\t', ','])
+        const TEST_DELIMITERS = new Set([columnDelimiter, '\t', ',', '|'])
         const tables: string[][][] = []
 
         for (const delimiter of TEST_DELIMITERS) {
@@ -186,24 +186,57 @@ export class Paster {
     }
 
     private processTable(content: string, delimiter = ','): Promise<string[][]> {
+        const isConsistent = (rows: string[][]) => {
+            return rows.reduce((accumulator, current, _index, array) => {
+                if (current.length === array[0].length) {
+                    return accumulator
+                } else {
+                    return false
+                }
+            }, true)
+        }
+        // if table is flanked by empty rows/columns, remove them
+        const trimSides = (rows: string[][]): string[][] => {
+            const emptyTop = rows[0].reduce((a, c) => c + a, '') === ''
+            const emptyBottom = rows[rows.length - 1].reduce((a, c) => c + a, '') === ''
+            const emptyLeft = rows.reduce((a, c) => a + c[0], '') === ''
+            const emptyRight = rows.reduce((a, c) => a + c[c.length - 1], '') === ''
+            if (!(emptyTop || emptyBottom || emptyLeft || emptyRight)) {
+                return rows
+            } else {
+                if (emptyTop) {
+                    rows.shift()
+                }
+                if (emptyBottom) {
+                    rows.pop()
+                }
+                if (emptyLeft) {
+                    rows.forEach(row => row.shift())
+                }
+                if (emptyRight) {
+                    rows.forEach(row => row.pop())
+                }
+                return trimSides(rows)
+            }
+        }
         return new Promise((resolve, reject) => {
-            const rows: string[][] = []
+            let rows: string[][] = []
             const contentStream = new Readable()
+            // if markdown / org mode / ascii table we want to strip some rows
+            if (delimiter === '|') {
+                const removeRowsRegex = /^\s*[\-\+:|]+\s*$/
+                const lines = content.split('\n').filter(l => !removeRowsRegex.test(l))
+                content = lines.join('\n')
+            }
             contentStream.push(content)
             contentStream.push(null)
             contentStream
                 .pipe(csv({ headers: false, separator: delimiter }))
                 .on('data', (data: { [key: string]: string }) => rows.push(Object.values(data)))
                 .on('end', () => {
+                    rows = trimSides(rows)
                     // determine if all rows have same number of cells
-                    const isConsistent = rows.reduce((accumulator, current, _index, array) => {
-                        if (current.length === array[0].length) {
-                            return accumulator
-                        } else {
-                            return false
-                        }
-                    }, true)
-                    if (!isConsistent) {
+                    if (!isConsistent(rows)) {
                         reject('Table is not consistent')
                     } else if (rows.length === 1 || rows[0].length === 1) {
                         reject("Doesn't look like a table")
