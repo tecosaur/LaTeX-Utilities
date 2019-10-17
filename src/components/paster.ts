@@ -3,6 +3,8 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import { spawn } from 'child_process'
+import * as csv from 'csv-parser'
+import { Readable } from 'stream'
 
 import { Extension } from '../main'
 import { promisify } from 'util'
@@ -94,13 +96,13 @@ export class Paster {
             this.pasteImage(editor, baseFile, file)
         } else if (TABLE_FORMATS.indexOf(extension) !== -1) {
             if (extension === '.csv') {
-                const fileContent = await readFile(path.resolve(baseFile, file));
-                await this.pasteTable(editor, fileContent.toString(), ",")
+                const fileContent = await readFile(path.resolve(baseFile, file))
+                await this.pasteTable(editor, fileContent.toString())
             }
         }
     }
 
-    public async pasteTable(editor: vscode.TextEditor, content: string, delimiter?: string|undefined) {
+    public async pasteTable(editor: vscode.TextEditor, content: string, delimiter?: string) {
         this.extension.logger.addLogMessage('Pasting: Table')
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
@@ -109,42 +111,58 @@ export class Paster {
         const booktabs: boolean = configuration.tableBooktabsStyle
         const headerRows: number = configuration.tableHeaderRows
 
-        if (configuration.tableDelimiterPrompt) {
-            const columnDelimiterNew = await vscode.window.showInputBox({
-                prompt: "Please specify the table cell delimiter",
-                value: columnDelimiter,
-                placeHolder: columnDelimiter,
-                validateInput: (text: string) => {
-                    return text === '' ? 'No delimiter specified!' : null;
-                }
-            });
-            if(columnDelimiterNew === undefined){
-                throw new Error('no table cell delimiter set')
-            }
-            columnDelimiter = columnDelimiterNew
-        }
         const trimUnwantedWhitespace = (s: string) =>
-            s.replace('\r\n', '\n').replace(/^[^\S\t]+|[^\S\t]+$/gm, '').replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
+            s
+                .replace('\r\n', '\n')
+                .replace(/^[^\S\t]+|[^\S\t]+$/gm, '')
+                .replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
         content = trimUnwantedWhitespace(content)
-        content = this.reformatText(content, false)
-        const lines = content.split('\n')
-        const cells = lines.map(l => l.split(columnDelimiter))
 
-        // determine if all rows have same number of cells
-        const isConsistent = cells.reduce((accumulator, current, _index, array) => {
-            if (current.length === array[0].length) {
-                return accumulator
-            } else {
-                return false
-            }
-        }, true)
-        if (!isConsistent) {
-            throw new Error('Table is not consistent')
-        } else if (cells.length === 1 || cells[0].length === 1) {
-            throw 'Doesn\'t look like a table'
+        const TEST_DELIMITERS = ['\t', ',']
+        const tables: string[][][] = []
+
+        for (const delimiter of TEST_DELIMITERS) {
+            try {
+                const table = await this.processTable(content, delimiter)
+                tables.push(table)
+                this.extension.logger.addLogMessage(`Successfully found ${delimiter} delimited table`)
+            } catch (e) {}
         }
 
-        const tabularRows = cells.map(row => '\t' + row.join(' & '))
+        if (tables.length === 0) {
+            this.extension.logger.addLogMessage('No table found')
+            if (configuration.tableDelimiterPrompt) {
+                const columnDelimiterNew = await vscode.window.showInputBox({
+                    prompt: 'Please specify the table cell delimiter',
+                    value: columnDelimiter,
+                    placeHolder: columnDelimiter,
+                    validateInput: (text: string) => {
+                        return text === '' ? 'No delimiter specified!' : null
+                    }
+                })
+                if (columnDelimiterNew === undefined) {
+                    throw new Error('no table cell delimiter set')
+                }
+                columnDelimiter = columnDelimiterNew
+
+                try {
+                    const table = await this.processTable(content, columnDelimiterNew)
+                    tables.push(table)
+                    this.extension.logger.addLogMessage(`Successfully found ${columnDelimiterNew} delimited table`)
+                } catch (e) {
+                    vscode.window.showWarningMessage(e)
+                    return
+                }
+            } else {
+                return
+            }
+        }
+
+        // put the 'biggest' table first
+        tables.sort((a, b) => a.length * a[0].length - b.length * b[0].length)
+        const table = tables[0].map(row => row.map(cell => this.reformatText(cell, false)))
+
+        const tabularRows = table.map(row => '\t' + row.join(' & '))
 
         if (headerRows && tabularRows.length > headerRows) {
             const eol = editor.document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n'
@@ -155,7 +173,7 @@ export class Paster {
         if (booktabs) {
             tabularContents = '\t\\toprule\n' + tabularContents + ' \\\\\n\t\\bottomrule'
         }
-        const tabular = `\\begin{tabular}{${columnType.repeat(cells[0].length)}}\n${tabularContents}\n\\end{tabular}`
+        const tabular = `\\begin{tabular}{${columnType.repeat(table[0].length)}}\n${tabularContents}\n\\end{tabular}`
 
         editor.edit(edit => {
             const current = editor.selection
@@ -165,6 +183,35 @@ export class Paster {
             } else {
                 edit.replace(current, tabular)
             }
+        })
+    }
+
+    private processTable(content: string, delimiter = ','): Promise<string[][]> {
+        return new Promise((resolve, reject) => {
+            const rows: string[][] = []
+            const contentStream = new Readable()
+            contentStream.push(content)
+            contentStream.push(null)
+            contentStream
+                .pipe(csv({ headers: false, separator: delimiter }))
+                .on('data', (data: { [key: string]: string }) => rows.push(Object.values(data)))
+                .on('end', () => {
+                    // determine if all rows have same number of cells
+                    const isConsistent = rows.reduce((accumulator, current, _index, array) => {
+                        if (current.length === array[0].length) {
+                            return accumulator
+                        } else {
+                            return false
+                        }
+                    }, true)
+                    if (!isConsistent) {
+                        reject('Table is not consistent')
+                    } else if (rows.length === 1 || rows[0].length === 1) {
+                        reject("Doesn't look like a table")
+                    }
+
+                    resolve(rows)
+                })
         })
     }
 
