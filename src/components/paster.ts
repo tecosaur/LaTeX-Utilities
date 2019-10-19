@@ -150,10 +150,10 @@ export class Paster {
                     this.extension.logger.addLogMessage(`Successfully found ${columnDelimiterNew} delimited table`)
                 } catch (e) {
                     vscode.window.showWarningMessage(e)
-                    return
+                    throw Error('Unable to identify table')
                 }
             } else {
-                return
+                throw Error('Unable to identify table')
             }
         }
 
