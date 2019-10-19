@@ -2,12 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+-   Setting to make formatted paste the default (`ctrl`+`v`) paste
+-   New setting for custom delimiter for formatted paste to try with tables
+
 ### Improved
 
 -   More tweaks to live snippets (`sr`, `cb` and superscripts)
 -   Formatted paste of tables now 'just works' with anything which is tab, comma, or `|` delimited,
     i.e. spreadsheets, csv, markdown
--   New setting for custom delimiter for formatted paste to try with tables
 
 ## [0.3.2] — 2019-10-16
 

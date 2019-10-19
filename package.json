@@ -72,7 +72,19 @@
                 "key": "ctrl+shift+v",
                 "mac": "cmd+shift+v",
                 "command": "latex-utilities.formattedPaste",
-                "when": "editorTextFocus && editorLangId == 'latex'"
+                "when": "!config.latex-utilities.formattedPaste.useAsDefault && editorTextFocus && editorLangId == 'latex'"
+            },
+            {
+                "key": "ctrl+shift+v",
+                "mac": "cmd+shift+v",
+                "command": "editor.action.clipboardPasteAction",
+                "when": "config.latex-utilities.formattedPaste.useAsDefault && editorTextFocus && editorLangId == 'latex'"
+            },
+            {
+                "key": "ctrl+v",
+                "mac": "cmd+v",
+                "command": "latex-utilities.formattedPaste",
+                "when": "config.latex-utilities.formattedPaste.useAsDefault && editorTextFocus && editorLangId == 'latex'"
             }
         ],
         "configuration": {
@@ -116,6 +128,11 @@
                     ],
                     "default": "\\includegraphics{${imageFilePath}}",
                     "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFilePath}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
+                },
+                "latex-utilities.formattedPaste.useAsDefault": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Make `ctrl`+`v` perform a formatted paste, and `ctrl`+`shift`+`v` perform a 'raw' (normal) paste."
                 },
                 "latex-utilities.liveReformat.enabled": {
                     "type": "boolean",
