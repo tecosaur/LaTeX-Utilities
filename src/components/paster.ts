@@ -516,7 +516,6 @@ export class Paster {
 
     public async saveAndPaste(editor: vscode.TextEditor, imgPath: string, oldPath?: string) {
         this.ensureImgDirExists(imgPath)
-            // @ts-ignore: Type 'unknown' is not assignable to type 'string'.ts(2345)
             .then((imagePath: string) => {
                 // save image and insert to current edit file
 
@@ -590,7 +589,7 @@ export class Paster {
             })
     }
 
-    private ensureImgDirExists(imagePath: string) {
+    private ensureImgDirExists(imagePath: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const imageDir = path.dirname(imagePath)
 

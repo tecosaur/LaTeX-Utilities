@@ -310,10 +310,10 @@ export class CompletionWatcher {
     }
 
     private getFraction(match: RegExpExecArray, line: vscode.TextLine): [vscode.Range, string] {
-        // @ts-ignore
-        const closingBracket: ')' | ']' | '}' = match[1]
-        // @ts-ignore
-        const openingBracket: '(' | '[' | '{' = { ')': '(', ']': '[', '}': '{' }[closingBracket]
+        type TclosingBracket = ')' | ']' | '}'
+        type TopeningBracket = '(' | '[' | '{'
+        const closingBracket = match[1] as TclosingBracket
+        const openingBracket = { ')': '(', ']': '[', '}': '{' }[closingBracket] as TopeningBracket
         let depth = 0
         for (let i = match.index; i >= 0; i--) {
             if (line.text[i] === closingBracket) {
