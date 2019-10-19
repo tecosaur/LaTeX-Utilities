@@ -196,7 +196,7 @@
         "eslint": "^6.5.1",
         "glob": "^7.1.4",
         "mocha": "^6.2.2",
-        "typescript": "^3.6.3"
+        "typescript": "^3.6.4"
     },
     "dependencies": {
         "csv-parser": "^2.3.1",
