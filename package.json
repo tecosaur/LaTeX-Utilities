@@ -78,17 +78,6 @@
         "configuration": {
             "title": "LaTeX Utils",
             "properties": {
-                "latex-utilities.formattedPaste.tableDelimiterDefault": {
-                    "type": "string",
-                    "default": "\t",
-                    "minLength": 1,
-                    "markdownDescription": "The default delimiter to use for splitting table cells."
-                },
-                "latex-utilities.formattedPaste.tableDelimiterPrompt": {
-                    "type": "boolean",
-                    "default": false,
-                    "markdownDescription": "Whether to be prompted to confirm the table cell delimiter."
-                },
                 "latex-utilities.formattedPaste.tableColumnType": {
                     "type": "string",
                     "default": "l",
@@ -103,6 +92,17 @@
                     "type": "integer",
                     "default": 1,
                     "markdownDescription": "Number of header rows to assume. Set to **`0`** to disable."
+                },
+                "latex-utilities.formattedPaste.customTableDelimiter": {
+                    "type": "string",
+                    "default": "\t",
+                    "minLength": 1,
+                    "markdownDescription": "A custom delimiter to try for tables (in addition to `\\t`, `,` and `|` which we always try)"
+                },
+                "latex-utilities.formattedPaste.tableDelimiterPrompt": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Whether to be prompted for a custom delimiter if the set table delimiters didn't work"
                 },
                 "latex-utilities.formattedPaste.maxLineLength": {
                     "type": "integer",

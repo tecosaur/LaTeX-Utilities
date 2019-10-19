@@ -106,7 +106,7 @@ export class Paster {
         this.extension.logger.addLogMessage('Pasting: Table')
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
-        let columnDelimiter: string = delimiter || configuration.tableDelimiterDefault
+        let columnDelimiter: string = delimiter || configuration.customTableDelimiter
         const columnType: string = configuration.tableColumnType
         const booktabs: boolean = configuration.tableBooktabsStyle
         const headerRows: number = configuration.tableHeaderRows
