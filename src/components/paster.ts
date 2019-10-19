@@ -159,7 +159,7 @@ export class Paster {
 
         // put the 'biggest' table first
         tables.sort((a, b) => a.length * a[0].length - b.length * b[0].length)
-        const table = tables[0].map(row => row.map(cell => this.reformatText(cell, false)))
+        const table = tables[0].map(row => row.map(cell => this.reformatText(cell.replace(/^\s+|\s+$/gm, ''), false)))
 
         const tabularRows = table.map(row => '\t' + row.join(' & '))
 
