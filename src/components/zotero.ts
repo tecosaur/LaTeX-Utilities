@@ -178,6 +178,8 @@ export class Zotero {
         if (citation) {
             this.insertCitation(citation)
         }
+
+        this.extension.telemetryReporter.sendTelemetryEvent('zoteroCite')
     }
 
     private extractCiteKey(editor: vscode.TextEditor) {

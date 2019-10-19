@@ -53,3 +53,21 @@ The feature should continue to expand at a gradually decreasing rate.
 ### Zotero Integration
 
 <img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/zotero-integration.gif" height="100px">
+
+## Telemetry
+
+This extension uses telemetry (If your response is best described by 🤢 I understand).
+
+### Why
+
+As a bunch of fancy, but non-essential features, it can be hard to know what features users actually derive value from.
+In adding telemetry to this extension I hope to get an idea of this, and inform future development efforts.
+It should also be possible to report errors in the background, and so I also hope this extension will be more stable as a result.
+
+At the moment I'm just logging when one of the main features is used.
+
+**TLDR; I want to get around the 1% rule**
+
+### I hate telemetry, go way!
+
+You probably have disabled vscode's `telemetry.enableTelemetry` then, in which case no telemetry is done.

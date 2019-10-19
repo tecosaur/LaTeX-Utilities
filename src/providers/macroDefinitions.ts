@@ -58,6 +58,7 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
         const resultPattern = /% (.+), line (\d+):/
         let result: RegExpMatchArray | null
         if ((result = texdefResult.match(resultPattern)) !== null) {
+            this.extension.telemetryReporter.sendTelemetryEvent('texdef')
             return new vscode.Location(vscode.Uri.file(result[1]), new vscode.Position(parseInt(result[2]) - 1, 0))
         } else {
             vscode.window.showWarningMessage(`Could not find definition for ${document.getText(command)}`)

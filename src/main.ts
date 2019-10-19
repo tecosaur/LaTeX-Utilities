@@ -11,8 +11,12 @@ import { TikzPictureView } from './components/tikzpreview'
 import { Zotero } from './components/zotero'
 import * as utils from './utils'
 
+import { default as TelemetryReporter } from 'vscode-extension-telemetry'
+
+let extension: Extension
+
 export function activate(context: vscode.ExtensionContext) {
-    const extension = new Extension()
+    extension = new Extension()
 
     extension.logger.addLogMessage('LaTeX Utilities Started')
 
@@ -27,7 +31,9 @@ export function activate(context: vscode.ExtensionContext) {
         ),
         vscode.commands.registerCommand('latex-utilities.citeZotero', () => extension.zotero.cite()),
         vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation()),
-        vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () => extension.wordCounter.pickFormat())
+        vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () =>
+            extension.wordCounter.pickFormat()
+        )
     )
 
     context.subscriptions.push(
@@ -63,13 +69,18 @@ export function activate(context: vscode.ExtensionContext) {
             new MacroDefinitions(extension)
         )
     )
+
+    context.subscriptions.push(extension.telemetryReporter)
 }
 
-export function deactivate() {}
+export function deactivate() {
+    extension.tikzPreview.cleanupTempFiles()
+    extension.telemetryReporter.dispose()
+}
 
 export class Extension {
     extensionRoot: string
-    // @ts-ignore
+    telemetryReporter: TelemetryReporter
     workshop: LaTeXWorkshopAPI
     logger: Logger
     completionWatcher: CompletionWatcher
@@ -81,12 +92,16 @@ export class Extension {
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
+        const self = vscode.extensions.getExtension('tecosaur.latex-utilities') as vscode.Extension<any>
+        this.telemetryReporter = new TelemetryReporter(
+            'tecosaur.latex-utilities',
+            self.packageJSON.version,
+            '015dde22-1297-4bc0-8f8d-6587f3c192ec'
+        )
         const workshop = vscode.extensions.getExtension('james-yu.latex-workshop') as vscode.Extension<any>
+        this.workshop = workshop.exports
         if (workshop.isActive === false) {
             workshop.activate().then(() => (this.workshop = workshop.exports))
-        } else {
-            this.workshop = workshop.exports
-        }
         }
         this.logger = new Logger(this)
         this.completionWatcher = new CompletionWatcher(this)

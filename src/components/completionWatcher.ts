@@ -151,6 +151,15 @@ export class CompletionWatcher {
                 line.text.substr(0, change.range.start.character + change.text.length + columnOffset)
             )
             if (match && vscode.window.activeTextEditor) {
+                if (this.snippetFile.current === this.snippetFile.user) {
+                    this.extension.telemetryReporter.sendTelemetryEvent('livesnippet', {
+                        description: 'CUSTOM_SNIPPET'
+                    })
+                } else if (snippet.description) {
+                    this.extension.telemetryReporter.sendTelemetryEvent('livesnippet', {
+                        description: snippet.description
+                    })
+                }
                 let matchRange: vscode.Range
                 let replacement: string
                 if (snippet.body === 'SPECIAL_ACTION_BREAK') {

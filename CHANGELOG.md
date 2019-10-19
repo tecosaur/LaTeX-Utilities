@@ -6,6 +6,7 @@
 
 -   Setting to make formatted paste the default (`ctrl`+`v`) paste
 -   New setting for custom delimiter for formatted paste to try with tables
+-   Telemetry to try to help direct development effort
 
 ### Improved
 

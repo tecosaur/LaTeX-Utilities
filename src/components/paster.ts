@@ -72,6 +72,7 @@ export class Paster {
                     .getConfiguration('latex-utilities.formattedPaste')
                     .get('maxLineLength') as number)
             )
+            this.extension.telemetryReporter.sendTelemetryEvent('formattedPaste', { type: 'text' })
         }
     }
 
@@ -183,6 +184,8 @@ export class Paster {
                 edit.replace(current, tabular)
             }
         })
+
+        this.extension.telemetryReporter.sendTelemetryEvent('formattedPaste', { type: 'table' })
     }
 
     private processTable(content: string, delimiter = ','): Promise<string[][]> {
@@ -578,6 +581,7 @@ export class Paster {
                         )
                     })
                 }
+                this.extension.telemetryReporter.sendTelemetryEvent('formattedPaste', { type: 'image' })
             })
             .catch((err: Error) => {
                 vscode.window.showErrorMessage(`Failed make folder. message=${err.message}`)

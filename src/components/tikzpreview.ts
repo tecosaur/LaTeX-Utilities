@@ -39,6 +39,7 @@ export class TikzPictureView {
 
     public async view(document: vscode.TextDocument, range: vscode.Range) {
         this.extension.logger.addLogMessage(`Viewing TikZ Picture starting on line ${range.start.line + 1}`)
+        this.extension.telemetryReporter.sendTelemetryEvent('tikzpreview')
 
         if (!this.initalised) {
             await this.cleanupTempDir()
