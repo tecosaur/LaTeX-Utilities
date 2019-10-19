@@ -73,6 +73,6 @@ At the moment I'm just logging when one of the main features is used.
 
 **TLDR; I want to get around the 1% rule**
 
-### I hate telemetry, go way!
+### I hate telemetry, go away!
 
 You probably have disabled vscode's `telemetry.enableTelemetry` then, in which case no telemetry is done.
