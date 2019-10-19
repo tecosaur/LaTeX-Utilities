@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
                 extension.wordCounter.setStatus()
             }
         }),
-        vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+        vscode.window.onDidChangeActiveTextEditor((_e: vscode.TextEditor | undefined) => {
             extension.wordCounter.setStatus()
         })
     )

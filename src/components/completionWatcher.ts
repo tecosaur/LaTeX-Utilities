@@ -157,7 +157,7 @@ export class CompletionWatcher {
                     resolve('break')
                     return
                 } else if (snippet.body === 'SPECIAL_ACTION_FRACTION') {
-                    ;[matchRange, replacement] = this.getFraction(match, line)
+                    [matchRange, replacement] = this.getFraction(match, line)
                 } else {
                     matchRange = new vscode.Range(
                         new vscode.Position(line.lineNumber, match.index),

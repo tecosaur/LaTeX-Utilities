@@ -164,7 +164,7 @@ export class TypeFinder {
     public getTypeAtPosition(
         document: vscode.TextDocument,
         position: vscode.Position,
-        lastKnown?: { position: vscode.Position; mode: 'maths' | 'text' }
+        lastKnown?: { position: vscode.Position, mode: 'maths' | 'text' }
     ): 'maths' | 'text' {
         const start = +new Date()
 

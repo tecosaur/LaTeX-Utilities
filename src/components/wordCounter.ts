@@ -34,7 +34,7 @@ export class WordCounter {
     }
 
     async counts(merge: boolean = true, file = this.extension.workshop.manager.rootFile()): Promise<TexCount> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             if (file === undefined) {
                 this.extension.logger.addLogMessage('A valid file was not give for TexCount')
                 return
@@ -117,7 +117,7 @@ export class WordCounter {
             text
         )
         if (reMatch !== null) {
-            let {
+            const {
                 groups: {
                     // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
                     wordsBody,
@@ -164,7 +164,7 @@ export class WordCounter {
             this.status.hide()
             return
         } else {
-            let template = vscode.workspace.getConfiguration('latex-utilities.countWord').get('format') as string
+            const template = vscode.workspace.getConfiguration('latex-utilities.countWord').get('format') as string
             if (template === '') {
                 this.status.hide()
                 return
@@ -179,13 +179,13 @@ export class WordCounter {
         const texCount = await this.counts()
 
         const templates = ['${words} Words', '${headers} Headers', '${floats} Floats', '${math} Equations']
-        let options: { [template: string]: string } = {}
+        const options: { [template: string]: string } = {}
         for (const template of templates) {
             options[template] = this.formatString(texCount, template)
         }
         options['custom'] = 'custom'
 
-        let choice = await vscode.window.showQuickPick(Object.values(options), {
+        const choice = await vscode.window.showQuickPick(Object.values(options), {
             placeHolder: 'Select format to use'
         })
 

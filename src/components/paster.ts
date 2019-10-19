@@ -106,7 +106,7 @@ export class Paster {
         this.extension.logger.addLogMessage('Pasting: Table')
         const configuration = vscode.workspace.getConfiguration('latex-utilities.formattedPaste')
 
-        let columnDelimiter: string = delimiter || configuration.customTableDelimiter
+        const columnDelimiter: string = delimiter || configuration.customTableDelimiter
         const columnType: string = configuration.tableColumnType
         const booktabs: boolean = configuration.tableBooktabsStyle
         const headerRows: number = configuration.tableHeaderRows
@@ -121,11 +121,11 @@ export class Paster {
         const TEST_DELIMITERS = new Set([columnDelimiter, '\t', ',', '|'])
         const tables: string[][][] = []
 
-        for (const delimiter of TEST_DELIMITERS) {
+        for (const testDelimiter of TEST_DELIMITERS) {
             try {
-                const table = await this.processTable(content, delimiter)
+                const table = await this.processTable(content, testDelimiter)
                 tables.push(table)
-                this.extension.logger.addLogMessage(`Successfully found ${delimiter} delimited table`)
+                this.extension.logger.addLogMessage(`Successfully found ${testDelimiter} delimited table`)
             } catch (e) {}
         }
 
@@ -224,7 +224,7 @@ export class Paster {
             const contentStream = new Readable()
             // if markdown / org mode / ascii table we want to strip some rows
             if (delimiter === '|') {
-                const removeRowsRegex = /^\s*[\-\+:|]+\s*$/
+                const removeRowsRegex = /^\s*[-+:|]+\s*$/
                 const lines = content.split('\n').filter(l => !removeRowsRegex.test(l))
                 content = lines.join('\n')
             }

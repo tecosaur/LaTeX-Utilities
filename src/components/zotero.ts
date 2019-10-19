@@ -16,7 +16,7 @@ export class Zotero {
 
         const zoteroUrl = configuration.get('zoteroUrl') as string
 
-        let options = {
+        const options = {
             format: 'biblatex',
             command: configuration.get('latexCommand'),
         }
@@ -48,8 +48,8 @@ export class Zotero {
         this.extension.logger.addLogMessage(`Searching Zotero for "${terms}"`)
         const req = got.post(`${zoteroUrl}/better-bibtex/json-rpc`, {
             body: {
-                jsonrpc: "2.0",
-                method: "item.search",
+                jsonrpc: '2.0',
+                method: 'item.search',
                 params: [terms]
             },
             json: true
@@ -64,11 +64,11 @@ export class Zotero {
 
     // Get a citation from a built-in quick picker
     private async vscodeCite() {
-        const disposables: vscode.Disposable[] = [];
+        const disposables: vscode.Disposable[] = []
 
         try {
             const entries = await new Promise<SearchResult[]>((resolve, _) => {
-                const input = vscode.window.createQuickPick<EntryItem | ErrorItem>();
+                const input = vscode.window.createQuickPick<EntryItem | ErrorItem>()
                 input.matchOnDescription = true
                 input.matchOnDetail = true
                 input.canSelectMany = true
@@ -88,7 +88,7 @@ export class Zotero {
                         const [r, c] = this.search(value)
                         cancel = c
                         r.then(results => {
-                                input.items = results.map(r => new EntryItem(r))
+                                input.items = results.map(result => new EntryItem(result))
                             })
                             .catch(error => {
                                 if (!error.isCanceled) {
@@ -102,7 +102,7 @@ export class Zotero {
                             })
                             .finally(() => {
                                 input.busy = false
-                            }) as unknown as { cancel(): void }
+                            })
                     } else {
                         input.items = []
                     }
@@ -225,17 +225,17 @@ export class Zotero {
 
 // Better BibTeX search result
 interface SearchResult {
-    type: string;
-    citekey: string;
-    title: string;
-    author?: [{ family: string, given: string }];
-    [field: string]: any;
+    type: string
+    citekey: string
+    title: string
+    author?: [{ family: string, given: string }]
+    [field: string]: any
 }
 
 class EntryItem implements vscode.QuickPickItem {
-    label: string;
-    detail: string;
-    description: string;
+    label: string
+    detail: string
+    description: string
 
     constructor(public result: SearchResult) {
         this.label = result.title
@@ -258,7 +258,7 @@ class EntryItem implements vscode.QuickPickItem {
 }
 
 class ErrorItem implements vscode.QuickPickItem {
-    label: string;
+    label: string
 
     constructor(public message: string) {
         this.label = message.replace(/\r?\n/g, ' ')
