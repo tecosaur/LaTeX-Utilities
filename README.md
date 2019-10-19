@@ -54,6 +54,11 @@ The feature should continue to expand at a gradually decreasing rate.
 
 <img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/zotero-integration.gif" height="100px">
 
+<br/>
+<br/>
+
+---
+
 ## Telemetry
 
 This extension uses telemetry (If your response is best described by 🤢 I understand).
