@@ -182,8 +182,7 @@
     ],
     "scripts": {
         "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "watch": "tsc -watch -p ./"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.0",
@@ -197,8 +196,7 @@
         "eslint": "^6.5.1",
         "glob": "^7.1.4",
         "mocha": "^6.1.4",
-        "typescript": "^3.6.3",
-        "vscode": "^1.1.36"
+        "typescript": "^3.6.3"
     },
     "dependencies": {
         "csv-parser": "^2.3.1",
