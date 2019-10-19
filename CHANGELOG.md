@@ -10,6 +10,9 @@
 ### Improved
 
 -   Live snippets now do so more accents, and spaces
+-   Formatted paste of tables now 'just works' with anything which is tab, comma, or `|` delimited,
+    i.e. spreadsheets, csv, markdown
+-   New setting for custom delimiter for formatted paste to try with tables
 
 ### Fixed
 
