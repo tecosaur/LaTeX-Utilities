@@ -81,15 +81,12 @@ export class Extension {
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
-        const workshop = vscode.extensions.getExtension('james-yu.latex-workshop')
-        if (workshop === undefined) {
-            throw new Error('LaTeX Workshop required, not found')
+        const workshop = vscode.extensions.getExtension('james-yu.latex-workshop') as vscode.Extension<any>
+        if (workshop.isActive === false) {
+            workshop.activate().then(() => (this.workshop = workshop.exports))
         } else {
-            if (workshop.isActive === false) {
-                workshop.activate().then(() => (this.workshop = workshop.exports))
-            } else {
-                this.workshop = workshop.exports
-            }
+            this.workshop = workshop.exports
+        }
         }
         this.logger = new Logger(this)
         this.completionWatcher = new CompletionWatcher(this)
