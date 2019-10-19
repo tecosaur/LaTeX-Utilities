@@ -227,7 +227,7 @@ export class Paster {
             const contentStream = new Readable()
             // if markdown / org mode / ascii table we want to strip some rows
             if (delimiter === '|') {
-                const removeRowsRegex = /^\s*[-+:|]+\s*$/
+                const removeRowsRegex = /^\s*[-+:| ]+\s*$/
                 const lines = content.split('\n').filter(l => !removeRowsRegex.test(l))
                 content = lines.join('\n')
             }
