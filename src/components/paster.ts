@@ -294,6 +294,9 @@ export class Paster {
             return lines.join('\n')
         }
 
+        // join hyphenated lines
+        text = text.replace(/(\w+)-\s?$\s?\n(\w+)/gm, '$1$2\n')
+
         if (removeBonusWhitespace) {
             text = doRemoveBonusWhitespace(text)
         }
@@ -318,8 +321,6 @@ export class Paster {
             '”': "''",
             '‘': '`',
             '’': "'",
-            // hyphenated lines
-            '(\\w+)-\\s?$\\s?\\n(\\w+)': '$1$2',
             // unicode symbols
             '—': '---', // em dash
             '–': '--', // en dash

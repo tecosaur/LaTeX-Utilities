@@ -13,6 +13,7 @@
 -   More tweaks to live snippets (`sr`, `cb` and superscripts)
 -   Formatted paste of tables now 'just works' with anything which is tab, comma, or `|` delimited,
     i.e. spreadsheets, csv, markdown
+-   Formatted paste of text now joins hyphenated words
 
 ## [0.3.2] — 2019-10-16
 
