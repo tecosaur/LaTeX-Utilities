@@ -10,3 +10,4 @@ tsconfig.eslint.json
 demo_media/**
 .eslintcache
 .eslintignore
+*.vsix
