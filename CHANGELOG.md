@@ -8,6 +8,7 @@
 -   Make TikZ Preview work with any environment which matches `\w*tikz\w*`
 -   Live snippets now treats comments inside a math environment as "text"
 -   Lots of excess logging with live snippets removed
+-   Minor tweaks to live snippets
 
 ## [0.3.3] — 2019-10-19
 

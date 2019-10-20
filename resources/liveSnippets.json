@@ -359,14 +359,14 @@
     },
     {
         "prefix": "\\b([A-Za-z])([A-Za-z])\\2$",
-        "body": "$1_$2 ",
+        "body": "$1_$2",
         "mode": "maths",
         "description": "subscript letter",
         "triggerWhenComplete": true
     },
     {
         "prefix": "\\b([A-Za-z])([A-Za-z])\\2?p1$",
-        "body": "$1_{$2+1} ",
+        "body": "$1_{$2+1}",
         "mode": "maths",
         "description": "subscript letter + 1",
         "priority": 2,
