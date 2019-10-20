@@ -1,6 +1,12 @@
 # Change Log
 
-## [Unreleased] — 2019-10-19
+## [Unreleased] — 2019-10-20
+
+### Improved
+
+-   TikZ Preview now uses relevant lines prior to the `tikzpicture`
+
+## [0.3.3] — 2019-10-19
 
 ### Added
 

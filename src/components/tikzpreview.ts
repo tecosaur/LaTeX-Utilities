@@ -56,7 +56,7 @@ export class TikzPictureView {
             content: document.getText(range)
         })
 
-        const preambleStatus = await this.checkPreamble(fileTikzCollection)
+        const preambleStatus = await this.checkPreamble(fileTikzCollection, range.start.line)
 
         if (preambleStatus === 'stable') {
             this.updateTikzPicture(tikzPicture)
@@ -213,7 +213,7 @@ export class TikzPictureView {
 
     private async getFileTikzCollection(document: vscode.TextDocument): Promise<IFileTikzCollection> {
         if (!(document.uri.fsPath in this.tikzCollections)) {
-            const tempDir: string = await fs.mkdtempSync(
+            const tempDir: string = fs.mkdtempSync(
                 path.join(tmpdir(), this.TEMPFOLDER_NAME, `tikzpreview-${path.basename(document.uri.fsPath, '.tex')}-`)
             )
 
@@ -256,8 +256,8 @@ export class TikzPictureView {
         return tikzCollection.tikzPictures[tikzCollection.tikzPictures.length - 1]
     }
 
-    private async checkPreamble(fileTikzCollection: IFileTikzCollection) {
-        const generatedPreamble = await this.generatePreamble(fileTikzCollection)
+    private async checkPreamble(fileTikzCollection: IFileTikzCollection, maxParsedLine?: number) {
+        const generatedPreamble = await this.generatePreamble(fileTikzCollection, maxParsedLine)
         if (fileTikzCollection.preamble !== generatedPreamble) {
             // eslint-disable-next-line require-atomic-updates
             fileTikzCollection.preamble = generatedPreamble
@@ -274,7 +274,7 @@ export class TikzPictureView {
         return 'stable'
     }
 
-    private async generatePreamble(fileTikzCollection: IFileTikzCollection) {
+    private async generatePreamble(fileTikzCollection: IFileTikzCollection, maxParsedLine?: number) {
         const configuration = vscode.workspace.getConfiguration('latex-utilities.tikzpreview')
         let commandsString = ''
         const newCommandFile = configuration.get('preambleContents') as string
@@ -298,12 +298,29 @@ export class TikzPictureView {
         const regex = /(\\usepackage(?:\[[^\]]*\])?{(?:tikz|pgfplots|xcolor)}|\\(?:tikzset|pgfplotsset){(?:[^{}]+|{(?:[^{}]+|{(?:[^{}]+|{[^{}]+})+})+})+}|\\(?:usetikzlibrary|usepgfplotslibrary){[^}]+}|\\definecolor{[^}]+}{[^}]+}{[^}]+}|\\colorlet{[^}]+}{[^}]+})/gm
         const commands: string[] = []
 
-        const content = await fs.readFileSync(fileTikzCollection.texFileLocation, { encoding: 'utf8' })
-        const noCommentContent = content.replace(/([^\\]|^)%.*$/gm, '$1').split('\\begin{document}')[0] // Strip comments
+        let content = await fs.readFileSync(fileTikzCollection.texFileLocation, { encoding: 'utf8' })
+        content = content.replace(/([^\\]|^)%.*$/gm, '$1') // Strip comments
+
+        if (maxParsedLine) {
+            const nthIndex = (str: string, pat: string, n: number) => {
+                const L = str.length
+                let i = -1
+                while (n-- && i++ < L) {
+                    i = str.indexOf(pat, i)
+                    if (i < 0) {
+                        break
+                    }
+                }
+                return i
+            }
+            content = content.substring(0, nthIndex(content, '\n', maxParsedLine))
+        } else {
+            content = content.split('\\begin{document}')[0]
+        }
 
         let result: RegExpExecArray | null
         do {
-            result = regex.exec(noCommentContent)
+            result = regex.exec(content)
             if (result) {
                 commands.push(result[1])
             }
