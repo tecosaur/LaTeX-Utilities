@@ -121,6 +121,21 @@
                     "default": "${words} Words",
                     "markdownDescription": "Format of the statusbar item. Set empty (`\"\"`) to disable."
                 },
+                "latex-utilities.linter.providers": {
+                    "type": "array",
+                    "default": [],
+                    "markdownDescription": "Providers used to lint TeX documents. Possible values: vale, LanguageTool"
+                },
+                "latex-utilities.linter.vale": {
+                    "type": "array",
+                    "default": [],
+                    "markdownDescription": "Arguments for vale."
+                },
+                "latex-utilities.linter.LanguageTool": {
+                    "type": "array",
+                    "default": [],
+                    "markdownDescription": "Arguments for LanguageTool."
+                },
                 "latex-utilities.tikzpreview.enabled": {
                     "type": "boolean",
                     "default": "true",

@@ -22,7 +22,7 @@ export interface IDiagnosticSource {
 export class Diagnoser {
     extension: Extension
     diagnosticSources: { [name: string]: IDiagnosticSource } = { vale: vale, LanguageTool: LanguageTool }
-    enabledLinters = ['LanguageTool','vale'] // todo: get from user setting
+    enabledLinters = vscode.workspace.getConfiguration('latex-utilities.linter').get("providers") as string[]
     
     private TEMPFOLDER_NAME = 'vscode-latexworkshop'
     private tempfile = ""
@@ -37,7 +37,6 @@ export class Diagnoser {
     }
 
     public async lintDocument(document: vscode.TextDocument) {
-
         if (!this.initalised) {
             await this.cleanupTempDir()
             if (!fs.existsSync(path.join(tmpdir(), this.TEMPFOLDER_NAME))) {
@@ -130,7 +129,7 @@ export class Diagnoser {
             else
                 return a[0]-b[0]
         })
-console.log(this.offsets)
+
         // Save temporary file
         this.tempfile = path.join(tmpdir(), this.TEMPFOLDER_NAME, `diagnoser-${path.basename(document.uri.fsPath)}`)
 

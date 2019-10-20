@@ -38,10 +38,9 @@ export const LanguageTool: IDiagnosticSource = {
     parser: function(document, tempfile, commandOutput,offsets) {
         this.diagnostics.clear()
         this.actions.clear()
-
         const diagnostics: vscode.Diagnostic[] = []
         const result: ILanguageToolJSON[] = JSON.parse(commandOutput)['matches']
-        console.log(result)
+        
         const processDiagnostic = (issue: ILanguageToolJSON, offsets: [number,number,  number , number][]) => {
             // Read temporary file
             let temp_text= fs.readFileSync(tempfile)
@@ -58,9 +57,8 @@ export const LanguageTool: IDiagnosticSource = {
             }
 
             let pos=issue.offset-first_char_pos;
-            console.log(issue.offset,first_char_pos,pos)
+
             // Apply change of coordinates
-            console.log(offsets)
             for (let i =0; i<offsets.length;i++){
                 if (line<offsets[i][0])
                     break 
@@ -69,17 +67,14 @@ export const LanguageTool: IDiagnosticSource = {
                         line+=offsets[i][1]
                     }
                     if (line==offsets[i][0]){
-                        console.log(offsets[i][3]-1,pos,offsets[i][2])
                         if (pos>offsets[i][2]){
                             pos=pos+offsets[i][3]-1 // -size of dummy replacement more exactly
-                            console.log(offsets[i][3]-1)
 
                         }
                     }
                 }
 
             }
-console.log(line,pos,line,pos+issue.length)
             // Build range of action
             const range = new vscode.Range(line,pos,line,pos+issue.length)
             const message = issue.message

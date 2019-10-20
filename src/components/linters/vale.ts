@@ -113,7 +113,6 @@ export const vale: IDiagnosticSource = {
             let line =issue.Line-1
             let pos_1 = issue.Span[0] - 1
             let pos_2 = issue.Span[1]
-            console.log(line,pos_1)
             for (let i =0; i<offsets.length;i++){
                 if (line<offsets[i][0])
                     break 
@@ -125,14 +124,12 @@ export const vale: IDiagnosticSource = {
                         if (pos_1>offsets[i][2]){
                             pos_1=pos_1+offsets[i][3]-1 // -size of dummy replacement more exactly
                             pos_2=pos_2+offsets[i][3]-1 // -size of dummy replacement more exactly
-                            console.log(offsets[i][3]-1)
 
                         }
                     }
                 }
 
             }
-            // console.log(line,pos,issue.Span[1])
 
             const range = new vscode.Range(line, pos_1, line, pos_2)
             const message = issue.Link
