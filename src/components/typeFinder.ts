@@ -184,6 +184,14 @@ export class TypeFinder {
                 lineContents = lineContents.substr(0, position.character + 1)
             }
             lineContents = stripComments(lineContents, '%')
+            // treat inside a comment as text
+            if (lineNo + 1 === position.line && position.character > lineContents.length) {
+                console.log(
+                    `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
+                        lineNo} lines to determine: 𝘁𝗲𝘅𝘁 since it's a comment`
+                )
+                return 'text'
+            }
 
             let tokens: RegExpExecArray[] = []
             let match: RegExpExecArray | null
