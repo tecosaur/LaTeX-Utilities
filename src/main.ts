@@ -11,7 +11,7 @@ import { TikzPictureView } from './components/tikzpreview'
 import { Zotero } from './components/zotero'
 import * as utils from './utils'
 
-import { default as TelemetryReporter } from 'vscode-extension-telemetry'
+import TelemetryReporter from 'vscode-extension-telemetry'
 
 let extension: Extension
 
