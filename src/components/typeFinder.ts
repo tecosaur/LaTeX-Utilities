@@ -9,6 +9,21 @@ interface IEnvInfo {
     }
 }
 
+const DEBUG_CONSOLE_LOG = false
+
+let debuglog: (start: number, lines: number | string, mode: 'text' | 'maths', reason: string) => void
+if (DEBUG_CONSOLE_LOG) {
+    debuglog = function (start, lines, mode, reason) {
+        console.log(
+            `⚪ TypeFinder took ${+new Date() - start}ms and ${lines} lines to determine: ${
+                mode === 'text' ? '𝘁𝗲𝘅𝘁' : '𝗺𝗮𝘁𝗵𝘀'
+            } ${reason}`
+        )
+    }
+} else {
+    debuglog = (_s, _l, _m, _r) => {}
+}
+
 export class TypeFinder {
     private envs: IEnvInfo = {
         '\\(': {
@@ -186,10 +201,7 @@ export class TypeFinder {
             lineContents = stripComments(lineContents, '%')
             // treat inside a comment as text
             if (lineNo + 1 === position.line && position.character > lineContents.length) {
-                console.log(
-                    `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                        lineNo} lines to determine: 𝘁𝗲𝘅𝘁 since it's a comment`
-                )
+                debuglog(start, position.line - lineNo, 'text', "since it's a comment")
                 return 'text'
             }
 
@@ -211,13 +223,7 @@ export class TypeFinder {
                             continue
                         }
                     }
-                    console.log(
-                        `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                            lineNo} lines to determine: ${
-                            lastKnown.mode === 'text' ? '𝘁𝗲𝘅𝘁' : '𝗺𝗮𝘁𝗵𝘀'
-                        } using lastknown (1)`
-                    )
-
+                    debuglog(start, position.line - lineNo, lastKnown.mode, 'using lastknown (1)')
                     return lastKnown.mode
                 } else {
                     continue
@@ -234,11 +240,7 @@ export class TypeFinder {
                 for (let j = lineContents.length - 1; j >= 0; j--) {
                     if (token[1] === '\\text' && token.index === j) {
                         if (curlyBracketDepth > 0) {
-                            console.log(
-                                `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                                    lineNo} lines to determine: ${env.mode === 'text' ? '𝘁𝗲𝘅𝘁' : '𝗺𝗮𝘁𝗵𝘀'} from \\text`
-                            )
-
+                            debuglog(start, position.line - lineNo, env.mode, 'from \\text')
                             return env.mode
                         }
                     }
@@ -251,13 +253,7 @@ export class TypeFinder {
 
                 if (env.type === 'end') {
                     if (env.pair === null) {
-                        console.log(
-                            `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                                lineNo} lines to determine: ${
-                                env.mode === 'text' ? '𝘁𝗲𝘅𝘁' : '𝗺𝗮𝘁𝗵𝘀'
-                            } from env with no pair`
-                        )
-
+                        debuglog(start, position.line - lineNo, env.mode, 'from env with no pair')
                         return env.mode
                     } else {
                         tokenStack.push(token[1])
@@ -266,13 +262,7 @@ export class TypeFinder {
                     (tokenStack.length === 0 || tokenStack[tokenStack.length - 1] !== env.pair) &&
                     token[1] !== '\\text'
                 ) {
-                    console.log(
-                        `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                            lineNo} lines to determine: ${
-                            env.mode === 'text' ? '𝘁𝗲𝘅𝘁' : '𝗺𝗮𝘁𝗵𝘀'
-                        } from unpaired env start token`
-                    )
-
+                    debuglog(start, position.line - lineNo, env.mode, 'from unpaired env token')
                     return env.mode
                 } else if (tokenStack.length > 0 && token[1] !== '\\text') {
                     tokenStack.pop()
@@ -288,22 +278,13 @@ export class TypeFinder {
                             continue
                         }
                     }
-                    console.log(
-                        `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                            lineNo} lines to determine: ${
-                            lastKnown.mode === 'text' ? '𝘁𝗲𝘅𝘁' : '𝗺𝗮𝘁𝗵𝘀'
-                        } using lastknown (2)`
-                    )
-
+                    debuglog(start, position.line - lineNo, lastKnown.mode, 'using lastknown (2)')
                     return lastKnown.mode
                 }
             }
         } while (lineNo >= minLine)
 
-        console.log(
-            `⚪ TypeFinder took ${+new Date() - start}ms and ${position.line -
-                lineNo} lines to determine: 𝘁𝗲𝘅𝘁 by default`
-        )
+        debuglog(start, position.line - lineNo, 'text', 'by default')
         return 'text'
     }
 }
