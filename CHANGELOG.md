@@ -6,6 +6,7 @@
 
 -   TikZ Preview now uses relevant lines prior to the `tikzpicture`
 -   Live snippets now treats comments inside a math environment as "text"
+-   Lots of excess logging with live snippets removed
 
 ## [0.3.3] — 2019-10-19
 

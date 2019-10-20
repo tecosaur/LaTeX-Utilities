@@ -15,6 +15,17 @@ interface ISnippet {
     noPlaceholders?: boolean
 }
 
+const DEBUG_CONSOLE_LOG = false
+
+let debuglog: (icon: string, start: number, action: string) => void
+if (DEBUG_CONSOLE_LOG) {
+    debuglog = function (icon, start, action) {
+        console.log(`${icon} Watcher took ${+new Date() - start}ms ${action}`)
+    }
+} else {
+    debuglog = (_i, _s, _a) => {}
+}
+
 export class CompletionWatcher {
     extension: Extension
     typeFinder: TypeFinder
@@ -115,7 +126,7 @@ export class CompletionWatcher {
                 }
             }
         }
-        console.log(`🔵 Watcher took ${+new Date() - start}ms to check for snippets`)
+        debuglog('🔵', start, 'to check for snippets')
     }
 
     private sameChanges(changes: vscode.TextDocumentChangeEvent) {
@@ -198,9 +209,7 @@ export class CompletionWatcher {
                                     )
                                 }
                                 this.currentlyExecutingChange = false
-                                console.log(
-                                    ` ▹ Watcher took ${+new Date() - changeStart}ms to perform text replacement`
-                                )
+                                debuglog(' ▹', changeStart, 'to perform text replacement')
                                 resolve(offset)
                             })
                     } else {
@@ -224,9 +233,7 @@ export class CompletionWatcher {
                                         .then(
                                             () => {
                                                 this.currentlyExecutingChange = false
-                                                console.log(
-                                                    ` ▹ Watcher took ${+new Date() - changeStart}ms to insert snippet`
-                                                )
+                                                debuglog(' ▹', changeStart, 'to insert snippet')
                                                 resolve(replacement.length - match[0].length)
                                             },
                                             (reason: any) => {
