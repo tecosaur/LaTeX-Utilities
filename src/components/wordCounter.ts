@@ -119,6 +119,7 @@ export class WordCounter {
         if (reMatch !== null) {
             const {
                 groups: {
+                    /* eslint-disable @typescript-eslint/ban-ts-ignore */
                     // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
                     wordsBody,
                     // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
@@ -133,6 +134,7 @@ export class WordCounter {
                     mathInline,
                     // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
                     mathDisplayed
+                    /* eslint-enable @typescript-eslint/ban-ts-ignore */
                 }
             } = reMatch
 
