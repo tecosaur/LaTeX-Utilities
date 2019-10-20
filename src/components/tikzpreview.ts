@@ -140,14 +140,16 @@ export class TikzPictureView {
         let startLocation: vscode.Position | null = null
         if (change.range.start.line <= tikzPicture.range.start.line) {
             const startLine = document.lineAt(tikzPicture.range.start.line)
-            const tikzPictureStartIndex = stripComments(startLine.text, '%').indexOf('\\begin{tikzpicture}')
+            const tikzPictureStartIndex = stripComments(startLine.text, '%').search(
+                /\\begin{(?:tikzpicture|\w*tikz\w*)}/
+            )
             if (tikzPictureStartIndex !== -1) {
                 startLocation = tikzPicture.range.start.translate(
                     0,
                     tikzPictureStartIndex - tikzPicture.range.start.character
                 )
             } else {
-                const startRegex = /\\begin{tikzpicture}/
+                const startRegex = /\\begin{(?:tikzpicture|\w*tikz\w*)}/
                 let startMatch: RegExpMatchArray | null = null
                 let lineNo = change.range.start.line - 1
                 do {
@@ -163,7 +165,7 @@ export class TikzPictureView {
         let endLocation: vscode.Position | null = null
         if (change.range.end.line >= tikzPicture.range.end.line) {
             // things can be a bit funny so we'll just look for the matchin \end{tikzpicture}
-            const endRegex = /\\end{tikzpicture}/
+            const endRegex = /\\end{(?:tikzpicture|\w*tikz\w*)}/
             let endMatch: RegExpMatchArray | null = null
             let lineNo = tikzPicture.range.start.line - 1
             do {
@@ -295,7 +297,7 @@ export class TikzPictureView {
         if (!configuration.get('parseTeXFile') as boolean) {
             return commandsString
         }
-        const regex = /(\\usepackage(?:\[[^\]]*\])?{(?:tikz|pgfplots|xcolor)}|\\(?:tikzset|pgfplotsset){(?:[^{}]+|{(?:[^{}]+|{(?:[^{}]+|{[^{}]+})+})+})+}|\\(?:usetikzlibrary|usepgfplotslibrary){[^}]+}|\\definecolor{[^}]+}{[^}]+}{[^}]+}|\\colorlet{[^}]+}{[^}]+})/gm
+        const regex = /(\\usepackage(?:\[[^\]]*\])?{(?:\w*tikz\w*|pgfplots|xcolor)}|\\(?:tikzset|pgfplotsset){(?:[^{}]+|{(?:[^{}]+|{(?:[^{}]+|{[^{}]+})+})+})+}|\\(?:usetikzlibrary|usepgfplotslibrary){[^}]+}|\\definecolor{[^}]+}{[^}]+}{[^}]+}|\\colorlet{[^}]+}{[^}]+})/gm
         const commands: string[] = []
 
         let content = await fs.readFileSync(fileTikzCollection.texFileLocation, { encoding: 'utf8' })

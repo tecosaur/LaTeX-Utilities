@@ -29,8 +29,8 @@ interface TikzPictureMatch {
 
 function findTikzPictures(document: vscode.TextDocument) {
     const matches: TikzPictureMatch[] = []
-    const startRegex = /\\begin{tikzpicture}/
-    const endRegex = /\\end{tikzpicture}/
+    const startRegex = /\\begin{(?:tikzpicture|\w*tikz\w*)}/
+    const endRegex = /\\end{(?:tikzpicture|\w*tikz\w*)}/
     for (let i = 0; i < document.lineCount; i++) {
         let line = document.lineAt(i)
         let text = stripComments(line.text, '%')

@@ -5,6 +5,7 @@
 ### Improved
 
 -   TikZ Preview now uses relevant lines prior to the `tikzpicture`
+-   Make TikZ Preview work with any environment which matches `\w*tikz\w*`
 -   Live snippets now treats comments inside a math environment as "text"
 -   Lots of excess logging with live snippets removed
 
@@ -111,6 +112,7 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.3...HEAD
 [0.3.3]: https://github.com/tecosaur/latex-utilities/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/tecosaur/latex-utilities/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/tecosaur/latex-utilities/compare/v0.3.0...v0.3.1
