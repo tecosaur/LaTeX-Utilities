@@ -83,6 +83,7 @@ export class TikzPictureView {
             return
         }
 
+        tikzFileCollection.lastChange = +new Date()
         this.checkPreamble(tikzFileCollection)
 
         const tikzPictures: IFileTikzPicture[] = tikzFileCollection.tikzPictures

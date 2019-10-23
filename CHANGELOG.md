@@ -10,6 +10,10 @@
 -   Lots of excess logging with live snippets removed
 -   Minor tweaks to live snippets
 
+### Fixed
+
+-   TikZ Preview delay was dodgy, now fixed
+
 ## [0.3.3] — 2019-10-19
 
 ### Added
