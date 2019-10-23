@@ -84,12 +84,12 @@ export class TikzPictureView {
             return
         }
 
+        tikzFileCollection.lastChange = +new Date()
+
         if (+new Date() - tikzFileCollection.lastChange > (tikzConfig.get('timeout') as number)) {
-            tikzFileCollection.lastChange = +new Date()
             return
         }
 
-        tikzFileCollection.lastChange = +new Date()
         this.checkPreamble(tikzFileCollection)
 
         const tikzPictures: IFileTikzPicture[] = tikzFileCollection.tikzPictures
