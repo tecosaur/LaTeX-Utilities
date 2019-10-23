@@ -99,7 +99,7 @@ export const vale: IDiagnosticSource = {
             { undoStopBefore: true, undoStopAfter: true }
         )
     },
-    parser: function(document, tempfile, commandOutput,offsets) {
+    parser: function(document, tempfile, commandOutput, offsets) {
         this.diagnostics.clear()
         this.actions.clear()
 
@@ -110,25 +110,22 @@ export const vale: IDiagnosticSource = {
         const processDiagnostic = (issue: IValeJSON) => {
             // vale prints one-based locations but code wants zero-based, so adjust
             // accordingly
-            let line =issue.Line-1
+            let line = issue.Line - 1
             let pos_1 = issue.Span[0] - 1
             let pos_2 = issue.Span[1]
-            for (let i =0; i<offsets.length;i++){
-                if (line<offsets[i][0])
-                    break 
+            for (let i = 0; i < offsets.length; i++) {
+                if (line < offsets[i][0]) break
                 else {
-                    if (line>offsets[i][0]){
-                        line+=offsets[i][1]
+                    if (line > offsets[i][0]) {
+                        line += offsets[i][1]
                     }
-                    if (line==offsets[i][0]){
-                        if (pos_1>offsets[i][2]){
-                            pos_1=pos_1+offsets[i][3]-1 // -size of dummy replacement more exactly
-                            pos_2=pos_2+offsets[i][3]-1 // -size of dummy replacement more exactly
-
+                    if (line == offsets[i][0]) {
+                        if (pos_1 > offsets[i][2]) {
+                            pos_1 = pos_1 + offsets[i][3] - 1 // -size of dummy replacement more exactly
+                            pos_2 = pos_2 + offsets[i][3] - 1 // -size of dummy replacement more exactly
                         }
                     }
                 }
-
             }
 
             const range = new vscode.Range(line, pos_1, line, pos_2)

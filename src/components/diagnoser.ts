@@ -8,10 +8,14 @@ import { tmpdir } from 'os'
 import { vale } from './linters/vale'
 import { LanguageTool } from './linters/languagetool'
 
-
 export interface IDiagnosticSource {
     command: (fileName: string, extraArguments?: string[]) => string[]
-    parser: (file: vscode.TextDocument, temp_file: string, commandOutput: string, offsets: [number, number,  number , number][]) => void
+    parser: (
+        file: vscode.TextDocument,
+        temp_file: string,
+        commandOutput: string,
+        offsets: [number, number, number, number][]
+    ) => void
     codeAction: (document: vscode.TextDocument, range: vscode.Range, source: string, message: string) => void
     diagnostics: vscode.DiagnosticCollection
     actions: Map<vscode.Range, vscode.CodeAction>
@@ -22,18 +26,27 @@ export interface IDiagnosticSource {
 export class Diagnoser {
     extension: Extension
     diagnosticSources: { [name: string]: IDiagnosticSource } = { vale: vale, LanguageTool: LanguageTool }
-    enabledLinters = vscode.workspace.getConfiguration('latex-utilities.linter').get("providers") as string[]
-    
+    enabledLinters: string[]
+    lintersArgs: { [name: string]: string[] }
+
     private TEMPFOLDER_NAME = 'vscode-latexworkshop'
-    private tempfile = ""
+    private tempfile = ''
     private initalised = false
     // Position of replace : [Line number,number of deleted lines, position of first replaced character in the line, length of replacement]
-    private offsets: [number,number,  number , number][] = []
-
-    
+    private offsets: [number, number, number, number][] = []
 
     constructor(extension: Extension) {
         this.extension = extension
+        // not calling updateConfig() because that doesn't make tslint happy
+        const linterConfig = vscode.workspace.getConfiguration('latex-utilities.linter')
+        this.enabledLinters = linterConfig.get('providers') as string[]
+        this.lintersArgs = linterConfig.get('arguments') as { [name: string]: string[] }
+    }
+
+    private updateConfig() {
+        const linterConfig = vscode.workspace.getConfiguration('latex-utilities.linter')
+        this.enabledLinters = linterConfig.get('providers') as string[]
+        this.lintersArgs = linterConfig.get('arguments') as { [name: string]: string[] }
     }
 
     public async lintDocument(document: vscode.TextDocument) {
@@ -44,14 +57,15 @@ export class Diagnoser {
             }
             this.initalised = true
         }
-        this.offsets=[]
+        this.offsets = []
         this.latexToPlaintext(document)
 
         for (const linterName of this.enabledLinters) {
             console.log(linterName)
             const linter = this.diagnosticSources[linterName]
-            
-            const command = linter.command(this.tempfile)
+
+            const extraArgs = linterName in this.lintersArgs ? this.lintersArgs[linterName] : []
+            const command = linter.command(this.tempfile, extraArgs)
             if (linter.currentProcess === undefined) {
                 this.extension.logger.addLogMessage(`Running ${linterName} on ${document.fileName}`)
             } else {
@@ -81,62 +95,72 @@ export class Diagnoser {
                 )
             })
         }
+
+        this.updateConfig()
     }
 
     private latexToPlaintext(document: vscode.TextDocument) {
         // Copy
         var str = document.getText()
 
-
         // Get position
-        var list_regex = [/\\\(.*?\\\)/g, /\$.*?\$/g, /\\cref\{.*?\}/g,/\\begin{(.*?)}.*?\\end{\1}/sg]
-        
-        for (let i =0; i<list_regex.length;i++){
-            let regex=list_regex[i]
-            var result;
+        var list_regex = [/\\\(.*?\\\)/g, /\$.*?\$/g, /\\cref\{.*?\}/g, /\\begin{(.*?)}.*?\\end{\1}/gs]
+
+        for (let i = 0; i < list_regex.length; i++) {
+            let regex = list_regex[i]
+            var result
 
             // Replace by matchAll...
-            while ( (result = regex.exec(document.getText())) ) {
-
+            while ((result = regex.exec(document.getText()))) {
                 // Get line
-                let line =(document.getText().substr(0,result.index).match(/\n/g) || []).length;   
+                let line = (
+                    document
+                        .getText()
+                        .substr(0, result.index)
+                        .match(/\n/g) || []
+                ).length
 
                 // Get first character of the line
-                let first_char_pos=document.getText().substr(0,result.index).lastIndexOf('\n');
-                if (first_char_pos==-1){
-                    first_char_pos=0;
-                }
-                else {
-                    first_char_pos+=1;
+                let first_char_pos = document
+                    .getText()
+                    .substr(0, result.index)
+                    .lastIndexOf('\n')
+                if (first_char_pos == -1) {
+                    first_char_pos = 0
+                } else {
+                    first_char_pos += 1
                 }
 
                 // Get number of deleted lines
-                let nb_deleted_lines =(document.getText().substr(first_char_pos,regex.lastIndex-first_char_pos).match(/\n/g) || []).length;
+                let nb_deleted_lines = (
+                    document
+                        .getText()
+                        .substr(first_char_pos, regex.lastIndex - first_char_pos)
+                        .match(/\n/g) || []
+                ).length
 
                 // Save
-                this.offsets.push([line,nb_deleted_lines,result.index-first_char_pos,regex.lastIndex-result.index]);
-
+                this.offsets.push([
+                    line,
+                    nb_deleted_lines,
+                    result.index - first_char_pos,
+                    regex.lastIndex - result.index
+                ])
             }
 
-            str=str.replace(regex,'X')
-            
+            str = str.replace(regex, 'X')
         }
 
         // Sort by increasing number of lines, and increasing position of the first replaced character
-        this.offsets.sort((a, b)=>{
-            if (a[0]==b[0])
-                return a[2]-b[2]
-            else
-                return a[0]-b[0]
+        this.offsets.sort((a, b) => {
+            if (a[0] == b[0]) return a[2] - b[2]
+            else return a[0] - b[0]
         })
 
         // Save temporary file
         this.tempfile = path.join(tmpdir(), this.TEMPFOLDER_NAME, `diagnoser-${path.basename(document.uri.fsPath)}`)
 
         fs.writeFileSync(this.tempfile, str)
-
-        
-
     }
     // private translatePlaintextPosition(linter: IDiagnosticSource) {
     //     linter.actions.forEach(
@@ -147,7 +171,6 @@ export class Diagnoser {
     //             }
     //         }
     //     );
-
 
     // }
 

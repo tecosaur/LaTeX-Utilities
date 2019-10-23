@@ -124,17 +124,15 @@
                 "latex-utilities.linter.providers": {
                     "type": "array",
                     "default": [],
-                    "markdownDescription": "Providers used to lint TeX documents. Possible values: vale, LanguageTool"
+                    "markdownDescription": "Providers used to lint TeX documents. Currently supported: vale, LanguageTool"
                 },
-                "latex-utilities.linter.vale": {
-                    "type": "array",
-                    "default": [],
-                    "markdownDescription": "Arguments for vale."
-                },
-                "latex-utilities.linter.LanguageTool": {
-                    "type": "array",
-                    "default": [],
-                    "markdownDescription": "Arguments for LanguageTool."
+                "latex-utilities.linter.arguments": {
+                    "type": "object",
+                    "default": {
+                        "vale": [],
+                        "languageTool": []
+                    },
+                    "markdownDescription": "Command lines arguments to be passed to linters. Use the form `{\"toolName\": [\"arg1\", \"arg2\", ...]}`"
                 },
                 "latex-utilities.tikzpreview.enabled": {
                     "type": "boolean",
