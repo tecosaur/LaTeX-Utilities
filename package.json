@@ -171,8 +171,13 @@
                 },
                 "latex-utilities.tikzpreview.delay": {
                     "type": "number",
-                    "default": 100,
+                    "default": 500,
                     "markdownDescription": "Defines the delay in milliseconds to wait after typing stops. Set to 0 to disable."
+                },
+                "latex-utilities.tikzpreview.timeout": {
+                    "type": "number",
+                    "default": 2000,
+                    "markdownDescription": "The first change made after this many milliseconds is ignored."
                 },
                 "latex-utilities.texdef.enabled": {
                     "type": "boolean",

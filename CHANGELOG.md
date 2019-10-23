@@ -2,6 +2,10 @@
 
 ## [Unreleased] — 2019-10-20
 
+### Added
+
+-   TikZ Preview `timeout` setting, to ignore the first change made after a certain period
+
 ### Improved
 
 -   TikZ Preview now uses relevant lines prior to the `tikzpicture`

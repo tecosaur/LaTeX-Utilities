@@ -70,7 +70,8 @@ export class TikzPictureView {
     ) {
         const tikzFileCollection = this.tikzCollections[document.uri.fsPath]
 
-        const changeDelay = vscode.workspace.getConfiguration('latex-utilities.tikzpreview').get('delay') as number
+        const tikzConfig = vscode.workspace.getConfiguration('latex-utilities.tikzpreview')
+        const changeDelay = tikzConfig.get('delay') as number
         if (changeDelay === 0 || tikzFileCollection === undefined) {
             return
         } else if (+new Date() - tikzFileCollection.lastChange < changeDelay) {
@@ -80,6 +81,11 @@ export class TikzPictureView {
                     this.onFileChange(document, changes, true)
                 }, changeDelay)
             }
+            return
+        }
+
+        if (+new Date() - tikzFileCollection.lastChange > (tikzConfig.get('timeout') as number)) {
+            tikzFileCollection.lastChange = +new Date()
             return
         }
 
