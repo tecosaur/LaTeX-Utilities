@@ -141,7 +141,7 @@
     {
         "prefix": "==$",
         "body": "&= ",
-        "mode": "≠",
+        "mode": "maths",
         "description": "aligned equal",
         "priority": 1,
         "triggerWhenComplete": true
