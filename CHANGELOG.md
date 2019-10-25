@@ -16,7 +16,8 @@
 
 ### Fixed
 
--   TikZ Preview delay was dodgy, now fixed
+-   TikZ Preview delay was dodgy
+-   TeX Count 'results' line was incorrectly isolated
 
 ## [0.3.3] — 2019-10-19
 

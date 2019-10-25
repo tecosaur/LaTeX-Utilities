@@ -85,8 +85,9 @@ export class WordCounter {
                 } else {
                     // just get the last line, ignoring errors
                     stdout = stdout
-                        .replace(/\n\(errors:\d+\)\n$/, '')
+                        .replace(/\(errors:\d+\)/, '')
                         .split('\n')
+                        .filter(l => l !== '')
                         .slice(-1)[0]
                     this.extension.logger.addLogMessage(`TeXCount output: ${stdout}`)
                     resolve(this.parseTexCount(stdout))
