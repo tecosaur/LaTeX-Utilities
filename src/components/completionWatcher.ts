@@ -79,6 +79,10 @@ export class CompletionWatcher {
             }
             if (snippet.mode === undefined) {
                 snippet.mode = 'any'
+            } else if (!/^maths|text|any$/.test(snippet.mode)) {
+                this.extension.logger.addLogMessage(
+                    `Invalid mode (${snippet.mode}) for live snippet "${snippet.description}"`
+                )
             }
         }
         this.snippets.sort((a, b) => {
