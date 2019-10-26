@@ -222,7 +222,7 @@
         "@types/glob": "^7.1.1",
         "@types/got": "^9.6.7",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^12.11.1",
+        "@types/node": "^12.11.7",
         "@types/vscode": "^1.36.0",
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
