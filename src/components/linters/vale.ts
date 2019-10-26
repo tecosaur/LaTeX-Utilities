@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { IDiagnosticSource } from '../diagnoser'
+import { start } from 'repl'
 
 interface IValeJSON {
     readonly Check: string
@@ -99,7 +100,7 @@ export const vale: IDiagnosticSource = {
             { undoStopBefore: true, undoStopAfter: true }
         )
     },
-    parser: function(document, tempfile, commandOutput, offsets) {
+    parser: function(document, tempfile, commandOutput,changes) {
         this.diagnostics.clear()
         this.actions.clear()
 
@@ -110,25 +111,30 @@ export const vale: IDiagnosticSource = {
         const processDiagnostic = (issue: IValeJSON) => {
             // vale prints one-based locations but code wants zero-based, so adjust
             // accordingly
-            let line = issue.Line - 1
-            let pos_1 = issue.Span[0] - 1
-            let pos_2 = issue.Span[1]
-            for (let i = 0; i < offsets.length; i++) {
-                if (line < offsets[i][0]) break
-                else {
-                    if (line > offsets[i][0]) {
-                        line += offsets[i][1]
-                    }
-                    if (line == offsets[i][0]) {
-                        if (pos_1 > offsets[i][2]) {
-                            pos_1 = pos_1 + offsets[i][3] - 1 // -size of dummy replacement more exactly
-                            pos_2 = pos_2 + offsets[i][3] - 1 // -size of dummy replacement more exactly
-                        }
-                    }
+            // let range = new vscode.Range(issue.Line - 1, issue.Span[0] - 1, issue.Line - 1, issue.Span[1])
+            let start_position= new vscode.Position(issue.Line - 1, issue.Span[0] - 1);
+            let end_position= new vscode.Position(issue.Line - 1, issue.Span[1]);
+            for (let i =0; i<changes.length;i++){
+                if (end_position.isBefore(changes[i].start)){
+                    break
                 }
-            }
+                else {
+                    let lineDelta = changes[i].end.line-changes[i].start.line
+                    let characterDelta = 0
 
-            const range = new vscode.Range(line, pos_1, line, pos_2)
+                    if (start_position.line+lineDelta==changes[i].end.line && start_position.line>changes[i].start.line){
+                        characterDelta=changes[i].end.character+1;
+                    }
+
+                    if (start_position.line+lineDelta==changes[i].end.line && start_position.line+lineDelta==changes[i].start.line){
+                        characterDelta=changes[i].end.character-changes[i].start.character+1-1; // minus size of dummy 
+                    }
+                    start_position=start_position.translate(lineDelta,characterDelta);
+                    end_position=end_position.translate(lineDelta,characterDelta);         
+                }
+            
+            }
+            const range = new vscode.Range(start_position,end_position)
             const message = issue.Link
                 ? `${issue.Message} (${issue.Check}, see ${issue.Link})`
                 : `${issue.Message} (${issue.Check})`

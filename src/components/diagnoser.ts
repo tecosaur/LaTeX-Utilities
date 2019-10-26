@@ -14,7 +14,7 @@ export interface IDiagnosticSource {
         file: vscode.TextDocument,
         temp_file: string,
         commandOutput: string,
-        offsets: [number, number, number, number][]
+        changes: vscode.Range[]
     ) => void
     codeAction: (document: vscode.TextDocument, range: vscode.Range, source: string, message: string) => void
     diagnostics: vscode.DiagnosticCollection
@@ -32,8 +32,7 @@ export class Diagnoser {
     private TEMPFOLDER_NAME = 'vscode-latexworkshop'
     private tempfile = ''
     private initalised = false
-    // Position of replace : [Line number,number of deleted lines, position of first replaced character in the line, length of replacement]
-    private offsets: [number, number, number, number][] = []
+    private changes: vscode.Range[]=[]
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -57,7 +56,7 @@ export class Diagnoser {
             }
             this.initalised = true
         }
-        this.offsets = []
+        this.changes=[]
         this.latexToPlaintext(document)
 
         for (const linterName of this.enabledLinters) {
@@ -87,7 +86,7 @@ export class Diagnoser {
                     linter.currentProcess.kill()
                 }
                 linter.currentProcess = undefined
-                linter.parser(document, this.tempfile, output, this.offsets)
+                linter.parser(document, this.tempfile, output,this.changes)
             })
             linter.currentProcess.stdout.on('exit', (exitCode: number, _signal: string) => {
                 this.extension.logger.addLogMessage(
@@ -111,56 +110,29 @@ export class Diagnoser {
             var result
 
             // Replace by matchAll...
-            while ((result = regex.exec(document.getText()))) {
-                // Get line
-                let line = (
-                    document
-                        .getText()
-                        .substr(0, result.index)
-                        .match(/\n/g) || []
-                ).length
-
-                // Get first character of the line
-                let first_char_pos = document
-                    .getText()
-                    .substr(0, result.index)
-                    .lastIndexOf('\n')
-                if (first_char_pos == -1) {
-                    first_char_pos = 0
-                } else {
-                    first_char_pos += 1
-                }
-
-                // Get number of deleted lines
-                let nb_deleted_lines = (
-                    document
-                        .getText()
-                        .substr(first_char_pos, regex.lastIndex - first_char_pos)
-                        .match(/\n/g) || []
-                ).length
-
+            while ( (result = regex.exec(document.getText())) ) {
                 // Save
-                this.offsets.push([
-                    line,
-                    nb_deleted_lines,
-                    result.index - first_char_pos,
-                    regex.lastIndex - result.index
-                ])
-            }
+                this.changes.push(new vscode.Range(document.positionAt(result.index),document.positionAt(regex.lastIndex-1)))
 
-            str = str.replace(regex, 'X')
+            }
+            str=str.replace(regex,'X')
+            
         }
 
         // Sort by increasing number of lines, and increasing position of the first replaced character
-        this.offsets.sort((a, b) => {
-            if (a[0] == b[0]) return a[2] - b[2]
-            else return a[0] - b[0]
+        this.changes.sort((a, b)=>{
+            if (a.start.line==b.start.line)
+                return a.start.character-b.start.character
+            else
+                return a.start.line-b.start.line
         })
 
         // Save temporary file
         this.tempfile = path.join(tmpdir(), this.TEMPFOLDER_NAME, `diagnoser-${path.basename(document.uri.fsPath)}`)
-
         fs.writeFileSync(this.tempfile, str)
+
+        
+
     }
     // private translatePlaintextPosition(linter: IDiagnosticSource) {
     //     linter.actions.forEach(
