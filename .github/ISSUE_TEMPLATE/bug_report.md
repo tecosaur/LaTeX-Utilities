@@ -13,9 +13,9 @@ Following contents are required for a successful issue. Not providing necessary 
 
 ## Bug Report
 
-### Disable all the other extensions except for LaTeX Workshop and LaTeX Utilities, and check that you still see this issue.
+#### Disable all the other extensions except for LaTeX Workshop and LaTeX Utilities, and check that you still see this issue.
 
-You still see this issue?: Yes/No
+You still see this issue?: **Yes/No**
 
 ### Describe the bug
 
@@ -73,9 +73,9 @@ If applicable, add screenshots to help explain your problem.
 
 ### Desktop
 
--   OS: [e.g. Windows 10]
--   VS Code version: [e.g. 1.20.0]
--   Extension version: [e.g. 5.0.0]
+-   OS: Windows 10 / MacOS / Linux
+-   VS Code version: X.Y.Z
+-   Extension version: X.Y.Z
 
 ### Additional context
 
