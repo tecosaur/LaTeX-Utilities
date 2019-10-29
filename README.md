@@ -1,13 +1,30 @@
-# <img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/icon.png" height="26px"> LaTeX Utilities
+<p align="center"><a href="https://github.com/tecosaur/LaTeX-Utilities" target="_blank" rel="noopener noreferrer"><img width="100" src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/icon.png" alt="LaTeX Utils logo"></a></p>
 
-[![version](https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&)
-[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg)
-[![installs](https://vsmarketplacebadge.apphb.com/installs-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities)
-[![rating](https://vsmarketplacebadge.apphb.com/rating-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983)](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities)
-[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square&color=579983)](https://raw.githubusercontent.com/James-Yu/LaTeX-Workshop/master/LICENSE.txt)
+<p align="center">
 
-<!-- [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/tecosaur/LaTeX-Utilities.svg)](https://github.com/tecosaur/LaTeX-Utilities/issues)
-[![Percentage of issues still open](https://isitmaintained.com/badge/open/tecosaur/LaTeX-Utilities.svg)](https://github.com/tecosaur/LaTeX-Utilities/issues) -->
+<a href="https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&">
+<img alt="version" src="https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2"/></a>
+<a href="https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg">
+<img alt="downloads" src="https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities">
+<img alt="installs" src="https://vsmarketplacebadge.apphb.com/installs-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities">
+<img alt="rating" src="https://vsmarketplacebadge.apphb.com/rating-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
+
+<br/>
+
+<a href="https://www.codefactor.io/repository/github/tecosaur/latex-utilities">
+<img src="https://www.codefactor.io/repository/github/tecosaur/latex-utilities/badge?style=flat-square&color=579983" alt="CodeFactor"/></a>
+<a href="https://github.com/tecosaur/LaTeX-Utilities/issues">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/tecosaur/LaTeX-Utilities?color=579983&style=flat-square"></a>
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/tecosaur/LaTeX-Utilities?color=579983&style=flat-square">
+
+<a href="https://raw.githubusercontent.com/James-Yu/LaTeX-Workshop/master/LICENSE.txt">
+<img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square&color=579983"/></a>
+
+</p>
+
+<h1 align="center">LaTeX Utilities</h1>
 
 An add-on to the vscode extension [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.
 The feature should continue to expand at a gradually decreasing rate.
@@ -60,8 +77,6 @@ The feature should continue to expand at a gradually decreasing rate.
 ---
 
 ## Telemetry
-
-This extension uses telemetry (If your response is best described by 🤢 I understand).
 
 ### Why
 
