@@ -208,7 +208,13 @@
                     "markdownDescription": "Controls how Zotero citations are chosen"
                 }
             }
-        }
+        },
+        "jsonValidation": [
+            {
+                "fileMatch": "latexUtilsLiveSnippets.json",
+                "url": "./resources/liveSnippetSchema.json"
+            }
+        ]
     },
     "extensionDependencies": [
         "james-yu.latex-workshop"

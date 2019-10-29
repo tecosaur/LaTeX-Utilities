@@ -5,6 +5,7 @@
 ### Added
 
 -   TikZ Preview `timeout` setting, to ignore the first change made after a certain period
+-   JSON validation schema for live snippets file
 
 ### Improved
 

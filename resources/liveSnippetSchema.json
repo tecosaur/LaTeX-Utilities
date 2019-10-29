@@ -1,0 +1,65 @@
+{
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "title": "Set of test strings and replacements",
+    "items": {
+        "$id": "#/items",
+        "type": "object",
+        "title": "Completion Item",
+        "required": ["prefix", "body"],
+        "properties": {
+            "prefix": {
+                "$id": "#/items/properties/prefix",
+                "type": "string",
+                "title": "Escaped RegEx test string",
+                "default": "",
+                "examples": ["([A-Za-z}\\)\\]])(\\d)$"],
+                "pattern": "\\$$"
+            },
+            "body": {
+                "$id": "#/items/properties/body",
+                "type": "string",
+                "title": "Replacement text",
+                "description": "Use $1 for regex groups, and $$1 for tabstops",
+                "default": "",
+                "examples": ["$1_$2"]
+            },
+            "mode": {
+                "$id": "#/items/properties/mode",
+                "type": "string",
+                "title": "Specific LaTeX mode. 'any' by default",
+                "enum": ["maths", "text", "any"],
+                "default": "",
+                "examples": ["maths"]
+            },
+            "triggerWhenComplete": {
+                "$id": "#/items/properties/triggerWhenComplete",
+                "type": "boolean",
+                "title": "Insta-complete. Off by default",
+                "default": false,
+                "examples": [true]
+            },
+            "description": {
+                "$id": "#/items/properties/description",
+                "type": "string",
+                "title": "Just a nice description to remember this by",
+                "default": "",
+                "examples": ["auto subscript"]
+            },
+            "priority": {
+                "$id": "#/items/properties/priority",
+                "type": "number",
+                "title": "Higher priority snippets get considered first",
+                "default": 0,
+                "examples": [1]
+            },
+            "noPlaceholders": {
+                "$id": "#/items/properties/noPlaceholders",
+                "type": "boolean",
+                "title": "For rare cases explicitly specify whether the item has placeholders.",
+                "description": "This is intelligently worked out by default"
+            }
+        }
+    }
+}
