@@ -17,7 +17,8 @@
 <img src="https://www.codefactor.io/repository/github/tecosaur/latex-utilities/badge?style=flat-square&color=579983" alt="CodeFactor"/></a>
 <a href="https://github.com/tecosaur/LaTeX-Utilities/issues">
 <img alt="GitHub issues" src="https://img.shields.io/github/issues/tecosaur/LaTeX-Utilities?color=579983&style=flat-square"></a>
-<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/tecosaur/LaTeX-Utilities?color=579983&style=flat-square">
+<a href="https://github.com/tecosaur/LaTeX-Utilities/commits/master">
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/tecosaur/LaTeX-Utilities?color=579983&style=flat-square"></a>
 
 <a href="https://raw.githubusercontent.com/James-Yu/LaTeX-Workshop/master/LICENSE.txt">
 <img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square&color=579983"/></a>
