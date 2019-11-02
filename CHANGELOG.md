@@ -14,6 +14,7 @@
 -   Live snippets now treats comments inside a math environment as "text"
 -   Lots of excess logging with live snippets removed
 -   More tweaks to live snippets
+-   Make formatted paste line shaping account for current column
 
 ### Fixed
 

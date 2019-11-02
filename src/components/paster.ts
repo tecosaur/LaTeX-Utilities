@@ -68,9 +68,12 @@ export class Paster {
         } catch (error) {
             this.pasteNormal(
                 editor,
-                this.reformatText(clipboardContents, true, vscode.workspace
-                    .getConfiguration('latex-utilities.formattedPaste')
-                    .get('maxLineLength') as number)
+                this.reformatText(
+                    clipboardContents,
+                    true,
+                    vscode.workspace.getConfiguration('latex-utilities.formattedPaste').get('maxLineLength') as number,
+                    editor
+                )
             )
             this.extension.telemetryReporter.sendTelemetryEvent('formattedPaste', { type: 'text' })
         }
@@ -250,7 +253,12 @@ export class Paster {
         })
     }
 
-    public reformatText(text: string, removeBonusWhitespace = true, maxLineLength: number | null = null) {
+    public reformatText(
+        text: string,
+        removeBonusWhitespace = true,
+        maxLineLength: number | null = null,
+        editor?: vscode.TextEditor
+    ) {
         function doRemoveBonusWhitespace(str: string) {
             str = str.replace(/\u200B/g, '') // get rid of zero-width spaces
             str = str.replace(/\n{2,}/g, '\uE000') // 'save' multi-newlines to private use character
@@ -261,7 +269,7 @@ export class Paster {
         }
         function fitToLineLength(lineLength: number, str: string, splitChars = [' ', ',', '.', ':', ';', '?', '!']) {
             const lines = []
-            let lastNewlinePosition = 0
+            let lastNewlinePosition = editor ? -editor.selection.start.character : 0
             let lastSplitCharPosition = 0
             let i
             for (i = 0; i < str.length; i++) {
@@ -274,7 +282,7 @@ export class Paster {
                 if (i - lastNewlinePosition > lineLength) {
                     lines.push(
                         str
-                            .slice(lastNewlinePosition, lastSplitCharPosition)
+                            .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
                             .replace(/^ /, '')
                             .replace(/\s+$/, '')
                     )
@@ -308,7 +316,7 @@ export class Paster {
             '%': '\\%',
             '\\$': '\\$',
             '#': '\\#',
-            _: '\\_',
+            '_': '\\_',
             '\\^': '\\textasciicircum ',
             '{': '\\{',
             '}': '\\}',
