@@ -3,7 +3,7 @@
     "displayName": "LaTeX Utilities",
     "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
     "icon": "icon.png",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "publisher": "tecosaur",
     "license": "MIT",
     "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
