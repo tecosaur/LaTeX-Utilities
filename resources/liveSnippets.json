@@ -225,10 +225,10 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(^|[^\\\\])(exp|sin|cos|tan|cot|csc|sec)$",
+        "prefix": "(^|[^\\\\])(sin|cos|tan|cot|csc|sec|min|max|log|exp)$",
         "body": "$1\\$2 ",
         "mode": "maths",
-        "description": "operator",
+        "description": "un-backslashed operator",
         "triggerWhenComplete": true
     },
     {
