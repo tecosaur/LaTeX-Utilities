@@ -13,7 +13,7 @@
                 "$id": "#/items/properties/prefix",
                 "type": "string",
                 "title": "Escaped RegEx test string",
-                "default": "",
+                "default": "$",
                 "examples": ["([A-Za-z}\\)\\]])(\\d)$"],
                 "pattern": "\\$$"
             },
@@ -30,7 +30,7 @@
                 "type": "string",
                 "title": "Specific LaTeX mode. 'any' by default",
                 "enum": ["maths", "text", "any"],
-                "default": "",
+                "default": "any",
                 "examples": ["maths"]
             },
             "triggerWhenComplete": {

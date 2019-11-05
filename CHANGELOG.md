@@ -7,6 +7,10 @@
 -   Command to reset user live snippets file
 -   Command to compare user live snippets file to default
 
+### Improved
+
+-   Tweak default live snippets (yet again, again)
+
 ## [0.3.4] — 2019-11-02
 
 ### Added

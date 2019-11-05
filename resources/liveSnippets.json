@@ -246,21 +246,21 @@
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(\\\\?[\\w\\^{}]{1,7})~ $",
+        "prefix": "(\\\\?[\\w\\^]{1,7})~ $",
         "body": "\\tilde{$1}",
         "mode": "maths",
         "description": "tilde",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(\\\\?[\\w\\^{}]{1,7})\\. $",
+        "prefix": "(\\\\?[\\w\\^]{1,7})\\. $",
         "body": "\\dot{$1}",
         "mode": "maths",
         "description": "dot",
         "triggerWhenComplete": true
     },
     {
-        "prefix": "(\\\\?[\\w\\^{}]{1,7})\\.\\. $",
+        "prefix": "(\\\\?[\\w\\^]{1,7})\\.\\. $",
         "body": "\\ddot{$1}",
         "mode": "maths",
         "description": "ddot",
