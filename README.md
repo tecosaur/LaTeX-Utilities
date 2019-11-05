@@ -30,6 +30,12 @@
 An add-on to the vscode extension [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.
 The feature should continue to expand at a gradually decreasing rate.
 
+Got an idea? Make a PR!
+<a href="https://gitpod.io/#https://github.com/tecosaur/LaTeX-Utilities">
+<img align="right" width="100" alt="Open in Gitpod" src="https://gitpod.io/button/open-in-gitpod.svg"/></a>
+
+<hr/>
+
 ## Features
 
 -   Formatted Pastes
