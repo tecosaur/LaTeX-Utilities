@@ -33,7 +33,17 @@
         "commands": [
             {
                 "command": "latex-utilities.editLiveSnippetsFile",
-                "title": "Edit Live Snippets File",
+                "title": "Edit Live Snippets file",
+                "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.resetLiveSnippetsFile",
+                "title": "Reset Live Snippets file",
+                "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.compareLiveSnippetsFile",
+                "title": "Compare user Live Snippets file to default",
                 "category": "LaTeX Utilities"
             },
             {

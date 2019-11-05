@@ -24,6 +24,12 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
             extension.completionWatcher.editSnippetsFile()
         ),
+        vscode.commands.registerCommand('latex-utilities.resetLiveSnippetsFile', () =>
+            extension.completionWatcher.resetSnippetsFile()
+        ),
+        vscode.commands.registerCommand('latex-utilities.compareLiveSnippetsFile', () =>
+            extension.completionWatcher.compareSnippetsFile()
+        ),
         vscode.commands.registerCommand('latex-utilities.formattedPaste', () => extension.paster.paste()),
         vscode.commands.registerCommand('latex-utilities.countWord', () => extension.wordCounter.count()),
         vscode.commands.registerCommand('latex-utilities.viewtikzpicture', (document, range) =>

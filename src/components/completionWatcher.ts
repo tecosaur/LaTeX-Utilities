@@ -3,7 +3,8 @@ import { Extension } from '../main'
 import { TypeFinder } from './typeFinder'
 import { exec } from 'child_process'
 import * as path from 'path'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, renameSync } from 'fs'
+import { removeSync } from 'fs-extra'
 
 interface ISnippet {
     prefix: RegExp
@@ -280,6 +281,27 @@ export class CompletionWatcher {
         vscode.workspace
             .openTextDocument(vscode.Uri.file(this.snippetFile.user))
             .then(doc => vscode.window.showTextDocument(doc))
+    }
+
+    public resetSnippetsFile() {
+        // retire any current user snippets file
+        if (existsSync(this.snippetFile.user)) {
+            const shiftedFile = this.snippetFile.user.replace(/^\.json$/, '.old.json')
+            if (existsSync(shiftedFile)) {
+                removeSync(shiftedFile)
+            }
+            renameSync(this.snippetFile.user, shiftedFile)
+        }
+        this.snippetFile.current = this.snippetFile.extension
+    }
+
+    public compareSnippetsFile() {
+        return vscode.commands.executeCommand(
+            'vscode.diff',
+            vscode.Uri.file(this.snippetFile.extension),
+            vscode.Uri.file(this.snippetFile.user),
+            'LiveSnippets: Default 🠚 User'
+        )
     }
 
     public loadSnippets(force = false) {
