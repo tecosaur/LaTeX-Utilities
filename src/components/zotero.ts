@@ -18,21 +18,25 @@ export class Zotero {
 
         const options = {
             format: 'biblatex',
-            command: configuration.get('latexCommand'),
+            command: configuration.get('latexCommand')
         }
 
         try {
             const res = await got(`${zoteroUrl}/better-bibtex/cayw`, {
-                query: options,
+                query: options
             })
 
             return res.body
         } catch (error) {
             if (error.code === 'ECONNREFUSED') {
-                this.extension.logger.showErrorMessage('Could not connect to Zotero. Is it running with the Better BibTeX extension installed?')
+                this.extension.logger.showErrorMessage(
+                    'Could not connect to Zotero. Is it running with the Better BibTeX extension installed?'
+                )
             } else {
                 this.extension.logger.addLogMessage(`Cannot insert citation: ${error.message}`)
-                this.extension.logger.showErrorMessage('Cite as you write failed. Please refer to LaTeX Utilities Output for details.')
+                this.extension.logger.showErrorMessage(
+                    'Cite as you write failed. Please refer to LaTeX Utilities Output for details.'
+                )
             }
 
             return null
@@ -55,11 +59,14 @@ export class Zotero {
             json: true
         })
 
-        return [req.then(response => {
-            const results = response.body.result as SearchResult[]
-            this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
-            return results
-        }), req.cancel.bind(req)]
+        return [
+            req.then(response => {
+                const results = response.body.result as SearchResult[]
+                this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
+                return results
+            }),
+            req.cancel.bind(req)
+        ]
     }
 
     // Get a citation from a built-in quick picker
@@ -76,52 +83,62 @@ export class Zotero {
 
                 let cancel: (() => void) | undefined
 
-                disposables.push(input.onDidChangeValue(value => {
-                    if (value) {
-                        input.busy = true
+                disposables.push(
+                    input.onDidChangeValue(value => {
+                        if (value) {
+                            input.busy = true
 
-                        if (cancel) {
-                            cancel()
-                            cancel = undefined
-                        }
+                            if (cancel) {
+                                cancel()
+                                cancel = undefined
+                            }
 
-                        const [r, c] = this.search(value)
-                        cancel = c
-                        r.then(results => {
+                            const [r, c] = this.search(value)
+                            cancel = c
+                            r.then(results => {
                                 input.items = results.map(result => new EntryItem(result))
                             })
-                            .catch(error => {
-                                if (!error.isCanceled) {
-                                    if (error.code === 'ECONNREFUSED') {
-                                        this.extension.logger.showErrorMessage('Could not connect to Zotero. Is it running with the Better BibTeX extension installed?')
-                                    } else {
-                                        this.extension.logger.addLogMessage(`Searching Zotero failed: ${error.message}`)
-                                        input.items = [new ErrorItem(error)]
+                                .catch(error => {
+                                    if (!error.isCanceled) {
+                                        if (error.code === 'ECONNREFUSED') {
+                                            this.extension.logger.showErrorMessage(
+                                                'Could not connect to Zotero. Is it running with the Better BibTeX extension installed?'
+                                            )
+                                        } else {
+                                            this.extension.logger.addLogMessage(
+                                                `Searching Zotero failed: ${error.message}`
+                                            )
+                                            input.items = [new ErrorItem(error)]
+                                        }
                                     }
-                                }
-                            })
-                            .finally(() => {
-                                input.busy = false
-                            })
-                    } else {
-                        input.items = []
-                    }
-                }))
+                                })
+                                .finally(() => {
+                                    input.busy = false
+                                })
+                        } else {
+                            input.items = []
+                        }
+                    })
+                )
 
-                disposables.push(input.onDidAccept(() => {
-                    const items = input.selectedItems.length > 0 ? input.selectedItems : input.activeItems
-                    input.hide()
-                    resolve(items.filter(i => i instanceof EntryItem).map(i => (i as EntryItem).result))
-                }))
+                disposables.push(
+                    input.onDidAccept(() => {
+                        const items = input.selectedItems.length > 0 ? input.selectedItems : input.activeItems
+                        input.hide()
+                        resolve(items.filter(i => i instanceof EntryItem).map(i => (i as EntryItem).result))
+                    })
+                )
 
-                disposables.push(input.onDidHide(() => {
-                    if (cancel) {
-                        cancel()
-                    }
+                disposables.push(
+                    input.onDidHide(() => {
+                        if (cancel) {
+                            cancel()
+                        }
 
-                    resolve([])
-                    input.dispose()
-                }))
+                        resolve([])
+                        input.dispose()
+                    })
+                )
 
                 input.show()
             })
@@ -162,7 +179,7 @@ export class Zotero {
         const configuration = vscode.workspace.getConfiguration('latex-utilities.zotero')
         const citeMethod = configuration.get('citeMethod')
 
-        if (!await this.checkZotero()) {
+        if (!(await this.checkZotero())) {
             return
         }
 
@@ -192,7 +209,7 @@ export class Zotero {
     }
 
     async openCitation() {
-        if (!await this.checkZotero()) {
+        if (!(await this.checkZotero())) {
             return
         }
 
