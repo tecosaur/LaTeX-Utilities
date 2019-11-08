@@ -362,8 +362,12 @@ export class Paster {
             '<-': '\\(\\leftarrow \\)'
         }
 
-        for (const pattern in textReplacements) {
-            text = text.replace(new RegExp(pattern, 'gm'), textReplacements[pattern])
+        const texText = /\\[A-Za-z]{3,15}/
+
+        if (!texText.test(text)) {
+            for (const pattern in textReplacements) {
+                text = text.replace(new RegExp(pattern, 'gm'), textReplacements[pattern])
+            }
         }
 
         if (maxLineLength !== null) {

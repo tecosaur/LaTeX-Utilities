@@ -11,6 +11,7 @@
 
 -   Tweak default live snippets (yet again, again)
 -   Account for indent when formatted-pasting text
+-   Try to avoid plaintext 🡒 LaTeX formatting already LaTeX formatted pastes
 
 ### Fixed
 
