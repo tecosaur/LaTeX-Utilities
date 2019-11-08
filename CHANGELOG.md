@@ -11,6 +11,10 @@
 
 -   Tweak default live snippets (yet again, again)
 
+### Fixed
+
+-   Formatted pasting a single line of text with cursor at non-zero column resulted in text being cut out
+
 ## [0.3.4] — 2019-11-02
 
 ### Added

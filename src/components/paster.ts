@@ -293,7 +293,7 @@ export class Paster {
             if (lastNewlinePosition < i) {
                 lines.push(
                     str
-                        .slice(lastNewlinePosition, i)
+                        .slice(Math.max(0, lastNewlinePosition), i)
                         .replace(/^ /, '')
                         .replace(/\s+$/, '')
                 )
