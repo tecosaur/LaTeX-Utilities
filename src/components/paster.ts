@@ -284,11 +284,13 @@ export class Paster {
                 }
                 if (i - lastNewlinePosition > lineLength - indent.length) {
                     lines.push(
-                        indent +
-                            str
-                                .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
-                                .replace(/^ /, '')
-                                .replace(/\s+$/, '')
+                        lines.length > 0
+                            ? indent
+                            : '' +
+                                  str
+                                      .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
+                                      .replace(/^ /, '')
+                                      .replace(/\s+$/, '')
                     )
                     lastNewlinePosition = lastSplitCharPosition
                     i = lastSplitCharPosition
@@ -296,11 +298,13 @@ export class Paster {
             }
             if (lastNewlinePosition < i) {
                 lines.push(
-                    indent +
-                        str
-                            .slice(Math.max(0, lastNewlinePosition), i)
-                            .replace(/^ /, '')
-                            .replace(/\s+$/, '')
+                    lines.length > 0
+                        ? indent
+                        : '' +
+                              str
+                                  .slice(Math.max(0, lastNewlinePosition), i)
+                                  .replace(/^ /, '')
+                                  .replace(/\s+$/, '')
                 )
             }
             console.log(lines.map(l => lineLength - l.length))
