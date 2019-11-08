@@ -10,6 +10,7 @@
 ### Improved
 
 -   Tweak default live snippets (yet again, again)
+-   Account for indent when formatted-pasting text
 
 ### Fixed
 
