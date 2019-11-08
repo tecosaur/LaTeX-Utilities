@@ -270,7 +270,7 @@ export class Paster {
         function fitToLineLength(lineLength: number, str: string, splitChars = [' ', ',', '.', ':', ';', '?', '!']) {
             const lines = []
             const indent = editor
-                ? editor.document.lineAt(editor.selection.start.line).text.replace(/^(\s+).*/, '$1')
+                ? editor.document.lineAt(editor.selection.start.line).text.replace(/^(\s*).*/, '$1')
                 : ''
             let lastNewlinePosition = editor ? -editor.selection.start.character : 0
             let lastSplitCharPosition = 0
@@ -284,13 +284,11 @@ export class Paster {
                 }
                 if (i - lastNewlinePosition > lineLength - indent.length) {
                     lines.push(
-                        lines.length > 0
-                            ? indent
-                            : '' +
-                                  str
-                                      .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
-                                      .replace(/^ /, '')
-                                      .replace(/\s+$/, '')
+                        (lines.length > 0 ? indent : '') +
+                            str
+                                .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
+                                .replace(/^ /, '')
+                                .replace(/\s+$/, '')
                     )
                     lastNewlinePosition = lastSplitCharPosition
                     i = lastSplitCharPosition
@@ -298,13 +296,11 @@ export class Paster {
             }
             if (lastNewlinePosition < i) {
                 lines.push(
-                    lines.length > 0
-                        ? indent
-                        : '' +
-                              str
-                                  .slice(Math.max(0, lastNewlinePosition), i)
-                                  .replace(/^ /, '')
-                                  .replace(/\s+$/, '')
+                    (lines.length > 0 ? indent : '') +
+                        str
+                            .slice(Math.max(0, lastNewlinePosition), i)
+                            .replace(/^ /, '')
+                            .replace(/\s+$/, '')
                 )
             }
             console.log(lines.map(l => lineLength - l.length))
