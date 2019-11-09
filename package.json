@@ -248,7 +248,7 @@
         "typescript": "^3.6.4"
     },
     "dependencies": {
-        "csv-parser": "^2.3.1",
+        "csv-parser": "^2.3.2",
         "fs-extra": "^8.1.0",
         "got": "^9.6.0",
         "vscode-extension-telemetry": "^0.1.2"
