@@ -239,7 +239,7 @@
         "@types/got": "^9.6.9",
         "@types/mocha": "^5.2.6",
         "@types/node": "^12.12.7",
-        "@types/vscode": "^1.36.0",
+        "@types/vscode": "^1.40.0",
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
         "eslint": "^6.6.0",
