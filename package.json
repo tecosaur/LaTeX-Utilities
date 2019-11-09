@@ -243,7 +243,7 @@
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
         "eslint": "^6.6.0",
-        "glob": "^7.1.5",
+        "glob": "^7.1.6",
         "mocha": "^6.2.2",
         "typescript": "^3.6.4"
     },
