@@ -6,6 +6,7 @@
 
 -   Command to reset user live snippets file
 -   Command to compare user live snippets file to default
+-   Basic support for bulleted lists in formatted paste
 
 ### Improved
 

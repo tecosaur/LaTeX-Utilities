@@ -264,6 +264,9 @@ export class Paster {
             str = str.replace(/\n{2,}/g, '\uE000') // 'save' multi-newlines to private use character
             str = str.replace(/\s+/g, ' ') // replace all whitespace with normal space
             str = str.replace(/\uE000/g, '\n\n') // re-insert multi-newlines
+            str = str.replace(/\uE001/g, '\n') // this has been used as 'saved' whitespace
+            str = str.replace(/\uE002/g, '\t') // this has been used as 'saved' whitespace
+            str = str.replace(/^\s+|\s+$/g, '')
 
             return str
         }
@@ -277,6 +280,13 @@ export class Paster {
             let i
             for (i = 0; i < str.length; i++) {
                 if (str[i] === '\n') {
+                    lines.push(
+                        (lines.length > 0 ? indent : '') +
+                            str
+                                .slice(Math.max(0, lastNewlinePosition), i)
+                                .replace(/^[^\S\t]+/, '')
+                                .replace(/\s+$/, '')
+                    )
                     lastNewlinePosition = i
                 }
                 if (splitChars.indexOf(str[i]) !== -1) {
@@ -287,7 +297,7 @@ export class Paster {
                         (lines.length > 0 ? indent : '') +
                             str
                                 .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
-                                .replace(/^ /, '')
+                                .replace(/^[^\S\t]+/, '')
                                 .replace(/\s+$/, '')
                     )
                     lastNewlinePosition = lastSplitCharPosition
@@ -299,7 +309,7 @@ export class Paster {
                     (lines.length > 0 ? indent : '') +
                         str
                             .slice(Math.max(0, lastNewlinePosition), i)
-                            .replace(/^ /, '')
+                            .replace(/^\s+/, '')
                             .replace(/\s+$/, '')
                 )
             }
@@ -310,10 +320,6 @@ export class Paster {
         // join hyphenated lines
         text = text.replace(/(\w+)-\s?$\s?\n(\w+)/gm, '$1$2\n')
 
-        if (removeBonusWhitespace) {
-            text = doRemoveBonusWhitespace(text)
-        }
-
         const textReplacements: { [key: string]: string } = {
             // escape latex special characters
             '\\\\': '\\textbackslash ',
@@ -321,7 +327,7 @@ export class Paster {
             '%': '\\%',
             '\\$': '\\$',
             '#': '\\#',
-            '_': '\\_',
+            _: '\\_',
             '\\^': '\\textasciicircum ',
             '{': '\\{',
             '}': '\\}',
@@ -337,6 +343,7 @@ export class Paster {
             // unicode symbols
             '—': '---', // em dash
             '–': '--', // en dash
+            ' -- ': ' --- ', // en dash that should be em
             '−': '-', // minus sign
             '…': '\\ldots ', // elipses
             '‐': '-', // hyphen
@@ -350,7 +357,7 @@ export class Paster {
             '÷': '\\(\\div \\)',
             '±': '\\(\\pm \\)',
             '→': '\\(\\to \\)',
-            '°': '\\(^\\circ \\)',
+            '(\\d*)° ?(C|F)?': '\\($1^\\circ $2\\)',
             '≤': '\\(\\leq \\)',
             '≥': '\\(\\geq \\)',
             // typographic approximations
@@ -359,7 +366,16 @@ export class Paster {
             '-{2,3}>': '\\(\\longrightarrow \\)',
             '->': '\\(\\to \\)',
             '<-{2,3}': '\\(\\longleftarrow \\)',
-            '<-': '\\(\\leftarrow \\)'
+            '<-': '\\(\\leftarrow \\)',
+            // more latex stuff
+            '\\b([A-Z]+)\\.\\s([A-Z])': '$1\\@. $2', // sentences that end in a capital letter.
+            '\\b(etc|ie|i\\.e|eg|e\\.g)\\.\\s(\\w)': '$1.\\ $2', // phrases that should have inter-word spacing
+            // some funky unicode symbols that come up here and there
+            '\\s?•\\s?': '\uE001\uE002\\item ',
+            '\\n?((?:\\s*\uE002\\\\item .*)+)': '\uE001\\begin{itemize}\uE001$1\uE001\\end{itemize}\uE001',
+            '': '<',
+            '': '-',
+            '': '>'
         }
 
         const texText = /\\[A-Za-z]{3,15}/
@@ -368,6 +384,10 @@ export class Paster {
             for (const pattern in textReplacements) {
                 text = text.replace(new RegExp(pattern, 'gm'), textReplacements[pattern])
             }
+        }
+
+        if (removeBonusWhitespace) {
+            text = doRemoveBonusWhitespace(text)
         }
 
         if (maxLineLength !== null) {
