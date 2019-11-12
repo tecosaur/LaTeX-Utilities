@@ -131,6 +131,9 @@ export class CompletionWatcher {
                 }
             }
         }
+        this.extension.telemetryReporter.sendTelemetryEvent('liveSnippetTimings', {
+            timeToCheck: (start - +new Date()).toString()
+        })
         debuglog('🔵', start, 'to check for snippets')
     }
 
