@@ -280,9 +280,9 @@ export class Paster {
                     lastNewlinePosition = i
                 }
                 if (splitChars.indexOf(str[i]) !== -1) {
-                    lastSplitCharPosition = i
+                    lastSplitCharPosition = i + 1
                 }
-                if (i - lastNewlinePosition > lineLength - indent.length) {
+                if (i - lastNewlinePosition >= lineLength - indent.length) {
                     lines.push(
                         (lines.length > 0 ? indent : '') +
                             str
