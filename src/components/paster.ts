@@ -117,7 +117,7 @@ export class Paster {
 
         const trimUnwantedWhitespace = (s: string) =>
             s
-                .replace('\r\n', '\n')
+                .replace(/\r\n/g, '\n')
                 .replace(/^[^\S\t]+|[^\S\t]+$/gm, '')
                 .replace(/^[\uFEFF\xA0]+|[\uFEFF\xA0]+$/gm, '')
         content = trimUnwantedWhitespace(content)
