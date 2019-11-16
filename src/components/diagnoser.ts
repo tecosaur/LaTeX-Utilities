@@ -14,7 +14,7 @@ export interface IDiagnosticSource {
         file: vscode.TextDocument,
         temp_file: string,
         commandOutput: string,
-        changes: vscode.Range[]
+        changes: [vscode.Range,number][]
     ) => void
     codeAction: (document: vscode.TextDocument, range: vscode.Range, source: string, message: string) => void
     diagnostics: vscode.DiagnosticCollection
@@ -32,7 +32,7 @@ export class Diagnoser {
     private TEMPFOLDER_NAME = 'vscode-latexworkshop'
     private tempfile = ''
     private initalised = false
-    private changes: vscode.Range[]=[]
+    private changes: [vscode.Range,number][]=[]
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -101,36 +101,91 @@ export class Diagnoser {
     private latexToPlaintext(document: vscode.TextDocument) {
         // Copy
         var str = document.getText()
+        
+        //
+        var list_regex_to_remove  = []
+        var list_regex_to_replace = []
 
-        // Get position
-        var list_regex = [/\\\(.*?\\\)/g, /\$.*?\$/g, /\\cref\{.*?\}/g, /\\begin{(.*?)}.*?\\end{\1}/gs]
+        // Remove preamble
+        list_regex_to_remove.push(/.*\\\\begin{document}/gs)
+        list_regex_to_remove.push(/\\end{document}.*/gs)
 
-        for (let i = 0; i < list_regex.length; i++) {
-            let regex = list_regex[i]
+        // Remove begin/end environment
+        var list_env_to_remove = ["align","align*","equation","equation*","figure","theorem"]
+
+        for (let env of list_env_to_remove){
+
+            // To deal with "*" in input strings
+            let regex_str = "\\\\begin\{"+env.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\}.*?\\\\end\{"+env.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\}"
+            list_regex_to_remove.push(new RegExp(regex_str,"gs"))
+        }
+
+        // Special environments
+        list_regex_to_remove.push(/\\\(.*?\\\)/g)
+        list_regex_to_remove.push(/\$.*?\$/g)
+        
+        // Remove command with their argument
+        var list_cmd_w_args_to_remove = ["cref","ref","cite"]
+
+        for (let cmd of list_cmd_w_args_to_remove){
+
+            // To deal with "*" in input strings
+            let regex_str = "\\\\"+cmd.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\{.*?\}"
+            list_regex_to_remove.push(new RegExp(regex_str,"g"))
+        }
+
+        // Remove command but keep their argument
+        var list_cmd_wo_args_to_remove = ["chapter","section","textbf"]
+
+        for (let cmd of list_cmd_wo_args_to_remove){
+
+            // To deal with "*" in input strings
+            let regex_str = "\\\\"+cmd.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\{(.*?)\}"
+            list_regex_to_replace.push(new RegExp(regex_str,"g"))
+        }
+
+        // Get position of removed content
+        for (let i = 0; i < list_regex_to_remove.length; i++) {
+            let regex = list_regex_to_remove[i]
             var result
 
             // Replace by matchAll...
             while ( (result = regex.exec(document.getText())) ) {
                 // Save
-                this.changes.push(new vscode.Range(document.positionAt(result.index),document.positionAt(regex.lastIndex-1)))
-
+                this.changes.push([new vscode.Range(document.positionAt(result.index),document.positionAt(regex.lastIndex-1)),1])
+                
             }
             str=str.replace(regex,'X')
             
         }
 
+        // Get position of replaced content
+        for (let i = 0; i < list_regex_to_replace.length; i++) {
+            let regex = list_regex_to_replace[i]
+            var result
+
+            // Replace by matchAll...
+            while ( (result = regex.exec(document.getText())) ) {
+                // Save
+                this.changes.push([new vscode.Range(document.positionAt(result.index),document.positionAt(regex.lastIndex-1)),result[1].length])
+                console.log(result)
+            }
+            str=str.replace(regex,"$1")
+            
+        }
+
         // Sort by increasing number of lines, and increasing position of the first replaced character
         this.changes.sort((a, b)=>{
-            if (a.start.line==b.start.line)
-                return a.start.character-b.start.character
+            if (a[0].start.line==b[0].start.line)
+                return a[0].start.character-b[0].start.character
             else
-                return a.start.line-b.start.line
+                return a[0].start.line-b[0].start.line
         })
 
         // Save temporary file
         this.tempfile = path.join(tmpdir(), this.TEMPFOLDER_NAME, `diagnoser-${path.basename(document.uri.fsPath)}`)
         fs.writeFileSync(this.tempfile, str)
-
+        console.log(this.tempfile)
         
 
     }

@@ -114,21 +114,36 @@ export const vale: IDiagnosticSource = {
             // let range = new vscode.Range(issue.Line - 1, issue.Span[0] - 1, issue.Line - 1, issue.Span[1])
             let start_position= new vscode.Position(issue.Line - 1, issue.Span[0] - 1);
             let end_position= new vscode.Position(issue.Line - 1, issue.Span[1]);
+
             for (let i =0; i<changes.length;i++){
-                if (end_position.isBefore(changes[i].start)){
+                if (end_position.isBefore(changes[i][0].start)){
                     break
                 }
                 else {
-                    let lineDelta = changes[i].end.line-changes[i].start.line
+
+                    // Lines to add
+                    let lineDelta = changes[i][0].end.line-changes[i][0].start.line
+
+                    // Characters to add
                     let characterDelta = 0
 
-                    if (start_position.line+lineDelta==changes[i].end.line && start_position.line>changes[i].start.line){
-                        characterDelta=changes[i].end.character+1;
+                    // if change is partially on the same line and before start_position
+                    if (start_position.line+lineDelta==changes[i][0].end.line && start_position.line>changes[i][0].start.line){
+                        characterDelta=changes[i][0].end.character+1;
                     }
 
-                    if (start_position.line+lineDelta==changes[i].end.line && start_position.line+lineDelta==changes[i].start.line){
-                        characterDelta=changes[i].end.character-changes[i].start.character+1-1; // minus size of dummy 
+                    // if change is completely on the same line and before start_position
+                    if (start_position.line+lineDelta==changes[i][0].end.line && start_position.line+lineDelta==changes[i][0].start.line){
+                        characterDelta=changes[i][0].end.character-changes[i][0].start.character+1-changes[i][1]; // minus size of dummy 
                     }
+
+                    // If action is actually related to an argument of a command (a bit hacky)
+                    if (start_position.line==changes[i][0].start.line && start_position.character==changes[i][0].start.character){
+                        characterDelta=changes[i][0].end.character-changes[i][0].start.character+1-changes[i][1]-1; // minus the last bracket for the argument 
+                        
+                    }
+
+                    // Translation
                     start_position=start_position.translate(lineDelta,characterDelta);
                     end_position=end_position.translate(lineDelta,characterDelta);         
                 }
