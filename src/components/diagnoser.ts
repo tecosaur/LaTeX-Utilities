@@ -110,6 +110,9 @@ export class Diagnoser {
         list_regex_to_remove.push(/.*\\\\begin{document}/gs)
         list_regex_to_remove.push(/\\end{document}.*/gs)
 
+        // Remove magic comments
+        list_regex_to_remove.push(/%.*/g)
+
         // Remove begin/end environment
         var list_env_to_remove = ["align","align*","equation","equation*","figure","theorem"]
 
