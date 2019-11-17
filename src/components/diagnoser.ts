@@ -107,8 +107,8 @@ export class Diagnoser {
         var list_regex_to_replace = []
 
         // Remove preamble
-        list_regex_to_remove.push(/.*\\\\begin{document}/gs)
-        list_regex_to_remove.push(/\\end{document}.*/gs)
+        list_regex_to_remove.push(/.*[^\\]\\begin{document}/gs)
+        list_regex_to_remove.push(/[^\\]\\end{document}.*/gs)
 
         // Remove magic comments
         list_regex_to_remove.push(/%.*/g)
