@@ -265,7 +265,13 @@ export class TypeFinder {
                     debuglog(start, position.line - lineNo, env.mode, 'from unpaired env token')
                     return env.mode
                 } else if (tokenStack.length > 0 && token[1] !== '\\text') {
+                    // this token matches the last seen token
                     tokenStack.pop()
+                    // if it opens the env of last known then lastKnown is suspicious
+                    // this may be unnecessarily strict, think about this later
+                    if (lastKnown && env.mode === lastKnown.mode) {
+                        continue
+                    }
                 }
 
                 // if before a last known location
