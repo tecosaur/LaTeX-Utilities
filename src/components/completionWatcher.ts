@@ -289,7 +289,7 @@ export class CompletionWatcher {
     public resetSnippetsFile() {
         // retire any current user snippets file
         if (existsSync(this.snippetFile.user)) {
-            const shiftedFile = this.snippetFile.user.replace(/^\.json$/, '.old.json')
+            const shiftedFile = this.snippetFile.user.replace(/\.json$/, '.old.json')
             if (existsSync(shiftedFile)) {
                 removeSync(shiftedFile)
             }
