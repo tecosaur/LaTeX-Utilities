@@ -87,6 +87,7 @@ export class WordCounter {
                     stdout = stdout
                         .replace(/\(errors:\d+\)/, '')
                         .split('\n')
+                        .map(l => l.trim())
                         .filter(l => l !== '')
                         .slice(-1)[0]
                     this.extension.logger.addLogMessage(`TeXCount output: ${stdout}`)
