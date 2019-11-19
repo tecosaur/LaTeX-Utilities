@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
+import * as fs from 'fs'
 
 import { Logger } from './components/logger'
 import { CompletionWatcher, Completer } from './components/completionWatcher'
@@ -81,6 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
         )
     )
 
+    newVersionMessage(context.extensionPath)
     context.subscriptions.push(extension.telemetryReporter)
 }
 
@@ -89,8 +91,93 @@ export function deactivate() {
     extension.telemetryReporter.dispose()
 }
 
+function newVersionMessage(extensionPath: string) {
+    fs.readFile(`${extensionPath}${path.sep}package.json`, (err, data) => {
+        if (err) {
+            extension.logger.addLogMessage('Cannot read package information.')
+            return
+        }
+        extension.packageInfo = JSON.parse(data.toString())
+        extension.logger.addLogMessage(`LaTeX Utilities version: ${extension.packageInfo.version}`)
+        if (
+            fs.existsSync(`${extensionPath}${path.sep}VERSION`) &&
+            fs.readFileSync(`${extensionPath}${path.sep}VERSION`).toString() === extension.packageInfo.version
+        ) {
+            return
+        }
+        fs.writeFileSync(`${extensionPath}${path.sep}VERSION`, extension.packageInfo.version)
+        const configuration = vscode.workspace.getConfiguration('latex-utilities')
+        // todo: remove me after next update
+        if (fs.existsSync(extension.completionWatcher.snippetFile.user)) {
+            vscode.window
+                .showWarningMessage(
+                    'LaTeX Utilities default LiveSnippets default has changed significantly',
+                    'Reset to new defaults',
+                    'Compare my snippets to default',
+                    'Ignore'
+                )
+                .then(option => {
+                    switch (option) {
+                        case 'Reset to new defaults':
+                            vscode.commands.executeCommand('latex-utilities.resetLiveSnippetsFile')
+                            break
+                        case 'Compare my snippets to default':
+                            vscode.commands.executeCommand('latex-utilities.compareLiveSnippetsFile')
+                            vscode.window
+                                .showWarningMessage(
+                                    'What do you want to do?',
+                                    'Reset to new defaults (keeps copy of old)',
+                                    'Leave my snippets alone'
+                                )
+                                .then(opt => {
+                                    if (opt === 'Reset to new defaults (keeps copy of old)') {
+                                        vscode.commands.executeCommand('latex-utilities.resetLiveSnippetsFile')
+                                    }
+                                })
+                            break
+                        default:
+                            break
+                    }
+                })
+        }
+        //
+        if (!(configuration.get('message.update.show') as boolean)) {
+            return
+        }
+        vscode.window
+            .showInformationMessage(
+                `LaTeX Utilities updated to version ${extension.packageInfo.version}.`,
+                'Change log',
+                'Star the project',
+                'Disable this message'
+            )
+            .then(option => {
+                switch (option) {
+                    case 'Change log':
+                        vscode.commands.executeCommand(
+                            'markdown.showPreview',
+                            vscode.Uri.file(`${extensionPath}${path.sep}CHANGELOG.md`)
+                        )
+                        break
+                    case 'Star the project':
+                        vscode.commands.executeCommand(
+                            'vscode.open',
+                            vscode.Uri.parse('https://github.com/tecosaur/LaTeX-Utilities/')
+                        )
+                        break
+                    case 'Disable this message':
+                        configuration.update('message.update.show', false, true)
+                        break
+                    default:
+                        break
+                }
+            })
+    })
+}
+
 export class Extension {
     extensionRoot: string
+    packageInfo: any
     telemetryReporter: TelemetryReporter
     workshop: LaTeXWorkshopAPI
     logger: Logger

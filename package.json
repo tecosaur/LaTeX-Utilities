@@ -164,6 +164,11 @@
                     "default": "${words} Words",
                     "markdownDescription": "Format of the statusbar item. Set empty (`\"\"`) to disable."
                 },
+                "latex-utilities.message.update.show": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Notify you when the extension updates"
+                },
                 "latex-utilities.tikzpreview.enabled": {
                     "type": "boolean",
                     "default": "true",
