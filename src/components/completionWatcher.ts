@@ -296,9 +296,11 @@ export class CompletionWatcher {
             renameSync(this.snippetFile.user, shiftedFile)
         }
         this.snippetFile.current = this.snippetFile.extension
+        this.extension.telemetryReporter.sendTelemetryEvent('livesnippet_reset')
     }
 
     public compareSnippetsFile() {
+        this.extension.telemetryReporter.sendTelemetryEvent('livesnippet_compare')
         return vscode.commands.executeCommand(
             'vscode.diff',
             vscode.Uri.file(this.snippetFile.extension),
