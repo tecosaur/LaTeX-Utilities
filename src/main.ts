@@ -77,7 +77,6 @@ export function activate(context: vscode.ExtensionContext) {
     )
 
     context.subscriptions.push(extension.telemetryReporter)
-    extension.telemetryReporter.sendTelemetryEvent('activated')
 }
 
 export function deactivate() {
