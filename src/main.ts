@@ -60,6 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
                 extension.wordCounter.setStatus()
             }
         }),
+        vscode.workspace.onDidCloseTextDocument((e: vscode.TextDocument) => {
+            if (e.uri.fsPath.includes(extension.completionWatcher.snippetFile.user)) {
+                extension.completionWatcher.determineIfUserSnippetsRedundant()
+            }
+        }),
         vscode.window.onDidChangeActiveTextEditor((_e: vscode.TextEditor | undefined) => {
             extension.wordCounter.setStatus()
         })

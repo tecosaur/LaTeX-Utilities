@@ -309,6 +309,24 @@ export class CompletionWatcher {
         )
     }
 
+    public determineIfUserSnippetsRedundant() {
+        const userSnippetsText = readFileSync(this.snippetFile.user).toString()
+        const extSnippetsText = readFileSync(this.snippetFile.extension).toString()
+        if (userSnippetsText === extSnippetsText) {
+            vscode.window
+                .showWarningMessage(
+                    "You don't seem to have changed the default snippets, but having a user config prevents you from receiving updates to the default",
+                    'Keep using the extension snippet file',
+                    'Switch to user snippet file'
+                )
+                .then(option => {
+                    if (option === 'Keep using the extension snippet file') {
+                        vscode.commands.executeCommand('latex-utilities.resetLiveSnippetsFile')
+                    }
+                })
+        }
+    }
+
     public loadSnippets(force = false) {
         let snippetsFile: string
         if (existsSync(this.snippetFile.user)) {
