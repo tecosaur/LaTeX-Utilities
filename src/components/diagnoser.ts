@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import * as path from 'path'
 import { tmpdir } from 'os'
+import { getClosingBracket } from '../utils'
 
 import { vale } from './linters/vale'
 import { LanguageTool } from './linters/languagetool'
@@ -112,93 +113,143 @@ export class Diagnoser {
     }
 
     private latexToPlaintext(document: vscode.TextDocument) {
-        // Copy
-        var str = document.getText()
-
-        //
-        var list_regex_to_remove = []
-        var list_regex_to_replace = []
-
-        // Remove preamble
-        list_regex_to_remove.push(/.*[^\\]\\begin{document}/gs)
-        list_regex_to_remove.push(/[^\\]\\end{document}.*/gs)
-
-        // Remove magic comments
-        list_regex_to_remove.push(/%.*/g)
-
-        // Remove begin/end environment
-        var list_env_to_remove = ['align', 'align*', 'equation', 'equation*', 'figure', 'theorem']
-
-        for (let env of list_env_to_remove) {
-            // To deal with "*" in input strings
-            let regex_str =
-                '\\\\begin{' +
-                env.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') +
-                '}.*?\\\\end{' +
-                env.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') +
-                '}'
-            list_regex_to_remove.push(new RegExp(regex_str, 'gs'))
+        let str = document.getText()
+        /**
+         * command: transparencyLevel, with
+         * 0 - none
+         * 1 - mandatory only
+         * 2 - optional only
+         * 3 - both
+         */
+        const transparentCommands: { [command: string]: number } = {
+            emph: 1,
+            textit: 1,
+            textbf: 1,
+            textsl: 1,
+            textsc: 1,
+            part: 1,
+            chapter: 1,
+            section: 1,
+            subsection: 1,
+            subsubsection: 1,
+            paragraph: 1,
+            subparagraph: 1,
+            acr: 1
         }
+        const opaqueEnvs = ['align', 'equation', 'figure', 'theorem', 'minted', 'figure', 'table', 'tabular']
+        const transparentEnvArguments: { [env: string]: number } = {}
 
-        // Special environments
-        list_regex_to_remove.push(/\\\(.*?\\\)/g)
-        list_regex_to_remove.push(/\$.*?\$/g)
-
-        // Remove command with their argument
-        var list_cmd_w_args_to_remove = ['cref', 'ref', 'cite']
-
-        for (let cmd of list_cmd_w_args_to_remove) {
-            // To deal with "*" in input strings
-            let regex_str = '\\\\' + cmd.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') + '{.*?}'
-            list_regex_to_remove.push(new RegExp(regex_str, 'g'))
+        const replacements: [number, number, string][] = []
+        const queueReplacement = (start: number, end: number, replacement: string) => {
+            replacements.push([start, end, replacement])
+            this.changes.push([
+                new vscode.Range(document.positionAt(start), document.positionAt(end)),
+                replacement.length
+            ])
         }
-
-        // Remove command but keep their argument
-        var list_cmd_wo_args_to_remove = ['chapter', 'section', 'textbf']
-
-        for (let cmd of list_cmd_wo_args_to_remove) {
-            // To deal with "*" in input strings
-            let regex_str = '\\\\' + cmd.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') + '{(.*?)}'
-            list_regex_to_replace.push(new RegExp(regex_str, 'g'))
-        }
-
-        // Get position of removed content
-        for (let i = 0; i < list_regex_to_remove.length; i++) {
-            let regex = list_regex_to_remove[i]
-            var result
-
-            // Replace by matchAll...
-            while ((result = regex.exec(document.getText()))) {
-                // Save
-                this.changes.push([
-                    new vscode.Range(document.positionAt(result.index), document.positionAt(regex.lastIndex - 1)),
-                    1
-                ])
+        const replaceCommand = (command: { text: string; start: number }, args: { start: number; end: number }[]) => {
+            queueReplacement(
+                command.start - 1,
+                command.start +
+                    command.text.length +
+                    (args.length === 1 && [' ', '\n'].includes(str[command.start + command.text.length]) ? 1 : 0),
+                ''
+            )
+            if (transparentCommands.hasOwnProperty(command.text.replace(/\*$/, ''))) {
+                const transparencyLevel = transparentCommands[command.text.replace(/\*$/, '')]
+                replaceArgs(args, transparencyLevel)
+            } else {
+                args.forEach(arg => {
+                    queueReplacement(arg.start, arg.end, '')
+                })
             }
-            str = str.replace(regex, 'X')
         }
-
-        // Get position of replaced content
-        for (let i = 0; i < list_regex_to_replace.length; i++) {
-            let regex = list_regex_to_replace[i]
-            var result
-
-            // Replace by matchAll...
-            while ((result = regex.exec(document.getText()))) {
-                // Save
-                this.changes.push([
-                    new vscode.Range(document.positionAt(result.index), document.positionAt(regex.lastIndex - 1)),
-                    result[1].length
-                ])
-                console.log(result)
+        const replaceArgs = (args: { start: number; end: number }[], transparencyLevel: number) => {
+            args.forEach(arg => {
+                if (str[arg.start] === '{' && [1, 3].includes(transparencyLevel)) {
+                    // mandatory arg, and supposed to be passed through
+                    queueReplacement(arg.start, arg.end, str.substring(arg.start + 1, arg.end - 1))
+                } else if (str[arg.start] === '[' && [2, 3].includes(transparencyLevel)) {
+                    // optional arg, and supposed to be passed through
+                    queueReplacement(arg.start, arg.end, str.substring(arg.start + 1, arg.end - 1))
+                } else {
+                    queueReplacement(arg.start, arg.end, '')
+                }
+            })
+        }
+        const processEnv = (regexMatch: RegExpExecArray, args: { start: number; end: number }[]) => {
+            const env = str.substring(args[0].start + 1, args[0].end - 1)
+            const envCloseCommand = `\\end{${env}}`
+            const envClose = str.indexOf(envCloseCommand)
+            queueReplacement(regexMatch.index + regexMatch[0].indexOf(regexMatch[1]) - 1, args[0].end, '') // remove \begin{env}
+            const transparencyLevel = transparentEnvArguments.hasOwnProperty(env.replace(/\*$/, ''))
+                ? transparentEnvArguments[env.replace(/\*$/, '')]
+                : 0
+            replaceArgs(args.slice(1), transparencyLevel)
+            if (opaqueEnvs.includes(env.replace(/\*$/, ''))) {
+                queueReplacement(args[args.length - 1].end, envClose + envCloseCommand.length, '')
+                ignoreUntil = Math.max(ignoreUntil, envClose + envCloseCommand.length)
             }
-            str = str.replace(regex, '$1')
         }
 
-        // Sort by increasing number of lines, and increasing position of the first replaced character
-        this.changes.sort((a, b) => {
-            if (a[0].start.line == b[0].start.line) return a[0].start.character - b[0].start.character
-            else return a[0].start.line - b[0].start.line
+        // remove everything before \begin{document}
+
+        str = str.replace(/.*[^\\]\\begin{document}/gs, '')
+        str = str.replace(/(^|[^\\])\\end{document}.*/gs, '$1')
+
+        const commandRegex = /\\([\w\(\)\[\]@]+\*?)/gs
+        let ignoreUntil = 0
+
+        let result: RegExpExecArray | null
+        while ((result = commandRegex.exec(str)) !== null) {
+            if (result.index < ignoreUntil || (result.index > 0 && str[result.index - 1] === '\\')) {
+                continue
+            }
+
+            const command = result[1]
+            if (command === '(') {
+                const close = str.indexOf('\\)', result.index + 1) + 2
+                queueReplacement(result.index + result[0].indexOf(command), close, '')
+                ignoreUntil = Math.max(ignoreUntil, close)
+                continue
+            } else if (command === '[') {
+                const close = str.indexOf('\\]', result.index + 1) + 2
+                queueReplacement(result.index + result[0].indexOf(command), close, '')
+                ignoreUntil = Math.max(ignoreUntil, close)
+                continue
+            }
+
+            let args = []
+
+            let argumentTest = result.index + result[0].length
+            let nextChar = str[argumentTest]
+            let argumentEnd: number
+            while (['{', '['].includes(nextChar)) {
+                argumentEnd = getClosingBracket(str, argumentTest)
+                args.push({ start: argumentTest, end: argumentEnd + 1 })
+                argumentTest = argumentEnd + 1
+                if (str[argumentTest] === '\n') {
+                    argumentTest++
+                }
+                nextChar = str[argumentTest]
+            }
+
+            if (command === 'begin') {
+                processEnv(result, args)
+                continue
+            }
+
+            replaceCommand({ text: command, start: result.index + result[0].indexOf(command) }, args)
+        }
+
+        let removedSoFar = 0
+        replacements.forEach(rep => {
+            console.log({
+                was: str.substring(rep[0] - removedSoFar, rep[1] - removedSoFar),
+                now: rep[2]
+            })
+            str = str.substr(0, rep[0] - removedSoFar) + rep[2] + str.substr(rep[1] - removedSoFar)
+            removedSoFar += rep[1] - rep[0] - rep[2].length
         })
 
         // Save temporary file
