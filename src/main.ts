@@ -34,7 +34,8 @@ export function activate(context: vscode.ExtensionContext) {
         ),
         vscode.commands.registerCommand('latex-utilities.code-action', (d, r, c, m) =>
             extension.codeActions.runCodeAction(d, r, c, m)
-        )
+        ),
+        vscode.commands.registerCommand('latex-utilities.lintDocument', () => extension.diagnoser.lintDocument())
     )
 
     context.subscriptions.push(

@@ -8,6 +8,7 @@
 -   Support for plaintext linting with various backends
     -   vale
     -   languagetool
+-   Command to manually lint current document
 
 ## [0.3.1] — 2019-09-27
 

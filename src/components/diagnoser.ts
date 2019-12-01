@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import * as path from 'path'
 import { tmpdir } from 'os'
+
 import { vale } from './linters/vale'
 import { LanguageTool } from './linters/languagetool'
 
@@ -14,7 +15,7 @@ export interface IDiagnosticSource {
         file: vscode.TextDocument,
         temp_file: string,
         commandOutput: string,
-        changes: [vscode.Range,number][]
+        changes: [vscode.Range, number][]
     ) => void
     codeAction: (document: vscode.TextDocument, range: vscode.Range, source: string, message: string) => void
     diagnostics: vscode.DiagnosticCollection
@@ -32,7 +33,7 @@ export class Diagnoser {
     private TEMPFOLDER_NAME = 'vscode-latexworkshop'
     private tempfile = ''
     private initalised = false
-    private changes: [vscode.Range,number][]=[]
+    private changes: [vscode.Range, number][] = []
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -48,7 +49,19 @@ export class Diagnoser {
         this.lintersArgs = linterConfig.get('arguments') as { [name: string]: string[] }
     }
 
-    public async lintDocument(document: vscode.TextDocument) {
+    public async lintDocument(document?: vscode.TextDocument) {
+        // separate because typescript was annoying when this logic was in the main function
+        if (document === undefined) {
+            if (vscode.window.activeTextEditor) {
+                document = vscode.window.activeTextEditor.document
+            } else {
+                return new Error('No active document to lint')
+            }
+        }
+        return this.lintTheDocument(document)
+    }
+
+    private async lintTheDocument(document: vscode.TextDocument) {
         if (!this.initalised) {
             await this.cleanupTempDir()
             if (!fs.existsSync(path.join(tmpdir(), this.TEMPFOLDER_NAME))) {
@@ -56,7 +69,7 @@ export class Diagnoser {
             }
             this.initalised = true
         }
-        this.changes=[]
+        this.changes = []
         this.latexToPlaintext(document)
 
         for (const linterName of this.enabledLinters) {
@@ -86,7 +99,7 @@ export class Diagnoser {
                     linter.currentProcess.kill()
                 }
                 linter.currentProcess = undefined
-                linter.parser(document, this.tempfile, output,this.changes)
+                linter.parser(document, this.tempfile, output, this.changes)
             })
             linter.currentProcess.stdout.on('exit', (exitCode: number, _signal: string) => {
                 this.extension.logger.addLogMessage(
@@ -101,9 +114,9 @@ export class Diagnoser {
     private latexToPlaintext(document: vscode.TextDocument) {
         // Copy
         var str = document.getText()
-        
+
         //
-        var list_regex_to_remove  = []
+        var list_regex_to_remove = []
         var list_regex_to_replace = []
 
         // Remove preamble
@@ -114,37 +127,39 @@ export class Diagnoser {
         list_regex_to_remove.push(/%.*/g)
 
         // Remove begin/end environment
-        var list_env_to_remove = ["align","align*","equation","equation*","figure","theorem"]
+        var list_env_to_remove = ['align', 'align*', 'equation', 'equation*', 'figure', 'theorem']
 
-        for (let env of list_env_to_remove){
-
+        for (let env of list_env_to_remove) {
             // To deal with "*" in input strings
-            let regex_str = "\\\\begin\{"+env.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\}.*?\\\\end\{"+env.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\}"
-            list_regex_to_remove.push(new RegExp(regex_str,"gs"))
+            let regex_str =
+                '\\\\begin{' +
+                env.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') +
+                '}.*?\\\\end{' +
+                env.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') +
+                '}'
+            list_regex_to_remove.push(new RegExp(regex_str, 'gs'))
         }
 
         // Special environments
         list_regex_to_remove.push(/\\\(.*?\\\)/g)
         list_regex_to_remove.push(/\$.*?\$/g)
-        
+
         // Remove command with their argument
-        var list_cmd_w_args_to_remove = ["cref","ref","cite"]
+        var list_cmd_w_args_to_remove = ['cref', 'ref', 'cite']
 
-        for (let cmd of list_cmd_w_args_to_remove){
-
+        for (let cmd of list_cmd_w_args_to_remove) {
             // To deal with "*" in input strings
-            let regex_str = "\\\\"+cmd.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\{.*?\}"
-            list_regex_to_remove.push(new RegExp(regex_str,"g"))
+            let regex_str = '\\\\' + cmd.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') + '{.*?}'
+            list_regex_to_remove.push(new RegExp(regex_str, 'g'))
         }
 
         // Remove command but keep their argument
-        var list_cmd_wo_args_to_remove = ["chapter","section","textbf"]
+        var list_cmd_wo_args_to_remove = ['chapter', 'section', 'textbf']
 
-        for (let cmd of list_cmd_wo_args_to_remove){
-
+        for (let cmd of list_cmd_wo_args_to_remove) {
             // To deal with "*" in input strings
-            let regex_str = "\\\\"+cmd.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1")+"\{(.*?)\}"
-            list_regex_to_replace.push(new RegExp(regex_str,"g"))
+            let regex_str = '\\\\' + cmd.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1') + '{(.*?)}'
+            list_regex_to_replace.push(new RegExp(regex_str, 'g'))
         }
 
         // Get position of removed content
@@ -153,13 +168,14 @@ export class Diagnoser {
             var result
 
             // Replace by matchAll...
-            while ( (result = regex.exec(document.getText())) ) {
+            while ((result = regex.exec(document.getText()))) {
                 // Save
-                this.changes.push([new vscode.Range(document.positionAt(result.index),document.positionAt(regex.lastIndex-1)),1])
-                
+                this.changes.push([
+                    new vscode.Range(document.positionAt(result.index), document.positionAt(regex.lastIndex - 1)),
+                    1
+                ])
             }
-            str=str.replace(regex,'X')
-            
+            str = str.replace(regex, 'X')
         }
 
         // Get position of replaced content
@@ -168,29 +184,27 @@ export class Diagnoser {
             var result
 
             // Replace by matchAll...
-            while ( (result = regex.exec(document.getText())) ) {
+            while ((result = regex.exec(document.getText()))) {
                 // Save
-                this.changes.push([new vscode.Range(document.positionAt(result.index),document.positionAt(regex.lastIndex-1)),result[1].length])
+                this.changes.push([
+                    new vscode.Range(document.positionAt(result.index), document.positionAt(regex.lastIndex - 1)),
+                    result[1].length
+                ])
                 console.log(result)
             }
-            str=str.replace(regex,"$1")
-            
+            str = str.replace(regex, '$1')
         }
 
         // Sort by increasing number of lines, and increasing position of the first replaced character
-        this.changes.sort((a, b)=>{
-            if (a[0].start.line==b[0].start.line)
-                return a[0].start.character-b[0].start.character
-            else
-                return a[0].start.line-b[0].start.line
+        this.changes.sort((a, b) => {
+            if (a[0].start.line == b[0].start.line) return a[0].start.character - b[0].start.character
+            else return a[0].start.line - b[0].start.line
         })
 
         // Save temporary file
         this.tempfile = path.join(tmpdir(), this.TEMPFOLDER_NAME, `diagnoser-${path.basename(document.uri.fsPath)}`)
         fs.writeFileSync(this.tempfile, str)
         console.log(this.tempfile)
-        
-
     }
     // private translatePlaintextPosition(linter: IDiagnosticSource) {
     //     linter.actions.forEach(
