@@ -336,6 +336,13 @@ export class TikzPictureView {
         } while (result)
         let preamble = commandsString + '\n' + commands.join('\n')
         preamble = preamble.includes('\\usepackage{tikz}') ? preamble : '\n\\usepackage{tikz}\n' + preamble
+        // extra includes
+        let tikzFileUnixPath = fileTikzCollection.texFileLocation
+        if (process.platform === 'win32') {
+            tikzFileUnixPath = tikzFileUnixPath.replace(/\\/g, '/')
+        }
+        const texFileParentFolder = tikzFileUnixPath.replace(/\/[^/.]+\.\w+$/, '')
+        preamble += `\\pgfplotsset{table/search path={${texFileParentFolder}}}`
         preamble += '\n\n\\pdfcompresslevel=0\n\\pdfobjcompresslevel=0'
         return preamble
     }

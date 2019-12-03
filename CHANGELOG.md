@@ -21,6 +21,7 @@
 
 -   Formatted pasting a single line of text with cursor at non-zero column resulted in text being cut out
 -   Account for inconsistency in `texcount` output
+-   Add `\pgfplotsset{table/search path=...` to TikZ Preview to (hopefully) fix local file references
 
 ## [0.3.4] — 2019-11-02
 
