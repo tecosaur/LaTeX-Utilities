@@ -159,12 +159,13 @@ export class Diagnoser {
                 const transparencyLevel = transparentCommands[command.text.replace(/\*$/, '')]
                 replaceArgs(args, transparencyLevel)
             } else {
-                args.forEach(arg => {
-                    queueReplacement(arg.start, arg.end, '')
-                })
+                replaceArgs(args, 0)
             }
         }
         const replaceArgs = (args: { start: number; end: number }[], transparencyLevel: number) => {
+            if (args.length === 0) {
+                return
+            }
             args.forEach(arg => {
                 if (str[arg.start] === '{' && [1, 3].includes(transparencyLevel)) {
                     // mandatory arg, and supposed to be passed through
@@ -176,6 +177,7 @@ export class Diagnoser {
                     queueReplacement(arg.start, arg.end, '')
                 }
             })
+            ignoreUntil = Math.max(ignoreUntil, args[args.length - 1].end)
         }
         const processEnv = (regexMatch: RegExpExecArray, args: { start: number; end: number }[]) => {
             const env = str.substring(args[0].start + 1, args[0].end - 1)
@@ -197,7 +199,7 @@ export class Diagnoser {
         str = str.replace(/.*[^\\]\\begin{document}/gs, '')
         str = str.replace(/(^|[^\\])\\end{document}.*/gs, '$1')
 
-        const commandRegex = /\\([\w\(\)\[\]@]+\*?)/gs
+        const commandRegex = /\\([\(\)\[\]]|[\w@]+\*?)/gs
         let ignoreUntil = 0
 
         let result: RegExpExecArray | null
@@ -207,6 +209,7 @@ export class Diagnoser {
             }
 
             const command = result[1]
+
             if (command === '(') {
                 const close = str.indexOf('\\)', result.index + 1) + 2
                 queueReplacement(result.index + result[0].indexOf(command), close, '')
@@ -244,10 +247,6 @@ export class Diagnoser {
 
         let removedSoFar = 0
         replacements.forEach(rep => {
-            console.log({
-                was: str.substring(rep[0] - removedSoFar, rep[1] - removedSoFar),
-                now: rep[2]
-            })
             str = str.substr(0, rep[0] - removedSoFar) + rep[2] + str.substr(rep[1] - removedSoFar)
             removedSoFar += rep[1] - rep[0] - rep[2].length
         })
