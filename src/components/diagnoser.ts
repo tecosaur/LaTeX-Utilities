@@ -194,10 +194,25 @@ export class Diagnoser {
             }
         }
 
-        // remove everything before \begin{document}
+        const regexReplacements: [RegExp, string][] = [
+            [/.*[^\\]\\begin{document}/gs, ''],
+            [/(^|[^\\])\\end{document}.*/gs, '$1']
+        ]
 
-        str = str.replace(/.*[^\\]\\begin{document}/gs, '')
-        str = str.replace(/(^|[^\\])\\end{document}.*/gs, '$1')
+        for (let i = 0; i < regexReplacements.length; i++) {
+            let match
+
+            while ((match = regexReplacements[i][0].exec(document.getText()))) {
+                this.changes.push([
+                    new vscode.Range(
+                        document.positionAt(match.index),
+                        document.positionAt(regexReplacements[i][0].lastIndex - 1)
+                    ),
+                    1
+                ])
+            }
+            str = str.replace(regexReplacements[i][0], regexReplacements[i][1])
+        }
 
         const commandRegex = /\\([\(\)\[\]]|[\w@]+\*?)/gs
         let ignoreUntil = 0
