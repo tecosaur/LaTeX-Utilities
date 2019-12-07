@@ -148,19 +148,18 @@ export class Diagnoser {
             ])
         }
         const replaceCommand = (command: { text: string; start: number }, args: { start: number; end: number }[]) => {
+            let transparencyLevel = 0
+            if (transparentCommands.hasOwnProperty(command.text.replace(/\*$/, ''))) {
+                transparencyLevel = transparentCommands[command.text.replace(/\*$/, '')]
+            }
             queueReplacement(
                 command.start - 1,
                 command.start +
                     command.text.length +
                     (args.length === 1 && [' ', '\n'].includes(str[command.start + command.text.length]) ? 1 : 0),
-                ''
+                transparencyLevel === 0 ? 'X' : ''
             )
-            if (transparentCommands.hasOwnProperty(command.text.replace(/\*$/, ''))) {
-                const transparencyLevel = transparentCommands[command.text.replace(/\*$/, '')]
-                replaceArgs(args, transparencyLevel)
-            } else {
-                replaceArgs(args, 0)
-            }
+            replaceArgs(args, transparencyLevel)
         }
         const replaceArgs = (args: { start: number; end: number }[], transparencyLevel: number) => {
             if (args.length === 0) {
