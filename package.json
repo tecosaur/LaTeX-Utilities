@@ -243,7 +243,7 @@
         "@types/glob": "^7.1.1",
         "@types/got": "^9.6.9",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^12.12.21",
+        "@types/node": "^13.1.1",
         "@types/vscode": "^1.41.0",
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
