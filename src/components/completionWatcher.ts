@@ -359,7 +359,13 @@ export class CompletionWatcher {
         } else if (process.platform === 'darwin' && process.env.HOME) {
             return path.join(process.env.HOME, 'Library', 'Application Support', codeFolder, 'User', templateName)
         } else if (process.platform === 'linux' && process.env.HOME) {
-            return path.join(process.env.HOME, '.config', codeFolder, 'User', templateName)
+            let conf = path.join(process.env.HOME, '.config', codeFolder, 'User', templateName)
+            if (existsSync(conf)) {
+                return conf
+            } else {
+                conf = path.join(process.env.HOME, '.config', 'Code - OSS', 'User', templateName)
+                return conf
+            }
         } else {
             return ''
         }
