@@ -164,6 +164,11 @@
                     "default": "${words} Words",
                     "markdownDescription": "Format of the statusbar item. Set empty (`\"\"`) to disable."
                 },
+                "latex-utilities.message.update.show": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Notify you when the extension updates"
+                },
                 "latex-utilities.tikzpreview.enabled": {
                     "type": "boolean",
                     "default": "true",
@@ -238,19 +243,19 @@
         "@types/glob": "^7.1.1",
         "@types/got": "^9.6.9",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^12.12.8",
-        "@types/vscode": "^1.40.0",
+        "@types/node": "^12.12.21",
+        "@types/vscode": "^1.41.0",
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
-        "eslint": "^6.6.0",
+        "eslint": "^6.8.0",
         "glob": "^7.1.6",
         "mocha": "^6.2.2",
-        "typescript": "^3.7.2"
+        "typescript": "^3.7.5"
     },
     "dependencies": {
         "csv-parser": "^2.3.2",
         "fs-extra": "^8.1.0",
-        "got": "^9.6.0",
+        "got": "^10.3.0",
         "vscode-extension-telemetry": "^0.1.2"
     }
 }

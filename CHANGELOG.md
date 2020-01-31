@@ -7,16 +7,21 @@
 -   Command to reset user live snippets file
 -   Command to compare user live snippets file to default
 -   Basic support for bulleted lists in formatted paste
+-   Notification on extension update
+-   Notify users when save/close a user live snippets file same as the extension default
 
 ### Improved
 
 -   Tweak default live snippets (yet again, again)
 -   Account for indent when formatted-pasting text
 -   Try to avoid plaintext 🡒 LaTeX formatting already LaTeX formatted pastes
+-   Determination of maths/text type at cursor gets it wrong a bit less
 
 ### Fixed
 
 -   Formatted pasting a single line of text with cursor at non-zero column resulted in text being cut out
+-   Account for inconsistency in `texcount` output
+-   Add `\pgfplotsset{table/search path=...` to TikZ Preview to (hopefully) fix local file references
 
 ## [0.3.4] — 2019-11-02
 

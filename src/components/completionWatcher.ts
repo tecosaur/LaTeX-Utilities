@@ -289,22 +289,42 @@ export class CompletionWatcher {
     public resetSnippetsFile() {
         // retire any current user snippets file
         if (existsSync(this.snippetFile.user)) {
-            const shiftedFile = this.snippetFile.user.replace(/^\.json$/, '.old.json')
+            const shiftedFile = this.snippetFile.user.replace(/\.json$/, '.old.json')
             if (existsSync(shiftedFile)) {
                 removeSync(shiftedFile)
             }
             renameSync(this.snippetFile.user, shiftedFile)
         }
         this.snippetFile.current = this.snippetFile.extension
+        this.extension.telemetryReporter.sendTelemetryEvent('livesnippet_reset')
     }
 
     public compareSnippetsFile() {
+        this.extension.telemetryReporter.sendTelemetryEvent('livesnippet_compare')
         return vscode.commands.executeCommand(
             'vscode.diff',
             vscode.Uri.file(this.snippetFile.extension),
             vscode.Uri.file(this.snippetFile.user),
             'LiveSnippets: Default 🠚 User'
         )
+    }
+
+    public determineIfUserSnippetsRedundant() {
+        const userSnippetsText = readFileSync(this.snippetFile.user).toString()
+        const extSnippetsText = readFileSync(this.snippetFile.extension).toString()
+        if (userSnippetsText === extSnippetsText) {
+            vscode.window
+                .showWarningMessage(
+                    "You don't seem to have changed the default snippets, but having a user config prevents you from receiving updates to the default",
+                    'Keep using the extension snippet file',
+                    'Switch to user snippet file'
+                )
+                .then(option => {
+                    if (option === 'Keep using the extension snippet file') {
+                        vscode.commands.executeCommand('latex-utilities.resetLiveSnippetsFile')
+                    }
+                })
+        }
     }
 
     public loadSnippets(force = false) {
@@ -339,7 +359,13 @@ export class CompletionWatcher {
         } else if (process.platform === 'darwin' && process.env.HOME) {
             return path.join(process.env.HOME, 'Library', 'Application Support', codeFolder, 'User', templateName)
         } else if (process.platform === 'linux' && process.env.HOME) {
-            return path.join(process.env.HOME, '.config', codeFolder, 'User', templateName)
+            let conf = path.join(process.env.HOME, '.config', codeFolder, 'User', templateName)
+            if (existsSync(conf)) {
+                return conf
+            } else {
+                conf = path.join(process.env.HOME, '.config', 'Code - OSS', 'User', templateName)
+                return conf
+            }
         } else {
             return ''
         }
