@@ -148,7 +148,7 @@ export class Zotero {
                 const latexCommand = configuration.get('latexCommand') as string
 
                 const keys = entries.map(e => e.citekey).join(',')
-                return `\\${latexCommand}{${keys}}`
+                return latexCommand.length > 0 ?`\\${latexCommand}{${keys}}` : `${keys}`
             } else {
                 return null
             }
