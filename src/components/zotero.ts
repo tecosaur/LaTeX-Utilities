@@ -51,12 +51,12 @@ export class Zotero {
 
         this.extension.logger.addLogMessage(`Searching Zotero for "${terms}"`)
         const req = got.post(`${zoteroUrl}/better-bibtex/json-rpc`, {
-            body: {
+            json: {
                 jsonrpc: '2.0',
                 method: 'item.search',
                 params: [terms]
             },
-            json: true
+            responseType: 'json'
         })
 
         return [
