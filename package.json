@@ -239,7 +239,7 @@
         "watch": "tsc -watch -p ./"
     },
     "devDependencies": {
-        "@types/fs-extra": "^8.0.1",
+        "@types/fs-extra": "^8.1.0",
         "@types/glob": "^7.1.1",
         "@types/got": "^9.6.9",
         "@types/mocha": "^5.2.6",
