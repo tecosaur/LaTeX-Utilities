@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.3.7] — 2020-05-22
+
+Announce that extension is no longer maintained.
+
 ## [0.3.6] — 2020-02-01
 
 ### Fixed
@@ -153,7 +157,8 @@
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.6...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...HEAD
+[0.3.7]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.7
 [0.3.6]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/tecosaur/latex-utilities/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/tecosaur/latex-utilities/compare/v0.3.3...v0.3.4
