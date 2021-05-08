@@ -254,7 +254,7 @@
     },
     "dependencies": {
         "csv-parser": "^2.3.3",
-        "fs-extra": "^8.1.0",
+        "fs-extra": "^10.0.0",
         "got": "^10.7.0",
         "vscode-extension-telemetry": "^0.1.2"
     }
