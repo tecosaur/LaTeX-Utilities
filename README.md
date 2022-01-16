@@ -50,7 +50,7 @@ Got an idea? Make a PR!
     -   Paste images, customisable template
     -   Paste location of CSVs/images to have them included
 -   Live Snippets (auto-activating, with regex) [see here](https://github.com/tecosaur/LaTeX-Utilities/wiki/Live-Snippets) for documentation
--   Count Words in a LaTeX Document
+-   Word count in status bar
 -   TikZ Preview
 -   Zotero citation management
 

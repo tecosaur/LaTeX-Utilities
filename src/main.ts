@@ -32,7 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
             extension.completionWatcher.compareSnippetsFile()
         ),
         vscode.commands.registerCommand('latex-utilities.formattedPaste', () => extension.paster.paste()),
-        vscode.commands.registerCommand('latex-utilities.countWord', () => extension.wordCounter.count()),
         vscode.commands.registerCommand('latex-utilities.viewtikzpicture', (document, range) =>
             extension.tikzPreview.view(document, range)
         ),

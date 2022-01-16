@@ -97,23 +97,6 @@ export class WordCounter {
         })
     }
 
-    async count(merge: boolean = true) {
-        const texCount = await this.counts(merge)
-        if (texCount.words.body) {
-            let floatMsg = ''
-            if (texCount.instances.floats > 0) {
-                floatMsg = `and ${texCount.instances.floats} float${
-                    texCount.instances.floats > 1 ? 's' : ''
-                } (tables, figures, etc.) `
-            }
-            vscode.window.showInformationMessage(
-                `There are ${texCount.words.body} words ${floatMsg}in the ${
-                    merge ? 'LaTeX project' : 'opened LaTeX file'
-                }.`
-            )
-        }
-    }
-
     parseTexCount(text: string): TexCount {
         const reMatch = /^(?<wordsBody>\d+)\+(?<wordsHeaders>\d+)\+(?<wordsCaptions>\d+) \((?<instancesHeaders>\d+)\/(?<instancesFloats>\d+)\/(?<mathInline>\d+)\/(?<mathDisplayed>\d+)\)/.exec(
             text
