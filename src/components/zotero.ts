@@ -65,7 +65,6 @@ export class Zotero {
 
         return [
             req.then(response => {
-                console.log(response)
                 const results = response.data.result as SearchResult[]
                 this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
                 return results
@@ -288,8 +287,6 @@ class ErrorItem implements vscode.QuickPickItem {
     label: string
 
     constructor(public message: string) {
-        // vscode.window.showWarningMessage(message)
-        console.log(message)
         this.label = message.replace(/\r?\n/g, ' ')
     }
 }
