@@ -165,12 +165,14 @@ export class WordCounter {
     async pickFormat() {
         const texCount = await this.counts()
 
-        const templates = ['${words} Words', '${headers} Headers', '${floats} Floats', '${math} Equations']
+        const templates = ['${words} Words', '${wordsBody} Words', '${headers} Headers', '${floats} Floats', '${math} Equations']
         const options: { [template: string]: string } = {}
         for (const template of templates) {
             options[template] = this.formatString(texCount, template)
+            if (template.startsWith('${wordsBody}')) {
+                options[template] += ' (body only)'
+            }
         }
-        options['custom'] = 'custom'
 
         const choice = await vscode.window.showQuickPick(Object.values(options), {
             placeHolder: 'Select format to use'

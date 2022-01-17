@@ -52,11 +52,6 @@
                 "category": "LaTeX Utilities"
             },
             {
-                "command": "latex-utilities.countWord",
-                "title": "Count words in LaTeX document",
-                "category": "LaTeX Utilities"
-            },
-            {
                 "command": "latex-utilities.viewtikzpicture",
                 "title": "View TikzPicture",
                 "category": "LaTeX Utilities"
