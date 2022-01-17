@@ -96,10 +96,13 @@ export class TikzPictureView {
         const tikzPicturesToUpdate: IFileTikzPicture[] = []
 
         for (const tikzPicture of tikzPictures) {
+            // if viewer is closed, we remove preview.
             if (
-                this.extension.workshop.viewer.clients[
-                    tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase()
-                ].length === 0
+                !this.extension.workshop.viewer.getClientSet(
+                    vscode.Uri.file(tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase())
+                ) || this.extension.workshop.viewer.getClientSet(
+                    vscode.Uri.file(tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase())
+                )?.size === 0
             ) {
                 tikzPictures.splice(tikzPictures.indexOf(tikzPicture), 1)
                 this.cleanupTikzPicture(tikzPicture)
@@ -207,14 +210,16 @@ export class TikzPictureView {
         }
 
         if (
-            this.extension.workshop.viewer.clients[
-                tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase()
-            ] !== undefined
+            this.extension.workshop.viewer.getClientSet(
+                vscode.Uri.file(tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase())
+            ) && this.extension.workshop.viewer.getClientSet(
+                vscode.Uri.file(tikzPicture.tempFile.replace(/\.tex$/, '.pdf').toLocaleUpperCase())
+            )?.size !== 0
         ) {
-            const refreshed = this.extension.workshop.viewer.refreshExistingViewer(tikzPicture.tempFile)
-            if (!refreshed) {
-                this.extension.workshop.viewer.openTab(tikzPicture.tempFile, false, true)
-            }
+            // now that refreshExistingViewer will always refresh the viewer,
+            // we won't need to check if it is refreshed.
+            // See: James-Yu/LaTeX-Workshop@003be53ee5398df7429eddb30c6ffe3b1ef06ca2
+            this.extension.workshop.viewer.refreshExistingViewer(tikzPicture.tempFile)
         } else {
             this.extension.workshop.viewer.openTab(tikzPicture.tempFile, false, true)
         }
@@ -348,7 +353,7 @@ export class TikzPictureView {
     }
 
     private precompilePreamble(file: string, preamble: string) {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             fs.writeFileSync(file, `\\documentclass{standalone}\n\n${preamble}\n\n\\begin{document}\\end{document}`)
             const process = cp.exec(
                 `pdftex -ini -interaction=nonstopmode -shell-escape -file-line-error -jobname="preamble" "&pdflatex" mylatexformat.ltx ${path.basename(

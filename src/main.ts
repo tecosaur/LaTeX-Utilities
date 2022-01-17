@@ -214,14 +214,8 @@ interface LaTeXWorkshopAPI {
     getRootFile: () => string
     getGraphicsPath: () => string[]
     viewer: {
-        clients: {
-            [key: string]: {
-                viewer: 'browser' | 'tab'
-                websocket: unknown
-                position?: {}
-            }[]
-        }
-        refreshExistingViewer(sourceFile?: string, viewer?: string): boolean
+        getClientSet(uri: vscode.Uri): Set<unknown> | undefined
+        refreshExistingViewer(sourceFile?: string): void
         openTab(sourceFile: string, respectOutDir: boolean, sideColumn: boolean): void
     }
     manager: {
