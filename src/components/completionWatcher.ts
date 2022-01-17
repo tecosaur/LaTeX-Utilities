@@ -164,7 +164,7 @@ export class CompletionWatcher {
         line: vscode.TextLine,
         change: vscode.TextDocumentContentChangeEvent,
         columnOffset: number
-    ): Promise<number | 'break'> {
+    ): Promise<number | 'break' | undefined> {
         return new Promise((resolve, reject) => {
             const match = snippet.prefix.exec(
                 line.text.substr(0, change.range.start.character + change.text.length + columnOffset)

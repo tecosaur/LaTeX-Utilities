@@ -38,6 +38,12 @@ export class TikzPictureView {
     }
 
     public async view(document: vscode.TextDocument, range: vscode.Range) {
+        if(document === undefined && range === undefined) {
+            vscode.window.showWarningMessage(
+                'Manually invoking this command is not supported.'
+            )
+            return
+        }
         this.extension.logger.addLogMessage(`Viewing TikZ Picture starting on line ${range.start.line + 1}`)
         this.extension.telemetryReporter.sendTelemetryEvent('tikzpreview')
 
