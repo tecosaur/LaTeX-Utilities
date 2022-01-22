@@ -248,9 +248,12 @@
         "typescript": "^3.9.7"
     },
     "dependencies": {
+        "@types/tmp": "^0.2.3",
         "axios": "^0.24.0",
         "csv-parser": "^2.3.3",
         "fs-extra": "^8.1.0",
+        "latex-utensils": "^4.1.0",
+        "tmp": "^0.2.1",
         "vscode-extension-telemetry": "^0.1.2"
     }
 }

@@ -33,7 +33,7 @@ export class WordCounter {
         this.setStatus()
     }
 
-    async counts(merge: boolean = true, file = this.extension.workshop.manager.rootFile()): Promise<TexCount> {
+    async counts(merge: boolean = true, file = this.extension.manager.rootFile): Promise<TexCount> {
         return new Promise((resolve, _reject) => {
             if (file === undefined) {
                 this.extension.logger.addLogMessage('A valid file was not give for TexCount')
@@ -47,7 +47,6 @@ export class WordCounter {
             args.push('-brief')
             let command = configuration.get('path') as string
             if (configuration.get('docker.enabled')) {
-                this.extension.workshop.manager.setEnvVar()
                 if (process.platform === 'win32') {
                     command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat')
                 } else {

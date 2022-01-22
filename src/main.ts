@@ -13,6 +13,7 @@ import { Zotero } from './components/zotero'
 import * as utils from './utils'
 
 import TelemetryReporter from 'vscode-extension-telemetry'
+import { Manager } from './workshop/manager'
 
 let extension: Extension
 
@@ -186,6 +187,7 @@ export class Extension {
     wordCounter: WordCounter
     tikzPreview: TikzPictureView
     zotero: Zotero
+    manager: Manager
 
     constructor() {
         this.extensionRoot = path.resolve(`${__dirname}/../../`)
@@ -207,22 +209,16 @@ export class Extension {
         this.wordCounter = new WordCounter(this)
         this.tikzPreview = new TikzPictureView(this)
         this.zotero = new Zotero(this)
+        this.manager = new Manager(this)
     }
 }
 
 interface LaTeXWorkshopAPI {
-    getRootFile: () => string
     getGraphicsPath: () => string[]
     viewer: {
         getClientSet(uri: vscode.Uri): Set<unknown> | undefined
         refreshExistingViewer(sourceFile?: string): void
         openTab(sourceFile: string, respectOutDir: boolean, sideColumn: boolean): void
-    }
-    manager: {
-        setEnvVar: () => void
-        findRoot: () => Promise<string | undefined>
-        rootDir: () => string
-        rootFile: () => string
     }
     completer: {
         command: {

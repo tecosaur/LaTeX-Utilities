@@ -304,7 +304,10 @@ export class TikzPictureView {
                     commandsString = await fs.readFileSync(newCommandFile, { encoding: 'utf8' })
                 }
             } else {
-                const rootDir = this.extension.workshop.manager.rootDir()
+                const rootDir = this.extension.manager.rootDir
+                if(!rootDir){
+                    return ''
+                }
                 const newCommandFileAbs = path.join(rootDir, newCommandFile)
                 if (fs.existsSync(newCommandFileAbs)) {
                     commandsString = await fs.readFileSync(newCommandFileAbs, { encoding: 'utf8' })
