@@ -189,6 +189,11 @@
                     "default": 2000,
                     "markdownDescription": "The first change made after this many milliseconds is ignored."
                 },
+                "latex-utilities.tikzpreview.args": {
+                    "type": "array",
+                    "default": [],
+                    "markdownDescription": "Args for latexmk when rendering tikzpictue."
+                },
                 "latex-utilities.texdef.enabled": {
                     "type": "boolean",
                     "default": "true",

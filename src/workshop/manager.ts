@@ -65,7 +65,6 @@ export class Manager {
     private readonly extension: Extension
     private readonly rsweaveExt: string[] = ['.rnw', '.Rnw', '.rtex', '.Rtex', '.snw', '.Snw']
     private readonly jlweaveExt: string[] = ['.jnw', '.jtexw']
-    private readonly weaveExt: string[] = []
     private readonly finderUtils: FinderUtils
     private readonly pathUtils: PathUtils
     private tmpDir: string

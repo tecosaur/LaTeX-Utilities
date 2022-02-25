@@ -96,10 +96,6 @@ export class PathUtils {
         this.extension = extension
     }
 
-    private get rootDir() {
-        return this.extension.manager.rootDir
-    }
-
     private getOutDir(texFile: string) {
         return this.extension.manager.getOutDir(texFile)
     }

@@ -203,16 +203,19 @@ export class TikzPictureView {
     private async updateTikzPicture(tikzPicture: IFileTikzPicture) {
         fs.writeFileSync(tikzPicture.tempFile, `%&preamble\n\\begin{document}\n${tikzPicture.content}\n\\end{document}`)
 
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.tikzpreview')
+        const args = configuration.get('args') as string[]
         const startTime = +new Date()
 
         try {
-            cp.execSync(`latexmk "${path.basename(tikzPicture.tempFile)}" -interaction=batchmode -quiet -pdf`, {
+            cp.execSync(`latexmk ${args.join(' ')} "${path.basename(tikzPicture.tempFile)}" -interaction=batchmode -quiet -pdf`, {
                 cwd: path.dirname(tikzPicture.tempFile),
                 stdio: 'ignore'
             })
             console.log(`Took ${+new Date() - startTime}ms to recompile tikzpicture`)
         } catch (error) {
             console.log('latexmk failed to compile standalone tikzpicture')
+            console.log(error)
         }
 
         if (
