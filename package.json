@@ -52,11 +52,6 @@
                 "category": "LaTeX Utilities"
             },
             {
-                "command": "latex-utilities.viewtikzpicture",
-                "title": "View TikzPicture",
-                "category": "LaTeX Utilities"
-            },
-            {
                 "command": "latex-utilities.citeZotero",
                 "title": "Cite from Zotero",
                 "category": "LaTeX Utilities"
@@ -163,36 +158,6 @@
                     "type": "boolean",
                     "default": "true",
                     "markdownDescription": "Notify you when the extension updates"
-                },
-                "latex-utilities.tikzpreview.enabled": {
-                    "type": "boolean",
-                    "default": "true",
-                    "markdownDescription": "Identify tikzpictures, and add a codelense that allows you to preview them"
-                },
-                "latex-utilities.tikzpreview.preambleContents": {
-                    "type": "string",
-                    "default": "",
-                    "markdownDescription": "Set the path of a file containing LaTeX code to be included in the preamble of standalone documents for tikzpicture preview. If the path is relative, it is joined with the root dir."
-                },
-                "latex-utilities.tikzpreview.parseTeXFile": {
-                    "type": "boolean",
-                    "default": "true",
-                    "markdownDescription": "Enable important tikz code in the current TeX file to be included in tikzpreview standalone file."
-                },
-                "latex-utilities.tikzpreview.delay": {
-                    "type": "number",
-                    "default": 500,
-                    "markdownDescription": "Defines the delay in milliseconds to wait after typing stops. Set to 0 to disable."
-                },
-                "latex-utilities.tikzpreview.timeout": {
-                    "type": "number",
-                    "default": 2000,
-                    "markdownDescription": "The first change made after this many milliseconds is ignored."
-                },
-                "latex-utilities.tikzpreview.args": {
-                    "type": "array",
-                    "default": [],
-                    "markdownDescription": "Args for latexmk when rendering tikzpictue."
                 },
                 "latex-utilities.texdef.enabled": {
                     "type": "boolean",

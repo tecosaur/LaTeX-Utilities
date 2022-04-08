@@ -51,7 +51,6 @@ Got an idea? Make a PR!
     -   Paste location of CSVs/images to have them included
 -   Live Snippets (auto-activating, with regex) [see here](https://github.com/tecosaur/LaTeX-Utilities/wiki/Live-Snippets) for documentation
 -   Word count in status bar
--   TikZ Preview
 -   Zotero citation management
 
 ## Documentation
@@ -75,10 +74,6 @@ Got an idea? Make a PR!
 ### Live Snippets
 
 <img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/liveSnippets.gif" height="30px">
-
-### TikZ Preview
-
-<img src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/demo-media/tikz-preview.gif" height="120px">
 
 ### Zotero Integration
 

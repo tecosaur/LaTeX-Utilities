@@ -6,9 +6,7 @@ import { Logger } from './components/logger'
 import { CompletionWatcher, Completer } from './components/completionWatcher'
 import { Paster } from './components/paster'
 import { WordCounter } from './components/wordCounter'
-import { TikzCodeLense } from './providers/tikzcodelense'
 import { MacroDefinitions } from './providers/macroDefinitions'
-import { TikzPictureView } from './components/tikzpreview'
 import { Zotero } from './components/zotero'
 import * as utils from './utils'
 
@@ -33,9 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
             extension.completionWatcher.compareSnippetsFile()
         ),
         vscode.commands.registerCommand('latex-utilities.formattedPaste', () => extension.paster.paste()),
-        vscode.commands.registerCommand('latex-utilities.viewtikzpicture', (document, range) =>
-            extension.tikzPreview.view(document, range)
-        ),
         vscode.commands.registerCommand('latex-utilities.citeZotero', () => extension.zotero.cite()),
         vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation()),
         vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () =>
@@ -48,11 +43,8 @@ export function activate(context: vscode.ExtensionContext) {
             (e: vscode.TextDocumentChangeEvent) => {
                 if (utils.hasTexId(e.document.languageId)) {
                     extension.completionWatcher.watcher(e)
-                    extension.tikzPreview.onFileChange(e.document, e.contentChanges)
                 }
-            },
-            undefined,
-            [new vscode.Disposable(extension.tikzPreview.cleanupTempFiles)]
+            }
         ),
         vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
             if (e.uri.fsPath === extension.completionWatcher.snippetFile.user) {
@@ -75,7 +67,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'tex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'latex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'doctex' }, extension.completer),
-        vscode.languages.registerCodeLensProvider({ language: 'latex', scheme: 'file' }, new TikzCodeLense()),
         vscode.languages.registerDefinitionProvider(
             { language: 'latex', scheme: 'file' },
             new MacroDefinitions(extension)
@@ -87,7 +78,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-    extension.tikzPreview.cleanupTempFiles()
     extension.telemetryReporter.dispose()
 }
 
@@ -185,7 +175,6 @@ export class Extension {
     completer: Completer
     paster: Paster
     wordCounter: WordCounter
-    tikzPreview: TikzPictureView
     zotero: Zotero
     manager: Manager
 
@@ -207,7 +196,6 @@ export class Extension {
         this.completer = new Completer(this)
         this.paster = new Paster(this)
         this.wordCounter = new WordCounter(this)
-        this.tikzPreview = new TikzPictureView(this)
         this.zotero = new Zotero(this)
         this.manager = new Manager(this)
     }
