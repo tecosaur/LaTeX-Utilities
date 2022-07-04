@@ -178,6 +178,75 @@ export class Manager {
         this.rootFilesLanguageIds[this.workspaceRootDirUri] = id
     }
 
+    /**
+     * Return a string array which holds all imported tex files
+     * from the given `file` including the `file` itself.
+     * If `file` is `undefined`, trace from the * root file,
+     * or return empty array if the root file is `undefined`
+     *
+     * @param file The path of a LaTeX file
+     */
+    getIncludedTeX(file?: string, includedTeX: string[] = []): string[] {
+        if (file === undefined) {
+            file = this.rootFile
+        }
+        if (file === undefined) {
+            return []
+        }
+        if (!(file in this.extension.manager.cachedContent)) {
+            return []
+        }
+        includedTeX.push(file)
+        for (const child of this.extension.manager.cachedContent[file].children) {
+            if (includedTeX.includes(child.file)) {
+                // Already included
+                continue
+            }
+            this.getIncludedTeX(child.file, includedTeX)
+        }
+        return includedTeX
+    }
+
+    usedPackages(document: vscode.TextDocument) {
+        // slower but will do the work for now
+        let text = document.getText();
+        const allPkgs: Set<string> = new Set()
+        // use regex to find all \usepackage{}
+        const pkgs = text.match(/\\usepackage\{(.*?)\}/g)
+        if (pkgs) {
+            for (const pkg of pkgs) {
+                const pkgName = pkg.replace(/\\usepackage\{(.*?)\}/, '$1')
+                allPkgs.add(pkgName)
+            }
+            this.extension.logger.addLogMessage(`${pkgs}`);
+        }
+        return allPkgs
+    }
+
+    getGraphicsPath(content: string): string[] {
+        const graphicsPath: string[] = [];
+        const regex = /\\graphicspath{[\s\n]*((?:{[^{}]*}[\s\n]*)*)}/g
+        const noVerbContent = utils.stripCommentsAndVerbatim(content);
+        let result: string[] | null
+        do {
+            result = regex.exec(noVerbContent)
+            if (result) {
+                for (const dir of result[1].split(/\{|\}/).filter(s => s.replace(/^\s*$/, ''))) {
+                    if (graphicsPath.includes(dir)) {
+                        continue
+                    }
+                    graphicsPath.push(dir)
+                }
+            }
+        } while (result);
+        this.extension.logger.addLogMessage(`${graphicsPath}`);
+        return graphicsPath;
+    }
+
+    getCachedContent(filePath: string): Content[string] | undefined {
+        return this.cachedContent[filePath]
+    }
+
     private inferLanguageId(filename: string): string | undefined {
         const ext = path.extname(filename).toLocaleLowerCase()
         if (ext === '.tex') {

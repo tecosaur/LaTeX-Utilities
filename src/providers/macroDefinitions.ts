@@ -44,11 +44,11 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
         checkCommandExists('texdef')
 
         const texdefOptions = ['--source', '--Find', '--tex', 'latex']
-        const packages = this.extension.workshop.completer.command.usedPackages()
+        const packages = this.extension.manager.usedPackages(document)
         if (/\.sty$/.test(document.uri.fsPath)) {
             texdefOptions.push(document.uri.fsPath.replace(/\.sty$/, ''))
         }
-        texdefOptions.push(...packages.map(p => ['-p', p]).reduce((prev, next) => prev.concat(next), []))
+        texdefOptions.push(...[...packages].map(p => ['-p', p]).reduce((prev, next) => prev.concat(next), []))
         const documentClass = this.getDocumentClass(document)
         texdefOptions.push('--class', documentClass !== null ? documentClass : 'article')
         texdefOptions.push(document.getText(command))

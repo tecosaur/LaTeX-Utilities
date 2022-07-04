@@ -169,7 +169,7 @@ export class Extension {
     extensionRoot: string
     packageInfo: any
     telemetryReporter: TelemetryReporter
-    workshop: LaTeXWorkshopAPI
+    // workshop: LaTeXWorkshopAPI
     logger: Logger
     completionWatcher: CompletionWatcher
     completer: Completer
@@ -186,11 +186,11 @@ export class Extension {
             self.packageJSON.version,
             '015dde22-1297-4bc0-8f8d-6587f3c192ec'
         )
-        const workshop = vscode.extensions.getExtension('james-yu.latex-workshop') as vscode.Extension<any>
-        this.workshop = workshop.exports
-        if (workshop.isActive === false) {
-            workshop.activate().then(() => (this.workshop = workshop.exports))
-        }
+        // const workshop = vscode.extensions.getExtension('james-yu.latex-workshop') as vscode.Extension<any>
+        // this.workshop = workshop.exports
+        // if (workshop.isActive === false) {
+        //     workshop.activate().then(() => (this.workshop = workshop.exports))
+        // }
         this.logger = new Logger(this)
         this.completionWatcher = new CompletionWatcher(this)
         this.completer = new Completer(this)
@@ -198,19 +198,5 @@ export class Extension {
         this.wordCounter = new WordCounter(this)
         this.zotero = new Zotero(this)
         this.manager = new Manager(this)
-    }
-}
-
-interface LaTeXWorkshopAPI {
-    getGraphicsPath: () => string[]
-    viewer: {
-        getClientSet(uri: vscode.Uri): Set<unknown> | undefined
-        refreshExistingViewer(sourceFile?: string): void
-        openTab(sourceFile: string, respectOutDir: boolean, sideColumn: boolean): void
-    }
-    completer: {
-        command: {
-            usedPackages: () => string[]
-        }
     }
 }
