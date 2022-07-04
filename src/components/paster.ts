@@ -492,8 +492,8 @@ export class Paster {
             this.pasteTemplate = pasteTemplate.join('\n')
         }
 
-        this.graphicsPathFallback = this.replacePathVariables(this.graphicsPathFallback, projectPath, filePath)
-        this.basePathConfig = this.replacePathVariables(this.basePathConfig, projectPath, filePath)
+        this.graphicsPathFallback = this.replacePathVariables('${currentFileDir}', projectPath, filePath)
+        this.basePathConfig = this.replacePathVariables('${graphicsPath}', projectPath, filePath)
         this.pasteTemplate = this.replacePathVariables(this.pasteTemplate, projectPath, filePath)
     }
 
