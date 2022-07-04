@@ -666,15 +666,17 @@ export class Paster {
         }
 
         const platform = process.platform
-        if (platform === 'win32') {
-            // Windows
+        if (platform === 'win32' || vscode.env.remoteName === "wsl") {
+            // Windows or WSL
             const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
 
-            let command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
-            const powershellExisted = fs.existsSync(command)
-            if (!powershellExisted) {
-                command = 'powershell'
-            }
+            let command = 'powershell.exe';  // Adding `exe` to run it from wsl
+            
+            //'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
+            // const powershellExisted = fs.existsSync(command)
+            // if (!powershellExisted) {
+            //     command = 'powershell'
+            // }
 
             const powershell = spawn(command, [
                 '-noprofile',
