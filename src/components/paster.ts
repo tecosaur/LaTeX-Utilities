@@ -666,17 +666,72 @@ export class Paster {
         }
 
         const platform = process.platform
-        if (platform === 'win32' || vscode.env.remoteName === "wsl") {
-            // Windows or WSL
-            const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
+        if (vscode.env.remoteName === "wsl") {
+            //  WSL
+            let scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
+            // convert scriptPath to windows path 
+            const wslpath = spawn("wslpath", [
+                "-w",
+                scriptPath
+            ]);
+            wslpath.stdout.on("data", (data) => {
+                scriptPath = data.toString().trim()
+                // SEE Powershell/powershell#17623
+                scriptPath = scriptPath.replace('\\wsl.localhost', '\\wsl$');
+                
+                this.extension.logger.addLogMessage(`saveClipimg-pc.ps1: ${scriptPath}`)
+                const wslPath = spawn("wslpath", [
+                    "-w",
+                    imagePath
+                ]);
+                wslPath.stdout.on("data", (data) => {
+                    // Yes. callback hell.
+                    // TODO: refactor this.
+                    const imagePath = data.toString().trim()
+                    this.extension.logger.addLogMessage(`imagePath: ${imagePath}`)
+    
+                    let command = 'powershell.exe';  // Adding `exe` to run it from wsl
+                    
+                    const powershell = spawn(command, [
+                        '-noprofile',
+                        '-noninteractive',
+                        '-nologo',
+                        '-sta',
+                        '-executionpolicy',
+                        'unrestricted',
+                        '-windowstyle',
+                        'hidden',
+                        '-file',
+                        scriptPath,
+                        imagePath
+                    ])
+                    powershell.on('error', e => {
+                        if (e.name === 'ENOENT') {
+                            vscode.window.showErrorMessage(
+                                'The powershell command is not in you PATH environment variables.Please add it and retry.'
+                            )
+                        } else {
+                            console.log(e)
+                            vscode.window.showErrorMessage(e.message)
+                        }
+                    })
+                    powershell.on('exit', (_code, _signal) => {
+                        // console.log('exit', code, signal);
+                    })
+                    powershell.stdout.on('data', (data: Buffer) => {
+                        cb(imagePath, data.toString().trim())
+                    })
+                })
+            })
+        } else if (platform === 'win32') {
+            // Windows
+            let scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
 
-            let command = 'powershell.exe';  // Adding `exe` to run it from wsl
-            
-            //'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
-            // const powershellExisted = fs.existsSync(command)
-            // if (!powershellExisted) {
-            //     command = 'powershell'
-            // }
+            let command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+            const powershellExisted = fs.existsSync(command)
+            if (!powershellExisted) {
+                command = 'powershell'
+            }
 
             const powershell = spawn(command, [
                 '-noprofile',
