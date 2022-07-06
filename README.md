@@ -1,9 +1,3 @@
-### <img src="https://i.ibb.co/X3PVszN/warning-5-64.png" alt="warning-5-64" border="0" height="16em"> Warning — looking for a maintainer
-
-**This extension is no longer maintained.** I'm sorry, it's not you, it's me. I still love this functionality, I've just moved to a different editor to get it.
-I don't want to leave you in the lurch, but I find it somewhat difficult to spend much time on an extension for an editor I no longer use.
-That said, while I may not be planning on doing any work myself, _I will gladly accept PRs_. New functionality? Bug fix? Don't let me stop you: **PR!**
-
 <p align="center"><a href="https://github.com/tecosaur/LaTeX-Utilities" target="_blank" rel="noopener noreferrer"><img width="100" src="https://github.com/tecosaur/LaTeX-Utilities/raw/master/icon.png" alt="LaTeX Utils logo"></a></p>
 
 <p align="center">
@@ -37,8 +31,6 @@ An add-on to the vscode extension [LaTeX Workshop](https://marketplace.visualstu
 The feature should continue to expand at a gradually decreasing rate.
 
 Got an idea? Make a PR!
-<a href="https://gitpod.io/#https://github.com/tecosaur/LaTeX-Utilities">
-<img align="right" width="100" alt="Open in Gitpod" src="https://gitpod.io/button/open-in-gitpod.svg"/></a>
 
 <hr/>
 
