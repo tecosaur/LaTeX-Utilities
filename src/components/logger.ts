@@ -28,4 +28,11 @@ export class Logger {
     showLog() {
         this.logPanel.show()
     }
+
+    logError(e: Error) {
+        this.addLogMessage(e.message)
+        if (e.stack) {
+            this.addLogMessage(e.stack)
+        }
+    }
 }

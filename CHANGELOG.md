@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.4.0] - 2022-07-06
+New maintainer!
+- Removed dependency on LaTeX-Workshop.
+- Removed support for TiKZ live preview temporarily.
+- Fixed pasting image inside WSL.
+- Move from NPM to yarn.
+
 ## [0.3.7] — 2020-05-22
 
 Announce that extension is no longer maintained.

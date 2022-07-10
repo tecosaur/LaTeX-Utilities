@@ -3,7 +3,7 @@
     "displayName": "LaTeX Utilities",
     "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
     "icon": "icon.png",
-    "version": "0.3.7",
+    "version": "0.4.0",
     "publisher": "tecosaur",
     "license": "MIT",
     "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
@@ -49,16 +49,6 @@
             {
                 "command": "latex-utilities.formattedPaste",
                 "title": "Paste formatted content",
-                "category": "LaTeX Utilities"
-            },
-            {
-                "command": "latex-utilities.countWord",
-                "title": "Count words in LaTeX document",
-                "category": "LaTeX Utilities"
-            },
-            {
-                "command": "latex-utilities.viewtikzpicture",
-                "title": "View TikzPicture",
                 "category": "LaTeX Utilities"
             },
             {
@@ -169,31 +159,6 @@
                     "default": "true",
                     "markdownDescription": "Notify you when the extension updates"
                 },
-                "latex-utilities.tikzpreview.enabled": {
-                    "type": "boolean",
-                    "default": "true",
-                    "markdownDescription": "Identify tikzpictures, and add a codelense that allows you to preview them"
-                },
-                "latex-utilities.tikzpreview.preambleContents": {
-                    "type": "string",
-                    "default": "",
-                    "markdownDescription": "Set the path of a file containing LaTeX code to be included in the preamble of standalone documents for tikzpicture preview. If the path is relative, it is joined with the root dir."
-                },
-                "latex-utilities.tikzpreview.parseTeXFile": {
-                    "type": "boolean",
-                    "default": "true",
-                    "markdownDescription": "Enable important tikz code in the current TeX file to be included in tikzpreview standalone file."
-                },
-                "latex-utilities.tikzpreview.delay": {
-                    "type": "number",
-                    "default": 500,
-                    "markdownDescription": "Defines the delay in milliseconds to wait after typing stops. Set to 0 to disable."
-                },
-                "latex-utilities.tikzpreview.timeout": {
-                    "type": "number",
-                    "default": 2000,
-                    "markdownDescription": "The first change made after this many milliseconds is ignored."
-                },
                 "latex-utilities.texdef.enabled": {
                     "type": "boolean",
                     "default": "true",
@@ -231,11 +196,9 @@
             }
         ]
     },
-    "extensionDependencies": [
-        "james-yu.latex-workshop"
-    ],
     "scripts": {
-        "compile": "tsc -p ./",
+        "build": "tsc -p ./",
+        "package": "vsce package",
         "watch": "tsc -watch -p ./"
     },
     "devDependencies": {
@@ -243,19 +206,23 @@
         "@types/glob": "^7.1.3",
         "@types/got": "^9.6.11",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^12.12.21",
-        "@types/vscode": "^1.51.0",
+        "@types/node": "^17.0.8",
+        "@types/vscode": "^1.45.0",
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
         "eslint": "^6.8.0",
         "glob": "^7.1.6",
         "mocha": "^6.2.2",
-        "typescript": "^3.9.7"
+        "typescript": "^3.9.7",
+        "vsce": "^2.9.2"
     },
     "dependencies": {
+        "@types/tmp": "^0.2.3",
+        "axios": "^0.24.0",
         "csv-parser": "^2.3.3",
         "fs-extra": "^8.1.0",
-        "got": "^10.7.0",
+        "latex-utensils": "^4.1.0",
+        "tmp": "^0.2.1",
         "vscode-extension-telemetry": "^0.1.2"
     }
 }

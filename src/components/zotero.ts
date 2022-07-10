@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import * as got from 'got'
+import axios from 'axios'
 
 import { Extension } from '../main'
 
@@ -22,11 +22,11 @@ export class Zotero {
         }
 
         try {
-            const res = await got(`${zoteroUrl}/better-bibtex/cayw`, {
-                query: options
+            const res = await axios.get(`${zoteroUrl}/better-bibtex/cayw`, {
+                params: options
             })
 
-            return res.body
+            return res.data
         } catch (error) {
             if (error.code === 'ECONNREFUSED') {
                 this.extension.logger.showErrorMessage(
@@ -50,22 +50,29 @@ export class Zotero {
         const zoteroUrl = configuration.get('zoteroUrl') as string
 
         this.extension.logger.addLogMessage(`Searching Zotero for "${terms}"`)
-        const req = got.post(`${zoteroUrl}/better-bibtex/json-rpc`, {
-            json: {
+        const CancelToken = axios.CancelToken
+        const source = CancelToken.source()
+        const req = axios(`${zoteroUrl}/better-bibtex/json-rpc`, {
+            method: 'post',
+            data: {
                 jsonrpc: '2.0',
                 method: 'item.search',
                 params: [terms]
             },
-            responseType: 'json'
+            responseType: 'json',
+            cancelToken: source.token
         })
 
         return [
             req.then(response => {
-                const results = response.body.result as SearchResult[]
+                const results = response.data.result as SearchResult[]
                 this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
                 return results
+            }).catch(error => {
+                this.extension.logger.showErrorMessage(`Searching Zotero failed: ${error.message}`)
+                return []
             }),
-            req.cancel.bind(req)
+            () => source.cancel('request canceled')
         ]
     }
 
@@ -84,7 +91,7 @@ export class Zotero {
                 let cancel: (() => void) | undefined
 
                 disposables.push(
-                    input.onDidChangeValue(value => {
+                    input.onDidChangeValue((value: any) => {
                         if (value) {
                             input.busy = true
 
@@ -125,7 +132,7 @@ export class Zotero {
                     input.onDidAccept(() => {
                         const items = input.selectedItems.length > 0 ? input.selectedItems : input.activeItems
                         input.hide()
-                        resolve(items.filter(i => i instanceof EntryItem).map(i => (i as EntryItem).result))
+                        resolve(items.filter((i: any) => i instanceof EntryItem).map((i: any) => (i as EntryItem).result))
                     })
                 )
 
@@ -160,7 +167,7 @@ export class Zotero {
     private async insertCitation(citation: string) {
         const editor = vscode.window.activeTextEditor
         if (editor) {
-            await editor.edit(edit => {
+            await editor.edit((edit: any) => {
                 if (editor.selection.isEmpty) {
                     edit.insert(editor.selection.active, citation)
                 } else {
@@ -230,7 +237,7 @@ export class Zotero {
         const zoteroUrl = configuration.get('zoteroUrl') as string
 
         try {
-            await got.get(`${zoteroUrl}/connector/ping`)
+            await axios.get(`${zoteroUrl}/connector/ping`)
             return true
         } catch (e) {
             if (e.code === 'ECONNREFUSED') {
