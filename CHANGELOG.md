@@ -165,6 +165,7 @@ Announce that extension is no longer maintained.
 -   Live Snippets (auto-activating, with regex)
 
 [unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...HEAD
+[0.4.0]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...v0.4.0
 [0.3.7]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.7
 [0.3.6]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/tecosaur/latex-utilities/compare/v0.3.4...v0.3.5

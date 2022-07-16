@@ -209,7 +209,7 @@ export class Manager {
 
     usedPackages(document: vscode.TextDocument) {
         // slower but will do the work for now
-        let text = document.getText();
+        const text = document.getText()
         const allPkgs: Set<string> = new Set()
         // use regex to find all \usepackage{}
         const pkgs = text.match(/\\usepackage\{(.*?)\}/g)
@@ -218,15 +218,15 @@ export class Manager {
                 const pkgName = pkg.replace(/\\usepackage\{(.*?)\}/, '$1')
                 allPkgs.add(pkgName)
             }
-            this.extension.logger.addLogMessage(`${pkgs}`);
+            this.extension.logger.addLogMessage(`${pkgs}`)
         }
         return allPkgs
     }
 
     getGraphicsPath(content: string): string[] {
-        const graphicsPath: string[] = [];
+        const graphicsPath: string[] = []
         const regex = /\\graphicspath{[\s\n]*((?:{[^{}]*}[\s\n]*)*)}/g
-        const noVerbContent = utils.stripCommentsAndVerbatim(content);
+        const noVerbContent = utils.stripCommentsAndVerbatim(content)
         let result: string[] | null
         do {
             result = regex.exec(noVerbContent)
@@ -238,9 +238,9 @@ export class Manager {
                     graphicsPath.push(dir)
                 }
             }
-        } while (result);
-        this.extension.logger.addLogMessage(`${graphicsPath}`);
-        return graphicsPath;
+        } while (result)
+        this.extension.logger.addLogMessage(`${graphicsPath}`)
+        return graphicsPath
     }
 
     getCachedContent(filePath: string): Content[string] | undefined {

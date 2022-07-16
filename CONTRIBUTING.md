@@ -6,7 +6,7 @@
 
 ## 2. Initialise
 
-Open the `LaTeX-Utilities` directory in vscode. Open up the command line and run `npm init`
+Open the `LaTeX-Utilities` directory in vscode. Open up the command line and run `yarn`
 
 ## 3. Make a new branch and add commits
 

@@ -666,32 +666,32 @@ export class Paster {
         }
 
         const platform = process.platform
-        if (vscode.env.remoteName === "wsl") {
+        if (vscode.env.remoteName === 'wsl') {
             //  WSL
             let scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
-            // convert scriptPath to windows path 
-            const wslpath = spawn("wslpath", [
-                "-w",
+            // convert scriptPath to windows path
+            const wslpath = spawn('wslpath', [
+                '-w',
                 scriptPath
-            ]);
-            wslpath.stdout.on("data", (data) => {
+            ])
+            wslpath.stdout.on('data', (data) => {
                 scriptPath = data.toString().trim()
                 // SEE Powershell/powershell#17623
-                scriptPath = scriptPath.replace('\\wsl.localhost', '\\wsl$');
-                
+                scriptPath = scriptPath.replace('\\wsl.localhost', '\\wsl$')
+
                 this.extension.logger.addLogMessage(`saveClipimg-pc.ps1: ${scriptPath}`)
-                const wslPath = spawn("wslpath", [
-                    "-w",
+                const wslPath = spawn('wslpath', [
+                    '-w',
                     imagePath
-                ]);
-                wslPath.stdout.on("data", (data) => {
+                ])
+                wslPath.stdout.on('data', (data2) => {
                     // Yes. callback hell.
                     // TODO: refactor this.
-                    const imagePath = data.toString().trim()
+                    imagePath = data2.toString().trim()
                     this.extension.logger.addLogMessage(`imagePath: ${imagePath}`)
-    
-                    let command = 'powershell.exe';  // Adding `exe` to run it from wsl
-                    
+
+                    const command = 'powershell.exe'  // Adding `exe` to run it from wsl
+
                     const powershell = spawn(command, [
                         '-noprofile',
                         '-noninteractive',
@@ -718,16 +718,16 @@ export class Paster {
                     powershell.on('exit', (_code, _signal) => {
                         // console.log('exit', code, signal);
                     })
-                    powershell.stdout.on('data', (data: Buffer) => {
-                        cb(imagePath, data.toString().trim())
+                    powershell.stdout.on('data', (data3: Buffer) => {
+                        cb(imagePath, data3.toString().trim())
                     })
                 })
             })
         } else if (platform === 'win32') {
             // Windows
-            let scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
+            const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1')
 
-            let command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+            let command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
             const powershellExisted = fs.existsSync(command)
             if (!powershellExisted) {
                 command = 'powershell'
@@ -832,11 +832,11 @@ export class Paster {
         postFunction: (str: string) => string = x => x
     ): string {
         const currentFileDir = path.dirname(curFilePath)
-        const text = vscode.window.activeTextEditor?.document.getText();
+        const text = vscode.window.activeTextEditor?.document.getText()
         if (!text) {
             return pathStr
         }
-        let graphicsPath: string | string[] = this.extension.manager.getGraphicsPath(text);
+        let graphicsPath: string | string[] = this.extension.manager.getGraphicsPath(text)
         graphicsPath = graphicsPath.length !== 0 ? graphicsPath[0] : this.graphicsPathFallback
         graphicsPath = path.resolve(currentFileDir, graphicsPath)
 
