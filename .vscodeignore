@@ -1,8 +1,6 @@
-.vscode/**
 .vscode-test/**
 out/test/**
 test/**
-src/**
 **/*.map
 .gitignore
 tsconfig.json
@@ -11,3 +9,8 @@ demo_media/**
 .eslintcache
 .eslintignore
 *.vsix
+.vscode
+node_modules
+src/
+tsconfig.json
+webpack.config.js

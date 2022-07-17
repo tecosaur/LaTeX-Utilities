@@ -28,7 +28,7 @@
         "onLanguage:latex",
         "onLanguage:doctex"
     ],
-    "main": "./out/src/main.js",
+    "main": "./out/main.js",
     "contributes": {
         "commands": [
             {
@@ -197,9 +197,12 @@
         ]
     },
     "scripts": {
-        "build": "tsc -p ./",
         "package": "vsce package",
-        "watch": "tsc -watch -p ./"
+        "vscode:prepublish": "yarn esbuild-base --minify",
+        "esbuild-base": "esbuild ./src/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "yarn esbuild-base --sourcemap",
+        "esbuild-watch": "yarn esbuild-base --sourcemap --watch",
+        "test-compile": "tsc -p ./"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.1.0",
@@ -210,6 +213,7 @@
         "@types/vscode": "^1.45.0",
         "@typescript-eslint/eslint-plugin": "^1.13.0",
         "@typescript-eslint/parser": "^1.13.0",
+        "esbuild": "^0.14.49",
         "eslint": "^6.8.0",
         "glob": "^7.1.6",
         "mocha": "^6.2.2",

@@ -17,6 +17,7 @@
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
+        "esModuleInterop": true,
         "target": "es2018",
         "baseUrl": "./",
         "typeRoots": ["./types", "./node_modules/@types"]

@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import { spawn } from 'child_process'
-import * as csv from 'csv-parser'
+import csv from 'csv-parser'
 import { Readable } from 'stream'
 
 import { Extension } from '../main'

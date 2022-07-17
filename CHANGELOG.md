@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.4.1] - 2022-07-17
+
+### Improved
+- Use esbuild to bundle the package to improve performance.
+
 ## [0.4.0] - 2022-07-06
 New maintainer!
 - Removed dependency on LaTeX-Workshop.
@@ -165,6 +170,7 @@ Announce that extension is no longer maintained.
 -   Live Snippets (auto-activating, with regex)
 
 [unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...HEAD
+[0.4.1]: https://github.com/tecosaur/latex-utilities/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...v0.4.0
 [0.3.7]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.7
 [0.3.6]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.6
