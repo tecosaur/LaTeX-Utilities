@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.4.2] - 2022-07-29
+
+### Fixed
+- Wrong path introduced by esbuild.
+
 ## [0.4.1] - 2022-07-17
 
 ### Improved
