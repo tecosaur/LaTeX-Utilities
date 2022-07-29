@@ -179,7 +179,7 @@ export class Extension {
     manager: Manager
 
     constructor() {
-        this.extensionRoot = path.resolve(`${__dirname}/../../`)
+        this.extensionRoot = path.resolve(`${__dirname}/../`)
         const self = vscode.extensions.getExtension('tecosaur.latex-utilities') as vscode.Extension<any>
         this.telemetryReporter = new TelemetryReporter(
             'tecosaur.latex-utilities',
