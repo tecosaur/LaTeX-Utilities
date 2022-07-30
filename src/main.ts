@@ -22,44 +22,50 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
-            extension.completionWatcher.editSnippetsFile()
+            extension.withTelemetry('editLiveSnippetsFile', extension.completionWatcher.editSnippetsFile)
         ),
         vscode.commands.registerCommand('latex-utilities.resetLiveSnippetsFile', () =>
-            extension.completionWatcher.resetSnippetsFile()
+            extension.withTelemetry('resetLiveSnippetsFile', extension.completionWatcher.resetSnippetsFile)
         ),
         vscode.commands.registerCommand('latex-utilities.compareLiveSnippetsFile', () =>
-            extension.completionWatcher.compareSnippetsFile()
+            extension.withTelemetry('compareLiveSnippetsFile', extension.completionWatcher.compareSnippetsFile)
         ),
-        vscode.commands.registerCommand('latex-utilities.formattedPaste', () => extension.paster.paste()),
-        vscode.commands.registerCommand('latex-utilities.citeZotero', () => extension.zotero.cite()),
-        vscode.commands.registerCommand('latex-utilities.openInZotero', () => extension.zotero.openCitation()),
+        vscode.commands.registerCommand('latex-utilities.formattedPaste', () => 
+            extension.withTelemetry('formattedPaste', extension.paster.paste)
+        ),
+        vscode.commands.registerCommand('latex-utilities.citeZotero', () => 
+            extension.withTelemetry('citeZotero', extension.zotero.cite)
+        ),
+        vscode.commands.registerCommand('latex-utilities.openInZotero', () => 
+            extension.withTelemetry('openInZotero', extension.zotero.openCitation)
+        ),
         vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () =>
-            extension.wordCounter.pickFormat()
-        )
+            extension.withTelemetry('selectWordcountFormat', extension.wordCounter.pickFormat)
+        ),
     )
 
     context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(
             (e: vscode.TextDocumentChangeEvent) => {
                 if (utils.hasTexId(e.document.languageId)) {
-                    extension.completionWatcher.watcher(e)
+                    extension.withTelemetry('onDidChangeTextDocument', () => extension.completionWatcher.watcher(e))
                 }
             }
         ),
         vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
             if (e.uri.fsPath === extension.completionWatcher.snippetFile.user) {
-                extension.completionWatcher.loadSnippets(true)
+                extension.withTelemetry('onDidSaveTextDocument_updateSnippet', () => extension.completionWatcher.loadSnippets(true))
             } else {
-                extension.wordCounter.setStatus()
+                extension.withTelemetry('onDidSaveTextDocument_tex_wordcounter', () => extension.wordCounter.setStatus())
             }
         }),
         vscode.workspace.onDidCloseTextDocument((e: vscode.TextDocument) => {
             if (e.uri.fsPath.includes(extension.completionWatcher.snippetFile.user)) {
-                extension.completionWatcher.determineIfUserSnippetsRedundant()
+                extension.withTelemetry('onDidCloseTextDocument_determineIfUserSnippetsRedundant', extension.completionWatcher.determineIfUserSnippetsRedundant)
             }
         }),
         vscode.window.onDidChangeActiveTextEditor((_e: vscode.TextEditor | undefined) => {
-            extension.wordCounter.setStatus()
+            extension.withTelemetry('onDidChangeActiveTextEditor_tex_wordcounter', () => extension.wordCounter.setStatus())
         })
     )
 
@@ -97,40 +103,6 @@ function newVersionMessage(extensionPath: string) {
         }
         fs.writeFileSync(`${extensionPath}${path.sep}VERSION`, extension.packageInfo.version)
         const configuration = vscode.workspace.getConfiguration('latex-utilities')
-        // todo: remove me after next update
-        if (fs.existsSync(extension.completionWatcher.snippetFile.user)) {
-            vscode.window
-                .showWarningMessage(
-                    'LaTeX Utilities default LiveSnippets default has changed significantly',
-                    'Reset to new defaults',
-                    'Compare my snippets to default',
-                    'Ignore'
-                )
-                .then(option => {
-                    switch (option) {
-                        case 'Reset to new defaults':
-                            vscode.commands.executeCommand('latex-utilities.resetLiveSnippetsFile')
-                            break
-                        case 'Compare my snippets to default':
-                            vscode.commands.executeCommand('latex-utilities.compareLiveSnippetsFile')
-                            vscode.window
-                                .showWarningMessage(
-                                    'What do you want to do?',
-                                    'Reset to new defaults (keeps copy of old)',
-                                    'Leave my snippets alone'
-                                )
-                                .then(opt => {
-                                    if (opt === 'Reset to new defaults (keeps copy of old)') {
-                                        vscode.commands.executeCommand('latex-utilities.resetLiveSnippetsFile')
-                                    }
-                                })
-                            break
-                        default:
-                            break
-                    }
-                })
-        }
-        //
         if (!(configuration.get('message.update.show') as boolean)) {
             return
         }
@@ -139,7 +111,7 @@ function newVersionMessage(extensionPath: string) {
                 `LaTeX Utilities updated to version ${extension.packageInfo.version}.`,
                 'Change log',
                 'Star the project',
-                'Disable this message'
+                'Disable this message forever'
             )
             .then(option => {
                 switch (option) {
@@ -155,7 +127,7 @@ function newVersionMessage(extensionPath: string) {
                             vscode.Uri.parse('https://github.com/tecosaur/LaTeX-Utilities/')
                         )
                         break
-                    case 'Disable this message':
+                    case 'Disable this message forever':
                         configuration.update('message.update.show', false, true)
                         break
                     default:
@@ -184,7 +156,7 @@ export class Extension {
         this.telemetryReporter = new TelemetryReporter(
             'tecosaur.latex-utilities',
             self.packageJSON.version,
-            '015dde22-1297-4bc0-8f8d-6587f3c192ec'
+            '11a955d7-02dc-4c1a-85e4-053858f88af0'
         )
         // const workshop = vscode.extensions.getExtension('james-yu.latex-workshop') as vscode.Extension<any>
         // this.workshop = workshop.exports
@@ -198,5 +170,18 @@ export class Extension {
         this.wordCounter = new WordCounter(this)
         this.zotero = new Zotero(this)
         this.manager = new Manager(this)
+    }
+
+    withTelemetry(command: string, callback: () => void) {
+        this.telemetryReporter.sendTelemetryEvent(command)
+        try {
+            callback()
+        } catch (error) {
+            this.logger.addLogMessage(error)
+            this.telemetryReporter.sendTelemetryException(error, {
+                'command': command
+            })
+            this.logger.addLogMessage("Error reported.")
+        }
     }
 }

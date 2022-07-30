@@ -15,55 +15,63 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
         position: vscode.Position,
         _token: vscode.CancellationToken
     ) {
-        const enabled = vscode.workspace.getConfiguration('latex-utilities.texdef').get('enabled')
-        if (!enabled) {
-            return
-        }
-
-        const line = document.lineAt(position.line)
-        let command: vscode.Range | undefined
-
-        const pattern = /\\[\w@]+/g
-        let match = pattern.exec(line.text)
-        while (match !== null) {
-            const matchStart = line.range.start.translate(0, match.index)
-            const matchEnd = matchStart.translate(0, match[0].length)
-            const matchRange = new vscode.Range(matchStart, matchEnd)
-
-            if (matchRange.contains(position)) {
-                command = matchRange
-                break
+        try {
+            const enabled = vscode.workspace.getConfiguration('latex-utilities.texdef').get('enabled')
+            if (!enabled) {
+                return
             }
-            match = pattern.exec(line.text)
-        }
 
-        if (command === undefined) {
-            return
-        }
+            const line = document.lineAt(position.line)
+            let command: vscode.Range | undefined
 
-        checkCommandExists('texdef')
+            const pattern = /\\[\w@]+/g
+            let match = pattern.exec(line.text)
+            while (match !== null) {
+                const matchStart = line.range.start.translate(0, match.index)
+                const matchEnd = matchStart.translate(0, match[0].length)
+                const matchRange = new vscode.Range(matchStart, matchEnd)
 
-        const texdefOptions = ['--source', '--Find', '--tex', 'latex']
-        const packages = this.extension.manager.usedPackages(document)
-        if (/\.sty$/.test(document.uri.fsPath)) {
-            texdefOptions.push(document.uri.fsPath.replace(/\.sty$/, ''))
-        }
-        texdefOptions.push(...[...packages].map(p => ['-p', p]).reduce((prev, next) => prev.concat(next), []))
-        const documentClass = this.getDocumentClass(document)
-        texdefOptions.push('--class', documentClass !== null ? documentClass : 'article')
-        texdefOptions.push(document.getText(command))
+                if (matchRange.contains(position)) {
+                    command = matchRange
+                    break
+                }
+                match = pattern.exec(line.text)
+            }
 
-        const texdefResult = await this.getFirstLineOfOutput('texdef', texdefOptions)
+            if (command === undefined) {
+                return
+            }
 
-        const resultPattern = /% (.+), line (\d+):/
-        let result: RegExpMatchArray | null
-        if ((result = texdefResult.match(resultPattern)) !== null) {
-            this.extension.telemetryReporter.sendTelemetryEvent('texdef')
-            return new vscode.Location(vscode.Uri.file(result[1]), new vscode.Position(parseInt(result[2]) - 1, 0))
-        } else {
-            vscode.window.showWarningMessage(`Could not find definition for ${document.getText(command)}`)
-            this.extension.logger.addLogMessage(`Could not find definition for ${document.getText(command)}`)
-            return
+            checkCommandExists('texdef')
+
+            const texdefOptions = ['--source', '--Find', '--tex', 'latex']
+            const packages = this.extension.manager.usedPackages(document)
+            if (/\.sty$/.test(document.uri.fsPath)) {
+                texdefOptions.push(document.uri.fsPath.replace(/\.sty$/, ''))
+            }
+            texdefOptions.push(...[...packages].map(p => ['-p', p]).reduce((prev, next) => prev.concat(next), []))
+            const documentClass = this.getDocumentClass(document)
+            texdefOptions.push('--class', documentClass !== null ? documentClass : 'article')
+            texdefOptions.push(document.getText(command))
+
+            const texdefResult = await this.getFirstLineOfOutput('texdef', texdefOptions)
+
+            const resultPattern = /% (.+), line (\d+):/
+            let result: RegExpMatchArray | null
+            if ((result = texdefResult.match(resultPattern)) !== null) {
+                this.extension.telemetryReporter.sendTelemetryEvent('texdef')
+                return new vscode.Location(vscode.Uri.file(result[1]), new vscode.Position(parseInt(result[2]) - 1, 0))
+            } else {
+                vscode.window.showWarningMessage(`Could not find definition for ${document.getText(command)}`)
+                this.extension.logger.addLogMessage(`Could not find definition for ${document.getText(command)}`)
+                return
+            }
+        } catch (error) {
+            this.extension.logger.addLogMessage(error)
+            this.extension.telemetryReporter.sendTelemetryException(error, {
+                'command': 'MacroDefinitions.provideDefinition',
+            })
+            this.extension.logger.addLogMessage("Error reported.")
         }
     }
 

@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.3] - 2022-07-30
+### Improved
+- Add error telemetry
+
 ## [0.4.2] - 2022-07-29
 
 ### Fixed
