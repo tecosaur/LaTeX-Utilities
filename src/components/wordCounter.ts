@@ -33,7 +33,7 @@ export class WordCounter {
         this.setStatus()
     }
 
-    async counts(merge: boolean = true, file = this.extension.manager.rootFile): Promise<TexCount> {
+    async counts(merge: boolean = true, file = vscode.window.activeTextEditor?.document.fileName): Promise<TexCount> {
         return new Promise((resolve, _reject) => {
             if (file === undefined) {
                 this.extension.logger.addLogMessage('A valid file was not give for TexCount')

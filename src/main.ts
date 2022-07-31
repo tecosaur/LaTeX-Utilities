@@ -22,25 +22,39 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
-            extension.withTelemetry('editLiveSnippetsFile', extension.completionWatcher.editSnippetsFile)
+            extension.withTelemetry('editLiveSnippetsFile', () => {
+                extension.completionWatcher.editSnippetsFile()
+            })
         ),
         vscode.commands.registerCommand('latex-utilities.resetLiveSnippetsFile', () =>
-            extension.withTelemetry('resetLiveSnippetsFile', extension.completionWatcher.resetSnippetsFile)
+            extension.withTelemetry('resetLiveSnippetsFile', () => {
+                extension.completionWatcher.resetSnippetsFile()
+            })
         ),
         vscode.commands.registerCommand('latex-utilities.compareLiveSnippetsFile', () =>
-            extension.withTelemetry('compareLiveSnippetsFile', extension.completionWatcher.compareSnippetsFile)
+            extension.withTelemetry('compareLiveSnippetsFile', () => {
+                extension.completionWatcher.compareSnippetsFile()
+            })
         ),
         vscode.commands.registerCommand('latex-utilities.formattedPaste', () => 
-            extension.withTelemetry('formattedPaste', extension.paster.paste)
+            extension.withTelemetry('formattedPaste', () => {
+                extension.paster.paste()
+            })
         ),
         vscode.commands.registerCommand('latex-utilities.citeZotero', () => 
-            extension.withTelemetry('citeZotero', extension.zotero.cite)
+            extension.withTelemetry('citeZotero', () => {
+                extension.zotero.cite()
+            })
         ),
         vscode.commands.registerCommand('latex-utilities.openInZotero', () => 
-            extension.withTelemetry('openInZotero', extension.zotero.openCitation)
+            extension.withTelemetry('openInZotero', () => {
+                extension.zotero.openCitation()
+            })
         ),
         vscode.commands.registerCommand('latex-utilities.selectWordcountFormat', () =>
-            extension.withTelemetry('selectWordcountFormat', extension.wordCounter.pickFormat)
+            extension.withTelemetry('selectWordcountFormat', () => {
+                extension.wordCounter.pickFormat()
+            })
         ),
     )
 
@@ -61,7 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
         }),
         vscode.workspace.onDidCloseTextDocument((e: vscode.TextDocument) => {
             if (e.uri.fsPath.includes(extension.completionWatcher.snippetFile.user)) {
-                extension.withTelemetry('onDidCloseTextDocument_determineIfUserSnippetsRedundant', extension.completionWatcher.determineIfUserSnippetsRedundant)
+                extension.withTelemetry('onDidCloseTextDocument_determineIfUserSnippetsRedundant', () => extension.completionWatcher.determineIfUserSnippetsRedundant())
             }
         }),
         vscode.window.onDidChangeActiveTextEditor((_e: vscode.TextEditor | undefined) => {
@@ -173,6 +187,7 @@ export class Extension {
     }
 
     withTelemetry(command: string, callback: () => void) {
+        this.logger.addLogMessage(command)
         try {
             callback()
         } catch (error) {

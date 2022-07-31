@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.5] - 2022-07-31
+### Fixed
+- Fix bugs introduced in 0.4.3
+
 ## [0.4.4] - 2022-07-31
 ### Improved
 - Prompt user when TexDef is not installed
