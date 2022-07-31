@@ -173,7 +173,6 @@ export class Extension {
     }
 
     withTelemetry(command: string, callback: () => void) {
-        this.telemetryReporter.sendTelemetryEvent(command)
         try {
             callback()
         } catch (error) {

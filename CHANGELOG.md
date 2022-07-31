@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.4] - 2022-07-31
+### Improved
+- Prompt user when TexDef is not installed
+
 ## [0.4.3] - 2022-07-30
 ### Improved
 - Add error telemetry
@@ -178,7 +182,10 @@ Announce that extension is no longer maintained.
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.4.4...HEAD
+[0.4.4]: https://github.com/tecosaur/latex-utilities/compare/v0.4.3...v0.4.4
+[0.4.3]: https://github.com/tecosaur/latex-utilities/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/tecosaur/latex-utilities/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/tecosaur/latex-utilities/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/tecosaur/latex-utilities/compare/v0.3.7...v0.4.0
 [0.3.7]: https://github.com/tecosaur/latex-utilities/compare/v0.3.5...v0.3.7

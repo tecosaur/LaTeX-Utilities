@@ -92,24 +92,29 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
         return new Promise(resolve => {
             const startTime = +new Date()
             this.extension.logger.addLogMessage(`Running command ${command} ${options.join(' ')}`)
-            const cmdProcess = spawn(command, options)
-            cmdProcess.stdout.on('data', data => {
-                this.extension.logger.addLogMessage(
-                    `Took ${+new Date() - startTime}ms to find definition for ${options[options.length - 1]}`
-                )
-                cmdProcess.kill()
-                resolve(data.toString())
-            })
-            cmdProcess.stdout.on('error', () => {
-                this.extension.logger.addLogMessage(`Error running texdef for ${options[options.length - 1]}}`)
-                resolve('')
-            })
-            cmdProcess.stdout.on('end', () => {
-                resolve('')
-            })
-            setTimeout(() => {
-                cmdProcess.kill()
-            }, 6000)
+            try {
+                const cmdProcess = spawn(command, options)
+                
+                cmdProcess.stdout.on('data', data => {
+                    this.extension.logger.addLogMessage(
+                        `Took ${+new Date() - startTime}ms to find definition for ${options[options.length - 1]}`
+                    )
+                    cmdProcess.kill()
+                    resolve(data.toString())
+                })
+                cmdProcess.stdout.on('error', () => {
+                    this.extension.logger.addLogMessage(`Error running texdef for ${options[options.length - 1]}}`)
+                    resolve('')
+                })
+                cmdProcess.stdout.on('end', () => {
+                    resolve('')
+                })
+                setTimeout(() => {
+                    cmdProcess.kill()
+                }, 6000)
+            } catch (error) {
+                this.extension.logger.showErrorMessage(`Got ${error} while running texdef. Is texdef installed?`)
+            }
         })
     }
 }
