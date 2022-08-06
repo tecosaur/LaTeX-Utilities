@@ -3,7 +3,7 @@
     "displayName": "LaTeX Utilities",
     "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
     "icon": "icon.png",
-    "version": "0.4.5",
+    "version": "0.4.6",
     "publisher": "tecosaur",
     "license": "MIT",
     "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
@@ -158,6 +158,11 @@
                     "type": "boolean",
                     "default": "true",
                     "markdownDescription": "Notify you when the extension updates"
+                },
+                "latex-utilities.message.error.show": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Show error messages"
                 },
                 "latex-utilities.texdef.enabled": {
                     "type": "boolean",

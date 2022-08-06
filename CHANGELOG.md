@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.6] - 2022-08-06
+### Fixed
+- Warn users about JSON errors in snippet file.
+
 ## [0.4.5] - 2022-07-31
 ### Fixed
 - Fix bugs introduced in 0.4.3
@@ -186,7 +190,9 @@ Announce that extension is no longer maintained.
 -   Image Pasting (via `ctrl`+`shift`+`v` and "Paste an Image File")
 -   Live Snippets (auto-activating, with regex)
 
-[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.4.4...HEAD
+[unreleased]: https://github.com/tecosaur/latex-utilities/compare/v0.4.6...HEAD
+[0.4.6]: https://github.com/tecosaur/latex-utilities/compare/v0.4.5...v0.4.6
+[0.4.5]: https://github.com/tecosaur/latex-utilities/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/tecosaur/latex-utilities/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/tecosaur/latex-utilities/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/tecosaur/latex-utilities/compare/v0.4.1...v0.4.2

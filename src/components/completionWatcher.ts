@@ -338,14 +338,19 @@ export class CompletionWatcher {
             return
         } else {
             this.snippetFile.current = snippetsFile
-            const snippets = JSON.parse(readFileSync(this.snippetFile.current, { encoding: 'utf8' }))
+            try {
+                const snippets = JSON.parse(readFileSync(this.snippetFile.current, { encoding: 'utf8' }))
 
-            for (let i = 0; i < snippets.length; i++) {
-                snippets[i].prefix = new RegExp(snippets[i].prefix)
+                for (let i = 0; i < snippets.length; i++) {
+                    snippets[i].prefix = new RegExp(snippets[i].prefix)
+                }
+
+                this.snippets = snippets
+                this.processSnippets()
+            } catch (error) {
+                this.extension.logger.logError(error)
+                this.extension.logger.showErrorMessage("Couldn't load snippets file. Is it a valid JSON?")
             }
-
-            this.snippets = snippets
-            this.processSnippets()
         }
         this.extension.logger.addLogMessage('Live Snippets Loaded')
     }
