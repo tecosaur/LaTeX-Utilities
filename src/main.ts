@@ -36,17 +36,17 @@ export function activate(context: vscode.ExtensionContext) {
                 extension.completionWatcher.compareSnippetsFile()
             })
         ),
-        vscode.commands.registerCommand('latex-utilities.formattedPaste', () => 
+        vscode.commands.registerCommand('latex-utilities.formattedPaste', () =>
             extension.withTelemetry('formattedPaste', () => {
                 extension.paster.paste()
             })
         ),
-        vscode.commands.registerCommand('latex-utilities.citeZotero', () => 
+        vscode.commands.registerCommand('latex-utilities.citeZotero', () =>
             extension.withTelemetry('citeZotero', () => {
                 extension.zotero.cite()
             })
         ),
-        vscode.commands.registerCommand('latex-utilities.openInZotero', () => 
+        vscode.commands.registerCommand('latex-utilities.openInZotero', () =>
             extension.withTelemetry('openInZotero', () => {
                 extension.zotero.openCitation()
             })
@@ -193,9 +193,9 @@ export class Extension {
         } catch (error) {
             this.logger.addLogMessage(error)
             this.telemetryReporter.sendTelemetryException(error, {
-                'command': command
+                command
             })
-            this.logger.addLogMessage("Error reported.")
+            this.logger.addLogMessage('Error reported.')
         }
     }
 }

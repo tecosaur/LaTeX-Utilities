@@ -2,12 +2,18 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as cp from 'child_process'
+import * as util from 'util'
 
 import { Extension } from '../main'
 import { hasTexId } from '../utils'
 
 interface TexCount {
     words: {
+        body: number
+        headers: number
+        captions: number
+    }
+    chars: {
         body: number
         headers: number
         captions: number
@@ -33,74 +39,80 @@ export class WordCounter {
         this.setStatus()
     }
 
-    async counts(merge: boolean = true, file = vscode.window.activeTextEditor?.document.fileName): Promise<TexCount> {
-        return new Promise((resolve, _reject) => {
-            if (file === undefined) {
-                this.extension.logger.addLogMessage('A valid file was not give for TexCount')
-                return
+    async counts(merge: boolean = true, file = vscode.window.activeTextEditor?.document.fileName): Promise<TexCount|undefined> {
+        if (file === undefined) {
+            this.extension.logger.addLogMessage('A valid file was not give for TexCount')
+            return
+        }
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.countWord')
+        const args = (configuration.get('args') as string[]).slice()
+        const execFile = util.promisify(cp.execFile)
+        if (merge) {
+            args.push('-merge')
+        }
+        args.push('-brief')
+        let command = configuration.get('path') as string
+        if (configuration.get('docker.enabled')) {
+            if (process.platform === 'win32') {
+                command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat')
+            } else {
+                command = path.resolve(this.extension.extensionRoot, './scripts/countword-linux.sh')
+                fs.chmodSync(command, 0o755)
             }
-            const configuration = vscode.workspace.getConfiguration('latex-utilities.countWord')
-            const args = configuration.get('args') as string[]
-            if (merge) {
-                args.push('-merge')
-            }
-            args.push('-brief')
-            let command = configuration.get('path') as string
-            if (configuration.get('docker.enabled')) {
-                if (process.platform === 'win32') {
-                    command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat')
-                } else {
-                    command = path.resolve(this.extension.extensionRoot, './scripts/countword-linux.sh')
-                    fs.chmodSync(command, 0o755)
-                }
-            }
-            const proc = cp.spawn(command, args.concat([path.basename(file)]), { cwd: path.dirname(file) })
-            proc.stdout.setEncoding('utf8')
-            proc.stderr.setEncoding('utf8')
+        }
+        this.extension.logger.addLogMessage(`TexCount args: ${args}`)
+        let stdout; let stderr
+        try {
+            ({stdout, stderr} = await execFile(command, args.concat([path.basename(file)]), {
+                cwd: path.dirname(file)
+            }))
 
-            let stdout = ''
-            proc.stdout.on('data', newStdout => {
-                stdout += newStdout
-            })
-
-            let stderr = ''
-            proc.stderr.on('data', newStderr => {
-                stderr += newStderr
-            })
-
-            proc.on('error', err => {
-                this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`)
-                this.extension.logger.showErrorMessage(
-                    'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
-                )
-            })
-
-            proc.on('exit', exitCode => {
-                if (exitCode !== 0) {
-                    this.extension.logger.addLogMessage(`Cannot count words, code: ${exitCode}, ${stderr}`)
-                    this.extension.logger.showErrorMessage(
-                        'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
-                    )
-                } else {
-                    // just get the last line, ignoring errors
-                    stdout = stdout
-                        .replace(/\(errors:\d+\)/, '')
-                        .split('\n')
-                        .map(l => l.trim())
-                        .filter(l => l !== '')
-                        .slice(-1)[0]
-                    this.extension.logger.addLogMessage(`TeXCount output: ${stdout}`)
-                    resolve(this.parseTexCount(stdout))
-                }
-            })
-        })
+        } catch (err) {
+            this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`)
+            this.extension.logger.showErrorMessage(
+                'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
+            )
+            return undefined
+        }
+        // just get the last line, ignoring errors
+        const stdoutWord = stdout
+            .replace(/\(errors:\d+\)/, '')
+            .split('\n')
+            .map(l => l.trim())
+            .filter(l => l !== '')
+            .slice(-1)[0]
+        this.extension.logger.addLogMessage(`TeXCount output for word: ${stdout}`)
+        args.push('-char')
+        this.extension.logger.addLogMessage(`TexCount args: ${args}`)
+        try {
+            ({stdout, stderr} = await execFile(command, args.concat([path.basename(file)]), {
+                cwd: path.dirname(file)
+            }))
+        } catch (err) {
+            this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`)
+            this.extension.logger.showErrorMessage(
+                'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
+            )
+            return undefined
+        }
+        const stdoutChar = stdout
+            .replace(/\(errors:\d+\)/, '')
+            .split('\n')
+            .map(l => l.trim())
+            .filter(l => l !== '')
+            .slice(-1)[0]
+        this.extension.logger.addLogMessage(`TeXCount output for char: ${stdout}`)
+        return this.parseTexCount(stdoutWord, stdoutChar)
     }
 
-    parseTexCount(text: string): TexCount {
-        const reMatch = /^(?<wordsBody>\d+)\+(?<wordsHeaders>\d+)\+(?<wordsCaptions>\d+) \((?<instancesHeaders>\d+)\/(?<instancesFloats>\d+)\/(?<mathInline>\d+)\/(?<mathDisplayed>\d+)\)/.exec(
-            text
+    parseTexCount(word: string, char: string): TexCount {
+        const reMatchWord = /^(?<wordsBody>\d+)\+(?<wordsHeaders>\d+)\+(?<wordsCaptions>\d+) \((?<instancesHeaders>\d+)\/(?<instancesFloats>\d+)\/(?<mathInline>\d+)\/(?<mathDisplayed>\d+)\)/.exec(
+            word
         )
-        if (reMatch !== null) {
+        const reMatchChar = /^(?<charsBody>\d+)\+(?<charsHeaders>\d+)\+(?<charsCaptions>\d+) \((?<instancesHeaders>\d+)\/(?<instancesFloats>\d+)\/(?<mathInline>\d+)\/(?<mathDisplayed>\d+)\)/.exec(
+            char
+        )
+        if (reMatchWord !== null && reMatchChar !== null) {
             const {
                 groups: {
                     /* eslint-disable @typescript-eslint/ban-ts-ignore */
@@ -120,13 +132,31 @@ export class WordCounter {
                     mathDisplayed
                     /* eslint-enable @typescript-eslint/ban-ts-ignore */
                 }
-            } = reMatch
+            } = reMatchWord
+
+            const {
+                groups: {
+                    /* eslint-disable @typescript-eslint/ban-ts-ignore */
+                    // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
+                    charsBody,
+                    // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
+                    charsHeaders,
+                    // @ts-ignore: ts _should_ be better with regex groups, but it isn't (yet)
+                    charsCaptions,
+                    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+                }
+            } = reMatchChar
 
             return {
                 words: {
                     body: parseInt(wordsBody),
                     headers: parseInt(wordsHeaders),
                     captions: parseInt(wordsCaptions)
+                },
+                chars: {
+                    body: parseInt(charsBody),
+                    headers: parseInt(charsHeaders),
+                    captions: parseInt(charsCaptions)
                 },
                 instances: {
                     headers: parseInt(instancesHeaders),
@@ -164,11 +194,12 @@ export class WordCounter {
     async pickFormat() {
         const texCount = await this.counts()
 
-        const templates = ['${words} Words', '${wordsBody} Words', '${headers} Headers', '${floats} Floats', '${math} Equations']
+        const templates = [
+            '${words} Words', '${wordsBody} Words', '${chars} Chars', '${charsBody} Chars', '${headers} Headers', '${floats} Floats', '${math} Equations', 'custom']
         const options: { [template: string]: string } = {}
         for (const template of templates) {
             options[template] = this.formatString(texCount, template)
-            if (template.startsWith('${wordsBody}')) {
+            if (template.startsWith('${wordsBody}') || template.startsWith('${charsBody}')) {
                 options[template] += ' (body only)'
             }
         }
@@ -187,6 +218,7 @@ export class WordCounter {
                 prompt:
                     'The Template. Feel free to use the following placeholders: \
                     ${wordsBody}, ${wordsHeaders}, ${wordsCaptions}, ${words}, \
+                    ${charsBody}, ${charsHeaders}, ${charsCaptions}, ${chars}, \
                     ${headers}, ${floats}, ${mathInline}, ${mathDisplayed}, ${math}'
             })
         } else {
@@ -210,12 +242,19 @@ export class WordCounter {
         }
     }
 
-    formatString(texCount: TexCount, template: string) {
+    formatString(texCount: TexCount | undefined, template: string) {
+        if (texCount === undefined) {
+            return '...'
+        }
         const replacements: { [placeholder: string]: number } = {
             '${wordsBody}': texCount.words.body,
             '${wordsHeaders}': texCount.words.headers,
             '${wordsCaptions}': texCount.words.captions,
+            '${charsBody}': texCount.chars.body,
+            '${charsHeaders}': texCount.chars.headers,
+            '${charsCaptions}': texCount.chars.captions,
             '${words}': texCount.words.body + texCount.words.headers + texCount.words.captions,
+            '${chars}': texCount.chars.body + texCount.chars.headers + texCount.chars.captions,
             '${headers}': texCount.instances.headers,
             '${floats}': texCount.instances.floats,
             '${mathInline}': texCount.instances.math.inline,

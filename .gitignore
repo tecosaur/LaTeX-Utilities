@@ -2,7 +2,7 @@ out
 node_modules
 .vscode-test/
 *.vsix
-
+VERSION
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

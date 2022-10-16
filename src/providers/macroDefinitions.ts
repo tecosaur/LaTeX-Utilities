@@ -71,7 +71,7 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
             this.extension.telemetryReporter.sendTelemetryException(error, {
                 'command': 'MacroDefinitions.provideDefinition',
             })
-            this.extension.logger.addLogMessage("Error reported.")
+            this.extension.logger.addLogMessage('Error reported.')
         }
     }
 
@@ -94,7 +94,7 @@ export class MacroDefinitions implements vscode.DefinitionProvider {
             this.extension.logger.addLogMessage(`Running command ${command} ${options.join(' ')}`)
             try {
                 const cmdProcess = spawn(command, options)
-                
+
                 cmdProcess.stdout.on('data', data => {
                     this.extension.logger.addLogMessage(
                         `Took ${+new Date() - startTime}ms to find definition for ${options[options.length - 1]}`
