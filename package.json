@@ -3,7 +3,7 @@
     "displayName": "LaTeX Utilities",
     "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
     "icon": "icon.png",
-    "version": "0.4.8",
+    "version": "0.4.9",
     "publisher": "tecosaur",
     "license": "MIT",
     "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
@@ -143,6 +143,11 @@
                     "type": "string",
                     "default": "texcount",
                     "markdownDescription": "Define the location of TeXCount executive file/script.\nThis command will be joint with `latex-utilities.countWord.args` and required arguments to form a complete command of TeXCount."
+                },
+                "latex-utilities.countWord.docker.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Use Docker to run TeXCount. This requires Docker to be installed and running. We will use docker config from LaTeX-Workshop."
                 },
                 "latex-utilities.countWord.args": {
                     "type": "array",
