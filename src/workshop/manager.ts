@@ -1,14 +1,14 @@
 // from James-Yu/LaTeX-Workshop
 
-import { Extension } from '../main'
-import * as vscode from 'vscode'
-import * as path from 'path'
-import * as fs from 'fs'
-import * as utils from './utils'
-import * as tmp from 'tmp'
-import {FinderUtils} from './finderutils'
-import type {MatchPath} from './pathutils'
-import {PathUtils, PathRegExp} from './pathutils'
+import { Extension } from '../main';
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as utils from './utils';
+import * as tmp from 'tmp';
+import {FinderUtils} from './finderutils';
+import type {MatchPath} from './pathutils';
+import {PathUtils, PathRegExp} from './pathutils';
 
 
 /**
@@ -54,26 +54,26 @@ export class Manager {
     /**
      * The content cache for each LaTeX file.
      */
-    private readonly cachedContent = Object.create(null) as Content
+    private readonly cachedContent = Object.create(null) as Content;
 
-    private readonly localRootFiles = Object.create(null) as { [key: string]: string | undefined }
-    private readonly rootFilesLanguageIds = Object.create(null) as { [key: string]: string | undefined }
+    private readonly localRootFiles = Object.create(null) as { [key: string]: string | undefined };
+    private readonly rootFilesLanguageIds = Object.create(null) as { [key: string]: string | undefined };
     // Store one root file for each workspace.
-    private readonly rootFiles = Object.create(null) as { [key: string]: RootFileType | undefined }
-    private workspaceRootDirUri: string = ''
+    private readonly rootFiles = Object.create(null) as { [key: string]: RootFileType | undefined };
+    private workspaceRootDirUri = '';
 
-    private readonly extension: Extension
-    private readonly rsweaveExt: string[] = ['.rnw', '.Rnw', '.rtex', '.Rtex', '.snw', '.Snw']
-    private readonly jlweaveExt: string[] = ['.jnw', '.jtexw']
-    private readonly finderUtils: FinderUtils
-    private readonly pathUtils: PathUtils
-    private tmpDir: string
+    private readonly extension: Extension;
+    private readonly rsweaveExt: string[] = ['.rnw', '.Rnw', '.rtex', '.Rtex', '.snw', '.Snw'];
+    private readonly jlweaveExt: string[] = ['.jnw', '.jtexw'];
+    private readonly finderUtils: FinderUtils;
+    private readonly pathUtils: PathUtils;
+    private tmpDir: string;
 
     constructor(extension: Extension) {
-        this.extension = extension
-        this.finderUtils = new FinderUtils(extension)
-        this.pathUtils = new PathUtils(extension)
-        this.tmpDir = tmp.dirSync({unsafeCleanup: true}).name.split(path.sep).join('/')
+        this.extension = extension;
+        this.finderUtils = new FinderUtils(extension);
+        this.pathUtils = new PathUtils(extension);
+        this.tmpDir = tmp.dirSync({unsafeCleanup: true}).name.split(path.sep).join('/');
     }
 
     /**
@@ -84,19 +84,19 @@ export class Manager {
      *
      * @param texPath The path of a LaTeX file.
      */
-     getOutDir(texPath?: string) {
+    getOutDir(texPath?: string) {
         if (texPath === undefined) {
-            texPath = this.rootFile
+            texPath = this.rootFile;
         }
         // rootFile is also undefined
         if (texPath === undefined) {
-            return './'
+            return './';
         }
 
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const outDir = configuration.get('latex.outDir') as string
-        const out = utils.replaceArgumentPlaceholders(texPath, this.tmpDir)(outDir)
-        return path.normalize(out).split(path.sep).join('/')
+        const configuration = vscode.workspace.getConfiguration('latex-workshop');
+        const outDir = configuration.get('latex.outDir') as string;
+        const out = utils.replaceArgumentPlaceholders(texPath, this.tmpDir)(outDir);
+        return path.normalize(out).split(path.sep).join('/');
     }
 
 
@@ -104,7 +104,7 @@ export class Manager {
      * The path of the directory of the root file.
      */
     get rootDir() {
-        return this.rootFile ? path.dirname(this.rootFile) : undefined
+        return this.rootFile ? path.dirname(this.rootFile) : undefined;
     }
 
     /**
@@ -112,70 +112,70 @@ export class Manager {
      * It is `undefined` before `findRoot` called.
      */
     get rootFile(): string | undefined {
-        const ret = this.rootFiles[this.workspaceRootDirUri]
+        const ret = this.rootFiles[this.workspaceRootDirUri];
         if (ret) {
             if (ret.type === 'filePath') {
-                return ret.filePath
+                return ret.filePath;
             } else {
                 if (ret.uri.scheme === 'file') {
-                    return ret.uri.fsPath
+                    return ret.uri.fsPath;
                 } else {
-                    this.extension.logger.addLogMessage(`The file cannot be used as the root file: ${ret.uri.toString(true)}`)
-                    return
+                    this.extension.logger.addLogMessage(`The file cannot be used as the root file: ${ret.uri.toString(true)}`);
+                    return;
                 }
             }
         } else {
-            return
+            return;
         }
     }
 
     set rootFile(root: string | undefined) {
         if (root) {
-            this.rootFiles[this.workspaceRootDirUri] = { type: 'filePath', filePath: root }
+            this.rootFiles[this.workspaceRootDirUri] = { type: 'filePath', filePath: root };
         } else {
-            this.rootFiles[this.workspaceRootDirUri] = undefined
+            this.rootFiles[this.workspaceRootDirUri] = undefined;
         }
     }
 
     get rootFileUri(): vscode.Uri | undefined {
-        const root = this.rootFiles[this.workspaceRootDirUri]
+        const root = this.rootFiles[this.workspaceRootDirUri];
         if (root) {
             if (root.type === 'filePath') {
-                return vscode.Uri.file(root.filePath)
+                return vscode.Uri.file(root.filePath);
             } else {
-                return root.uri
+                return root.uri;
             }
         } else {
-            return
+            return;
         }
     }
 
     set rootFileUri(root: vscode.Uri | undefined) {
-        let rootFile: RootFileType | undefined
+        let rootFile: RootFileType | undefined;
         if (root) {
             if (root.scheme === 'file') {
-                rootFile = { type: 'filePath', filePath: root.fsPath }
+                rootFile = { type: 'filePath', filePath: root.fsPath };
             } else {
-                rootFile = { type: 'uri', uri: root }
+                rootFile = { type: 'uri', uri: root };
             }
         }
-        this.rootFiles[this.workspaceRootDirUri] = rootFile
+        this.rootFiles[this.workspaceRootDirUri] = rootFile;
     }
 
     get localRootFile() {
-        return this.localRootFiles[this.workspaceRootDirUri]
+        return this.localRootFiles[this.workspaceRootDirUri];
     }
 
     set localRootFile(localRoot: string | undefined) {
-        this.localRootFiles[this.workspaceRootDirUri] = localRoot
+        this.localRootFiles[this.workspaceRootDirUri] = localRoot;
     }
 
     get rootFileLanguageId() {
-        return this.rootFilesLanguageIds[this.workspaceRootDirUri]
+        return this.rootFilesLanguageIds[this.workspaceRootDirUri];
     }
 
     set rootFileLanguageId(id: string | undefined) {
-        this.rootFilesLanguageIds[this.workspaceRootDirUri] = id
+        this.rootFilesLanguageIds[this.workspaceRootDirUri] = id;
     }
 
     /**
@@ -188,75 +188,75 @@ export class Manager {
      */
     getIncludedTeX(file?: string, includedTeX: string[] = []): string[] {
         if (file === undefined) {
-            file = this.rootFile
+            file = this.rootFile;
         }
         if (file === undefined) {
-            return []
+            return [];
         }
         if (!(file in this.extension.manager.cachedContent)) {
-            return []
+            return [];
         }
-        includedTeX.push(file)
+        includedTeX.push(file);
         for (const child of this.extension.manager.cachedContent[file].children) {
             if (includedTeX.includes(child.file)) {
                 // Already included
-                continue
+                continue;
             }
-            this.getIncludedTeX(child.file, includedTeX)
+            this.getIncludedTeX(child.file, includedTeX);
         }
-        return includedTeX
+        return includedTeX;
     }
 
     usedPackages(document: vscode.TextDocument) {
         // slower but will do the work for now
-        const text = document.getText()
-        const allPkgs: Set<string> = new Set()
+        const text = document.getText();
+        const allPkgs: Set<string> = new Set();
         // use regex to find all \usepackage{}
-        const pkgs = text.match(/\\usepackage\{(.*?)\}/g)
+        const pkgs = text.match(/\\usepackage\{(.*?)\}/g);
         if (pkgs) {
             for (const pkg of pkgs) {
-                const pkgName = pkg.replace(/\\usepackage\{(.*?)\}/, '$1')
-                allPkgs.add(pkgName)
+                const pkgName = pkg.replace(/\\usepackage\{(.*?)\}/, '$1');
+                allPkgs.add(pkgName);
             }
-            this.extension.logger.addLogMessage(`${pkgs}`)
+            this.extension.logger.addLogMessage(`${pkgs}`);
         }
-        return allPkgs
+        return allPkgs;
     }
 
     getGraphicsPath(content: string): string[] {
-        const graphicsPath: string[] = []
-        const regex = /\\graphicspath{[\s\n]*((?:{[^{}]*}[\s\n]*)*)}/g
-        const noVerbContent = utils.stripCommentsAndVerbatim(content)
-        let result: string[] | null
+        const graphicsPath: string[] = [];
+        const regex = /\\graphicspath{[\s\n]*((?:{[^{}]*}[\s\n]*)*)}/g;
+        const noVerbContent = utils.stripCommentsAndVerbatim(content);
+        let result: string[] | null;
         do {
-            result = regex.exec(noVerbContent)
+            result = regex.exec(noVerbContent);
             if (result) {
                 for (const dir of result[1].split(/\{|\}/).filter(s => s.replace(/^\s*$/, ''))) {
                     if (graphicsPath.includes(dir)) {
-                        continue
+                        continue;
                     }
-                    graphicsPath.push(dir)
+                    graphicsPath.push(dir);
                 }
             }
-        } while (result)
-        this.extension.logger.addLogMessage(`${graphicsPath}`)
-        return graphicsPath
+        } while (result);
+        this.extension.logger.addLogMessage(`${graphicsPath}`);
+        return graphicsPath;
     }
 
     getCachedContent(filePath: string): Content[string] | undefined {
-        return this.cachedContent[filePath]
+        return this.cachedContent[filePath];
     }
 
     private inferLanguageId(filename: string): string | undefined {
-        const ext = path.extname(filename).toLocaleLowerCase()
+        const ext = path.extname(filename).toLocaleLowerCase();
         if (ext === '.tex') {
-            return 'latex'
+            return 'latex';
         } else if (this.jlweaveExt.includes(ext)) {
-            return 'jlweave'
+            return 'jlweave';
         } else if (this.rsweaveExt.includes(ext)) {
-            return 'rsweave'
+            return 'rsweave';
         } else {
-            return undefined
+            return undefined;
         }
     }
 
@@ -266,31 +266,31 @@ export class Manager {
      * @param id The identifier of language.
      */
     hasTexId(id: string) {
-        return ['tex', 'latex', 'latex-expl3', 'doctex', 'jlweave', 'rsweave'].includes(id)
+        return ['tex', 'latex', 'latex-expl3', 'doctex', 'jlweave', 'rsweave'].includes(id);
     }
 
     private findWorkspace() {
-        const firstDir = vscode.workspace.workspaceFolders?.[0]
+        const firstDir = vscode.workspace.workspaceFolders?.[0];
         // If no workspace is opened.
         if (!firstDir) {
-            this.workspaceRootDirUri = ''
-            return
+            this.workspaceRootDirUri = '';
+            return;
         }
         // If we don't have an active text editor, we can only make a guess.
         // Let's guess the first one.
         if (!vscode.window.activeTextEditor) {
-            this.workspaceRootDirUri = firstDir.uri.toString(true)
-            return
+            this.workspaceRootDirUri = firstDir.uri.toString(true);
+            return;
         }
         // Get the workspace folder which contains the active document.
-        const activeFileUri = vscode.window.activeTextEditor.document.uri
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(activeFileUri)
+        const activeFileUri = vscode.window.activeTextEditor.document.uri;
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(activeFileUri);
         if (workspaceFolder) {
-            this.workspaceRootDirUri = workspaceFolder.uri.toString(true)
-            return
+            this.workspaceRootDirUri = workspaceFolder.uri.toString(true);
+            return;
         }
         // Guess that the first workspace is the chosen one.
-        this.workspaceRootDirUri = firstDir.uri.toString(true)
+        this.workspaceRootDirUri = firstDir.uri.toString(true);
     }
 
     /**
@@ -298,157 +298,159 @@ export class Manager {
      * The found root is also set to `rootFile`.
      */
     async findRoot(): Promise<string | undefined> {
-        this.findWorkspace()
-        const wsfolders = vscode.workspace.workspaceFolders?.map(e => e.uri.toString(true))
-        this.extension.logger.addLogMessage(`Current workspace folders: ${JSON.stringify(wsfolders)}`)
-        this.extension.logger.addLogMessage(`Current workspaceRootDir: ${this.workspaceRootDirUri}`)
-        this.localRootFile = undefined
+        this.findWorkspace();
+        const wsfolders = vscode.workspace.workspaceFolders?.map(e => e.uri.toString(true));
+        this.extension.logger.addLogMessage(`Current workspace folders: ${JSON.stringify(wsfolders)}`);
+        this.extension.logger.addLogMessage(`Current workspaceRootDir: ${this.workspaceRootDirUri}`);
+        this.localRootFile = undefined;
         const findMethods = [
             () => {
                 if (!vscode.window.activeTextEditor) {
-                    return undefined
+                    return undefined;
                 }
-                const regex = /^(?:%\s*!\s*T[Ee]X\sroot\s*=\s*(.*\.(?:tex|[jrsRS]nw|[rR]tex|jtexw))$)/m
-                let content: string | undefined = vscode.window.activeTextEditor.document.getText()
+                const regex = /^(?:%\s*!\s*T[Ee]X\sroot\s*=\s*(.*\.(?:tex|[jrsRS]nw|[rR]tex|jtexw))$)/m;
+                let content: string | undefined = vscode.window.activeTextEditor.document.getText();
 
-                let result = content.match(regex)
-                const fileStack: string[] = []
+                let result = content.match(regex);
+                const fileStack: string[] = [];
                 if (result) {
-                    let file = path.resolve(path.dirname(vscode.window.activeTextEditor.document.fileName), result[1])
-                    content = fs.readFileSync(file).toString()
+                    let file = path.resolve(path.dirname(vscode.window.activeTextEditor.document.fileName), result[1]);
+                    content = fs.readFileSync(file).toString();
                     if (content === undefined) {
-                        const msg = `Not found root file specified in the magic comment: ${file}`
-                        this.extension.logger.addLogMessage(msg)
-                        throw new Error(msg)
+                        const msg = `Not found root file specified in the magic comment: ${file}`;
+                        this.extension.logger.addLogMessage(msg);
+                        throw new Error(msg);
                     }
-                    fileStack.push(file)
-                    this.extension.logger.addLogMessage(`Found root file by magic comment: ${file}`)
+                    fileStack.push(file);
+                    this.extension.logger.addLogMessage(`Found root file by magic comment: ${file}`);
 
-                    result = content.match(regex)
+                    result = content.match(regex);
                     while (result) {
-                        file = path.resolve(path.dirname(file), result[1])
+                        file = path.resolve(path.dirname(file), result[1]);
                         if (fileStack.includes(file)) {
-                            this.extension.logger.addLogMessage(`Looped root file by magic comment found: ${file}, stop here.`)
-                            return file
+                            this.extension.logger.addLogMessage(`Looped root file by magic comment found: ${file}, stop here.`);
+                            return file;
                         } else {
-                            fileStack.push(file)
-                            this.extension.logger.addLogMessage(`Recursively found root file by magic comment: ${file}`)
+                            fileStack.push(file);
+                            this.extension.logger.addLogMessage(`Recursively found root file by magic comment: ${file}`);
                         }
 
-                        content = fs.readFileSync(file).toString()
+                        content = fs.readFileSync(file).toString();
                         if (content === undefined) {
-                            const msg = `Not found root file specified in the magic comment: ${file}`
-                            this.extension.logger.addLogMessage(msg)
-                            throw new Error(msg)
+                            const msg = `Not found root file specified in the magic comment: ${file}`;
+                            this.extension.logger.addLogMessage(msg);
+                            throw new Error(msg);
 
                         }
-                        result = content.match(regex)
+                        result = content.match(regex);
                     }
-                    return file
+                    return file;
                 }
-                return undefined
+                return undefined;
             },
             () => this.findRootFromActive(),
             () => this.findRootInWorkspace()
-        ]
+        ];
         for (const method of findMethods) {
-            const rootFile = await method()
+            const rootFile = await method();
             if (rootFile === undefined) {
-                continue
+                continue;
             }
             if (this.rootFile !== rootFile) {
-                this.extension.logger.addLogMessage(`Root file changed: from ${this.rootFile} to ${rootFile}`)
-                this.extension.logger.addLogMessage('Start to find all dependencies.')
-                this.rootFile = rootFile
-                this.rootFileLanguageId = this.inferLanguageId(rootFile)
-                this.extension.logger.addLogMessage(`Root file languageId: ${this.rootFileLanguageId}`)
+                this.extension.logger.addLogMessage(`Root file changed: from ${this.rootFile} to ${rootFile}`);
+                this.extension.logger.addLogMessage('Start to find all dependencies.');
+                this.rootFile = rootFile;
+                this.rootFileLanguageId = this.inferLanguageId(rootFile);
+                this.extension.logger.addLogMessage(`Root file languageId: ${this.rootFileLanguageId}`);
             } else {
-                this.extension.logger.addLogMessage(`Keep using the same root file: ${this.rootFile}`)
+                this.extension.logger.addLogMessage(`Keep using the same root file: ${this.rootFile}`);
             }
-            return rootFile
+            return rootFile;
         }
-        return undefined
+        return undefined;
     }
 
     private findRootFromActive(): string | undefined {
         if (!vscode.window.activeTextEditor) {
-            return undefined
+            return undefined;
         }
         if (vscode.window.activeTextEditor.document.uri.scheme !== 'file') {
-            this.extension.logger.addLogMessage(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
-            return undefined
+            this.extension.logger.addLogMessage(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`);
+            return undefined;
         }
-        const regex = /\\begin{document}/m
-        const content = utils.stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText())
-        const result = content.match(regex)
+        const regex = /\\begin{document}/m;
+        const content = utils.stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText());
+        const result = content.match(regex);
         if (result) {
-            const rootSubFile = this.finderUtils.findSubFiles(content)
-            const file = vscode.window.activeTextEditor.document.fileName
+            const rootSubFile = this.finderUtils.findSubFiles(content);
+            const file = vscode.window.activeTextEditor.document.fileName;
             if (rootSubFile) {
-               this.localRootFile = file
-               return rootSubFile
+                this.localRootFile = file;
+                return rootSubFile;
             } else {
-                this.extension.logger.addLogMessage(`Found root file from active editor: ${file}`)
-                return file
+                this.extension.logger.addLogMessage(`Found root file from active editor: ${file}`);
+                return file;
             }
         }
-        return undefined
+        return undefined;
     }
 
     private async findRootInWorkspace(): Promise<string | undefined> {
-        const regex = /\\begin{document}/m
+        const regex = /\\begin{document}/m;
 
         if (!this.workspaceRootDirUri) {
-            return undefined
+            return undefined;
         }
 
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const rootFilesIncludePatterns = configuration.get('latex.search.rootFiles.include') as string[]
-        const rootFilesIncludeGlob = '{' + rootFilesIncludePatterns.join(',') + '}'
-        const rootFilesExcludePatterns = configuration.get('latex.search.rootFiles.exclude') as string[]
-        const rootFilesExcludeGlob = rootFilesExcludePatterns.length > 0 ? '{' + rootFilesExcludePatterns.join(',') + '}' : undefined
+        const configuration = vscode.workspace.getConfiguration('latex-workshop');
+        const rootFilesIncludePatterns = configuration.get('latex.search.rootFiles.include') as string[];
+        const rootFilesIncludeGlob = '{' + rootFilesIncludePatterns.join(',') + '}';
+        const rootFilesExcludePatterns = configuration.get('latex.search.rootFiles.exclude') as string[];
+        const rootFilesExcludeGlob = rootFilesExcludePatterns.length > 0 ? '{' + rootFilesExcludePatterns.join(',') + '}' : undefined;
         try {
-            const files = await vscode.workspace.findFiles(rootFilesIncludeGlob, rootFilesExcludeGlob)
-            const candidates: string[] = []
+            const files = await vscode.workspace.findFiles(rootFilesIncludeGlob, rootFilesExcludeGlob);
+            const candidates: string[] = [];
             for (const file of files) {
                 if (file.scheme !== 'file') {
-                    this.extension.logger.addLogMessage(`Skip the file: ${file.toString(true)}`)
-                    continue
+                    this.extension.logger.addLogMessage(`Skip the file: ${file.toString(true)}`);
+                    continue;
                 }
-                const flsChildren = this.getTeXChildrenFromFls(file.fsPath)
+                const flsChildren = this.getTeXChildrenFromFls(file.fsPath);
                 if (vscode.window.activeTextEditor && flsChildren.includes(vscode.window.activeTextEditor.document.fileName)) {
-                    this.extension.logger.addLogMessage(`Found root file from '.fls': ${file.fsPath}`)
-                    return file.fsPath
+                    this.extension.logger.addLogMessage(`Found root file from '.fls': ${file.fsPath}`);
+                    return file.fsPath;
                 }
-                const content = utils.stripCommentsAndVerbatim(fs.readFileSync(file.fsPath).toString())
-                const result = content.match(regex)
+                const content = utils.stripCommentsAndVerbatim(fs.readFileSync(file.fsPath).toString());
+                const result = content.match(regex);
                 if (result) {
                     // Can be a root
-                    const children = this.getTeXChildren(file.fsPath, file.fsPath, [], content)
+                    const children = this.getTeXChildren(file.fsPath, file.fsPath, [], content);
                     if (vscode.window.activeTextEditor && children.includes(vscode.window.activeTextEditor.document.fileName)) {
-                        this.extension.logger.addLogMessage(`Found root file from parent: ${file.fsPath}`)
-                        return file.fsPath
+                        this.extension.logger.addLogMessage(`Found root file from parent: ${file.fsPath}`);
+                        return file.fsPath;
                     }
                     // Not including the active file, yet can still be a root candidate
-                    candidates.push(file.fsPath)
+                    candidates.push(file.fsPath);
                 }
             }
             if (candidates.length > 0) {
-                this.extension.logger.addLogMessage(`Found files that might be root, choose the first one: ${candidates}`)
-                return candidates[0]
+                this.extension.logger.addLogMessage(`Found files that might be root, choose the first one: ${candidates}`);
+                return candidates[0];
             }
-        } catch (e) {}
-        return undefined
+        } catch (e) {
+            this.extension.logger.addLogMessage(`Cannot find root file: ${e.message}`);
+        }
+        return undefined;
     }
 
     private getTeXChildrenFromFls(texFile: string) {
-        const flsFile = this.pathUtils.getFlsFilePath(texFile)
+        const flsFile = this.pathUtils.getFlsFilePath(texFile);
         if (flsFile === undefined) {
-            return []
+            return [];
         }
-        const rootDir = path.dirname(texFile)
-        const ioFiles = this.pathUtils.parseFlsContent(fs.readFileSync(flsFile).toString(), rootDir)
-        return ioFiles.input
+        const rootDir = path.dirname(texFile);
+        const ioFiles = this.pathUtils.parseFlsContent(fs.readFileSync(flsFile).toString(), rootDir);
+        return ioFiles.input;
     }
 
     /**
@@ -459,45 +461,46 @@ export class Manager {
      * @param children The list of already computed children
      * @param content The content of `file`. If undefined, it is read from disk
      */
-     private getTeXChildren(file: string, baseFile: string, children: string[], content?: string): string[] {
+    private getTeXChildren(file: string, baseFile: string, children: string[], content?: string): string[] {
         if (content === undefined) {
-            content = utils.stripCommentsAndVerbatim(fs.readFileSync(file).toString())
+            content = utils.stripCommentsAndVerbatim(fs.readFileSync(file).toString());
         }
 
         // Update children of current file
         if (this.cachedContent[file] === undefined) {
-            this.cachedContent[file] = {content, bibs: [], children: []}
-            const pathRegexp = new PathRegExp()
+            this.cachedContent[file] = {content, bibs: [], children: []};
+            const pathRegexp = new PathRegExp();
+            // eslint-disable-next-line no-constant-condition
             while (true) {
-                const result: MatchPath | undefined = pathRegexp.exec(content)
+                const result: MatchPath | undefined = pathRegexp.exec(content);
                 if (!result) {
-                    break
+                    break;
                 }
 
-                const inputFile = pathRegexp.parseInputFilePath(result, file, baseFile)
+                const inputFile = pathRegexp.parseInputFilePath(result, file, baseFile);
 
                 if (!inputFile ||
                     !fs.existsSync(inputFile) ||
                     path.relative(inputFile, baseFile) === '') {
-                    continue
+                    continue;
                 }
 
                 this.cachedContent[file].children.push({
                     index: result.index,
                     file: inputFile
-                })
+                });
             }
         }
 
         this.cachedContent[file].children.forEach(child => {
             if (children.includes(child.file)) {
                 // Already included
-                return
+                return;
             }
-            children.push(child.file)
-            this.getTeXChildren(child.file, baseFile, children)
-        })
-        return children
+            children.push(child.file);
+            this.getTeXChildren(child.file, baseFile, children);
+        });
+        return children;
     }
 }
 
