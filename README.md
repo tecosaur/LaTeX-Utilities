@@ -3,13 +3,13 @@
 <p align="center">
 
 <a href="https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&">
-<img alt="version" src="https://vsmarketplacebadge.apphb.com/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2"/></a>
-<a href="https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg">
-<img alt="downloads" src="https://vsmarketplacebadge.apphb.com/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
+<img alt="version" src="https://vsmarketplacebadges.dev/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2"/></a>
+<a href="https://vsmarketplacebadges.dev/downloads-short/tecosaur.latex-utilities.svg">
+<img alt="downloads" src="https://vsmarketplacebadges.dev/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
 <a href="https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities">
-<img alt="installs" src="https://vsmarketplacebadge.apphb.com/installs-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
+<img alt="installs" src="https://vsmarketplacebadges.dev/installs-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
 <a href="https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities">
-<img alt="rating" src="https://vsmarketplacebadge.apphb.com/rating-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
+<img alt="rating" src="https://vsmarketplacebadges.dev/rating-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983"/></a>
 
 <br/>
 

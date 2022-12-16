@@ -238,5 +238,27 @@
         "latex-utensils": "^4.1.0",
         "tmp": "^0.2.1",
         "vscode-extension-telemetry": "^0.1.2"
-    }
+    },
+    "badges": [
+        {
+            "url": "https://vsmarketplacebadges.dev/version-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983&logo=visual-studio-code&logoColor=C6EDE2",
+            "href": "https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&",
+            "description": "VSCode Marketplace"
+        },
+        {
+            "url": "https://vsmarketplacebadges.dev/downloads-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983",
+            "href": "https://vsmarketplacebadges.dev/downloads-short/tecosaur.latex-utilities.svg",
+            "description": "version"
+        },
+        {
+            "url": "https://vsmarketplacebadges.dev/installs-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983",
+            "href": "https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&",
+            "description": "installs"
+        },
+        {
+            "url": "https://vsmarketplacebadges.dev/rating-short/tecosaur.latex-utilities.svg?style=flat-square&color=579983",
+            "href": "https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities&",
+            "description": "rating"
+        }
+    ]
 }
