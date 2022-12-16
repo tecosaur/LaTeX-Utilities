@@ -129,6 +129,11 @@
                     "default": "\\includegraphics{${imageFilePath}}",
                     "markdownDescription": "The template to use for pasting the image (use an array for multiline strings), use `${imageFilePath}` to represent the image file. Can also use `${imageFileNameWithoutExt}`"
                 },
+                "latex-utilities.formattedPaste.imagePathOverride": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "Override the image path to use for the image template. If empty, the path will be read automatically from the source file. You can use ${currentFileDir} to represent the current source file dir."
+                },
                 "latex-utilities.formattedPaste.useAsDefault": {
                     "type": "boolean",
                     "default": false,
@@ -221,10 +226,10 @@
         "@types/mocha": "^5.2.6",
         "@types/node": "^17.0.8",
         "@types/vscode": "^1.45.0",
-        "@typescript-eslint/eslint-plugin": "^1.13.0",
-        "@typescript-eslint/parser": "^1.13.0",
+        "@typescript-eslint/eslint-plugin": "^5.46.1",
+        "@typescript-eslint/parser": "^5.46.1",
         "esbuild": "^0.14.49",
-        "eslint": "^6.8.0",
+        "eslint": "^8.29.0",
         "glob": "^7.1.6",
         "mocha": "^6.2.2",
         "typescript": "^3.9.7",
