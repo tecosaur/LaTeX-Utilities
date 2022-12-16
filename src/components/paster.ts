@@ -850,7 +850,7 @@ export class Paster {
         if (override.length !== 0) {
             graphicsPath = override;
         }
-        
+
         pathStr = pathStr.replace(this.PATH_VARIABLE_GRAPHICS_PATH, postFunction(graphicsPath));
         pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_DIR, postFunction(currentFileDir));
 

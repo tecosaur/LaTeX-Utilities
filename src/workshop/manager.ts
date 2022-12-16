@@ -503,4 +503,3 @@ export class Manager {
         return children;
     }
 }
-
