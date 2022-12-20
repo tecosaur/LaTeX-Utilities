@@ -1,5 +1,17 @@
 # Change Log
 
+## unreleased
+### Added
+- imagePathOverride
+
+## [0.4.9] - 2022-12-16
+### Added
+- Config to use docker to run texcount
+
+## [0.4.8] - 2022-10-16
+### Added
+- Support character count
+
 ## [0.4.6] - 2022-08-06
 ### Fixed
 - Warn users about JSON errors in snippet file.
