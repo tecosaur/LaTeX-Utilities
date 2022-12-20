@@ -12,6 +12,10 @@
 ### Added
 - Support character count
 
+## [0.4.7] - 2022-09-25
+### Added
+- Support pasting image file in formatted paste
+
 ## [0.4.6] - 2022-08-06
 ### Fixed
 - Warn users about JSON errors in snippet file.
