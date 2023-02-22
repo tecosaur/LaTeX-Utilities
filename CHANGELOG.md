@@ -1,8 +1,8 @@
 # Change Log
 
-## unreleased
+## [0.4.10] - 2023-2-22
 ### Added
-- imagePathOverride
+- Add an option `imagePathOverride` to override the image path in formatted pasting.
 
 ## [0.4.9] - 2022-12-16
 ### Added
