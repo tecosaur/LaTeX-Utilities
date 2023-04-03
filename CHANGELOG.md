@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.11] - 2023-4-3
+### Fixed
+- [#383](https://github.com/tecosaur/LaTeX-Utilities/issues/383) Fixes an issue that caused formatted pasting can't paste image on linux.
+
 ## [0.4.10] - 2023-2-22
 ### Added
 - Add an option `imagePathOverride` to override the image path in formatted pasting.
