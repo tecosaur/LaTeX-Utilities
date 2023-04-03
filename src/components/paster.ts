@@ -1,16 +1,13 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
+import { constants as fsconstants } from 'fs';
 import * as fse from 'fs-extra';
-import { spawn } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import csv from 'csv-parser';
 import { Readable } from 'stream';
 
 import { Extension } from '../main';
-import { promisify } from 'util';
-
-const fsCopy = promisify(fs.copyFile);
-const readFile = promisify(fs.readFile);
 
 export class Paster {
     extension: Extension;
@@ -36,13 +33,18 @@ export class Paster {
         const clipboardContents = await vscode.env.clipboard.readText();
 
         // if empty try pasting an image from clipboard
-        if (clipboardContents === '') {
+        // also try pasting image first on linux
+        if (clipboardContents === '' || process.platform === 'linux') {
             if (fileUri.scheme === 'untitled') {
                 vscode.window.showInformationMessage('You need to the save the current editor before pasting an image');
 
                 return;
             }
-            this.pasteImage(editor, fileUri.fsPath);
+            if (await this.pasteImage(editor, fileUri.fsPath)){
+                this.extension.logger.addLogMessage('paste image success. returning');
+                return;
+            }
+            this.extension.logger.addLogMessage('paste image finished and failed.');
         }
 
         if (clipboardContents.split('\n').length === 1) {
@@ -55,11 +57,14 @@ export class Paster {
                 filePath = path.resolve(fileUri.fsPath, clipboardContents);
                 basePath = fileUri.fsPath;
             }
-
-            if (fs.existsSync(filePath)) {
-                await this.pasteFile(editor, basePath, clipboardContents);
-
-                return;
+            try {
+                await fs.access(filePath, fsconstants.R_OK);
+                if (await this.pasteFile(editor, basePath, clipboardContents)) {
+                    this.extension.logger.addLogMessage('paste file success. returning');
+                    return;
+                }
+            } catch (error) {
+                // pass
             }
         }
         // if not pasting file
@@ -91,19 +96,23 @@ export class Paster {
         });
     }
 
-    public async pasteFile(editor: vscode.TextEditor, baseFile: string, file: string) {
+    public async pasteFile(editor: vscode.TextEditor, baseFile: string, file: string): Promise<boolean> {
+        this.extension.logger.addLogMessage('Pasting: file');
         const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.eps', '.pdf'];
         const TABLE_FORMATS = ['.csv'];
         const extension = path.extname(file);
 
         if (IMAGE_EXTENSIONS.indexOf(extension) !== -1) {
-            this.pasteImage(editor, baseFile, file);
+            this.extension.logger.addLogMessage('File is an image.');
+            return this.pasteImage(editor, baseFile, file);
         } else if (TABLE_FORMATS.indexOf(extension) !== -1) {
             if (extension === '.csv') {
-                const fileContent = await readFile(path.resolve(baseFile, file));
+                const fileContent = await fs.readFile(path.resolve(baseFile, file));
                 await this.pasteTable(editor, fileContent.toString());
+                return true;
             }
         }
+        return false;
     }
 
     public async pasteTable(editor: vscode.TextEditor, content: string, delimiter?: string) {
@@ -285,10 +294,10 @@ export class Paster {
                 if (str[i] === '\n') {
                     lines.push(
                         (lines.length > 0 ? indent : '') +
-                            str
-                                .slice(Math.max(0, lastNewlinePosition), i)
-                                .replace(/^[^\S\t]+/, '')
-                                .replace(/\s+$/, '')
+                        str
+                            .slice(Math.max(0, lastNewlinePosition), i)
+                            .replace(/^[^\S\t]+/, '')
+                            .replace(/\s+$/, '')
                     );
                     lastNewlinePosition = i;
                 }
@@ -298,10 +307,10 @@ export class Paster {
                 if (i - lastNewlinePosition >= lineLength - indent.length) {
                     lines.push(
                         (lines.length > 0 ? indent : '') +
-                            str
-                                .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
-                                .replace(/^[^\S\t]+/, '')
-                                .replace(/\s+$/, '')
+                        str
+                            .slice(Math.max(0, lastNewlinePosition), lastSplitCharPosition)
+                            .replace(/^[^\S\t]+/, '')
+                            .replace(/\s+$/, '')
                     );
                     lastNewlinePosition = lastSplitCharPosition;
                     i = lastSplitCharPosition;
@@ -310,10 +319,10 @@ export class Paster {
             if (lastNewlinePosition < i) {
                 lines.push(
                     (lines.length > 0 ? indent : '') +
-                        str
-                            .slice(Math.max(0, lastNewlinePosition), i)
-                            .replace(/^\s+/, '')
-                            .replace(/\s+$/, '')
+                    str
+                        .slice(Math.max(0, lastNewlinePosition), i)
+                        .replace(/^\s+/, '')
+                        .replace(/\s+$/, '')
                 );
             }
             console.log(lines.map(l => lineLength - l.length));
@@ -418,8 +427,8 @@ export class Paster {
     basePathConfig = '${graphicsPath}';
     graphicsPathFallback = '${currentFileDir}';
 
-    public pasteImage(editor: vscode.TextEditor, baseFile: string, imgFile?: string) {
-        this.extension.logger.addLogMessage('Pasting: Image');
+    public async pasteImage(editor: vscode.TextEditor, baseFile: string, imgFile?: string): Promise<boolean> {
+        this.extension.logger.addLogMessage(`Pasting: Image. imgFile: ${imgFile}`);
 
         const folderPath = path.dirname(baseFile);
         const projectPath = vscode.workspace.workspaceFolders
@@ -432,7 +441,7 @@ export class Paster {
         if (selectText && /\//.test(selectText)) {
             vscode.window.showInformationMessage('Your selection is not a valid file name!');
 
-            return;
+            return false;
         }
 
         this.loadImageConfig(projectPath, baseFile);
@@ -441,43 +450,40 @@ export class Paster {
             const imagePath = this.renderImagePaste(path.dirname(baseFile), imgFile);
 
             if (!vscode.window.activeTextEditor) {
-                return;
+                return false;
             }
             vscode.window.activeTextEditor.insertSnippet(new vscode.SnippetString(imagePath), editor.selection.start, {
                 undoStopBefore: true,
                 undoStopAfter: true
             });
 
-            return;
+            return false;
         }
 
-        this.getImagePath(baseFile, imgFile, selectText, this.basePathConfig, (_err: Error | null, imagePath) => {
-            try {
-                // does the file exist?
-                const existed = fs.existsSync(imagePath);
-                if (existed) {
-                    vscode.window
-                        .showInformationMessage(
-                            `File ${imagePath} exists. Would you want to replace?`,
-                            'Replace',
-                            'Cancel'
-                        )
-                        .then(choose => {
-                            if (choose !== 'Replace') {
-                                return;
-                            }
-
-                            this.saveAndPaste(editor, imagePath, imgFile);
-                        });
-                } else {
-                    this.saveAndPaste(editor, imagePath, imgFile);
-                }
-            } catch (err) {
-                vscode.window.showErrorMessage(`fs.existsSync(${imagePath}) fail. message=${err.message}`);
-
-                return;
+        const imagePath = await this.getImagePath(baseFile, imgFile, selectText, this.basePathConfig);
+        this.extension.logger.addLogMessage(`Image path: ${imagePath}`);
+        if (!imagePath) {
+            this.extension.logger.addLogMessage('Could not get image path.');
+            return false;
+        }
+        // does the file exist?
+        try {
+            await fs.access(imagePath, fsconstants.F_OK);
+            const choice = await vscode.window
+                .showInformationMessage(
+                    `File ${imagePath} exists. Would you want to replace?`,
+                    'Replace',
+                    'Cancel'
+                );
+            if (choice !== 'Replace') {
+                this.extension.logger.addLogMessage('User cancelled the image paste.');
+                return false;
             }
-        });
+        } catch(e) {
+            // pass, we save the image if it doesn't exists
+        }
+        this.saveAndPaste(editor, imagePath, imgFile);
+        return true;
     }
 
     public loadImageConfig(projectPath: string, filePath: string) {
@@ -500,44 +506,44 @@ export class Paster {
         this.pasteTemplate = this.replacePathVariables(this.pasteTemplate, projectPath, filePath);
     }
 
-    public getImagePath(
+    public async getImagePath(
         filePath: string,
         imagePathCurrent = '',
         selectText: string,
-        folderPathFromConfig: string,
-        callback: (err: Error | null, imagePath: string) => void
+        folderPathFromConfig: string
     ) {
         const graphicsPath = this.basePathConfig;
+        try {
+            await this.ensureImgDirExists(graphicsPath);
+        } catch (e) {
+            vscode.window.showErrorMessage(`Could not find image directory: ${e.message}`);
+            return null;
+        }
         const imgPostfixNumber =
             Math.max(
                 0,
-                ...fs
-                    .readdirSync(graphicsPath)
+                ...(await fs.readdir(graphicsPath))
                     .map(imagePath => parseInt(imagePath.replace(/^image(\d+)\.\w+/, '$1')))
                     .filter(num => !isNaN(num))
             ) + 1;
         const imgExtension = path.extname(imagePathCurrent) ? path.extname(imagePathCurrent) : '.png';
         const imageFileName = selectText ? selectText + imgExtension : `image${imgPostfixNumber}` + imgExtension;
 
-        vscode.window
-            .showInputBox({
-                prompt: 'Please specify the filename of the image.',
-                value: imageFileName,
-                valueSelection: [imageFileName.length - imageFileName.length, imageFileName.length - 4]
-            })
-            .then(result => {
-                if (result) {
-                    if (!result.endsWith(imgExtension)) {
-                        result += imgExtension;
-                    }
+        let result = await vscode.window.showInputBox({
+            prompt: 'Please specify the filename of the image.',
+            value: imageFileName,
+            valueSelection: [imageFileName.length - imageFileName.length, imageFileName.length - 4]
+        });
+        if (result) {
+            if (!result.endsWith(imgExtension)) {
+                result += imgExtension;
+            }
 
-                    result = makeImagePath(result);
-
-                    callback(null, result);
-                }
-
-                return;
-            });
+            result = makeImagePath(result);
+            return result;
+        } else {
+            return null;
+        }
 
         function makeImagePath(fileName: string) {
             // image output path
@@ -556,257 +562,202 @@ export class Paster {
     }
 
     public async saveAndPaste(editor: vscode.TextEditor, imgPath: string, oldPath?: string) {
-        this.ensureImgDirExists(imgPath)
-            .then((imagePath: string) => {
-                // save image and insert to current edit file
+        this.extension.logger.addLogMessage(`save and paste. imagePath: ${imgPath}`);
+        if (oldPath) {
+            await fs.copyFile(oldPath, imgPath);
+            const imageString = this.renderImagePaste(this.basePathConfig, imgPath);
 
-                if (oldPath) {
-                    fsCopy(oldPath, imagePath);
-                    const imageString = this.renderImagePaste(this.basePathConfig, imagePath);
+            const current = editor.selection;
+            if (!current.isEmpty) {
+                editor.edit(
+                    editBuilder => {
+                        editBuilder.delete(current);
+                    },
+                    { undoStopBefore: true, undoStopAfter: false }
+                );
+            }
 
-                    const current = editor.selection;
-                    if (!current.isEmpty) {
-                        editor.edit(
-                            editBuilder => {
-                                editBuilder.delete(current);
-                            },
-                            { undoStopBefore: true, undoStopAfter: false }
-                        );
-                    }
-
-                    if (!vscode.window.activeTextEditor) {
-                        return;
-                    }
-                    vscode.window.activeTextEditor.insertSnippet(
-                        new vscode.SnippetString(imageString),
-                        editor.selection.start,
-                        {
-                            undoStopBefore: true,
-                            undoStopAfter: true
-                        }
-                    );
-                } else {
-                    this.saveClipboardImageToFileAndGetPath(imagePath, (_imagePath, imagePathReturnByScript) => {
-                        if (!imagePathReturnByScript) {
-                            return;
-                        }
-                        if (imagePathReturnByScript === 'no image') {
-                            vscode.window.showInformationMessage('No image in clipboard');
-
-                            return;
-                        }
-
-                        const imageString = this.renderImagePaste(this.basePathConfig, imagePath);
-
-                        const current = editor.selection;
-                        if (!current.isEmpty) {
-                            editor.edit(
-                                editBuilder => {
-                                    editBuilder.delete(current);
-                                },
-                                { undoStopBefore: true, undoStopAfter: false }
-                            );
-                        }
-
-                        if (!vscode.window.activeTextEditor) {
-                            return;
-                        }
-                        vscode.window.activeTextEditor.insertSnippet(
-                            new vscode.SnippetString(imageString),
-                            editor.selection.start,
-                            {
-                                undoStopBefore: true,
-                                undoStopAfter: true
-                            }
-                        );
-                    });
-                }
-                this.extension.telemetryReporter.sendTelemetryEvent('formattedPaste', { type: 'image' });
-            })
-            .catch((err: Error) => {
-                vscode.window.showErrorMessage(`Failed make folder. message=${err.message}`);
-
+            if (!vscode.window.activeTextEditor) {
                 return;
-            });
+            }
+            vscode.window.activeTextEditor.insertSnippet(
+                new vscode.SnippetString(imageString),
+                editor.selection.start,
+                {
+                    undoStopBefore: true,
+                    undoStopAfter: true
+                }
+            );
+        } else {
+            const imagePathReturnByScript = await this.saveClipboardImageToFileAndGetPath(imgPath);
+            if (!imagePathReturnByScript) {
+                return;
+            }
+            if (imagePathReturnByScript === 'no image') {
+                vscode.window.showInformationMessage('No image in clipboard');
+                return;
+            }
+
+            const imageString = this.renderImagePaste(this.basePathConfig, imgPath);
+
+            const current = editor.selection;
+            if (!current.isEmpty) {
+                editor.edit(
+                    editBuilder => {
+                        editBuilder.delete(current);
+                    },
+                    { undoStopBefore: true, undoStopAfter: false }
+                );
+            }
+
+            if (!vscode.window.activeTextEditor) {
+                return;
+            }
+            vscode.window.activeTextEditor.insertSnippet(
+                new vscode.SnippetString(imageString),
+                editor.selection.start,
+                {
+                    undoStopBefore: true,
+                    undoStopAfter: true
+                }
+            );
+        }
+        this.extension.telemetryReporter.sendTelemetryEvent('formattedPaste', { type: 'image' });
     }
 
-    private ensureImgDirExists(imagePath: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const imageDir = path.dirname(imagePath);
+    private async ensureImgDirExists(imagePath: string){
+        try {
+            const stats = await fs.stat(imagePath);
+            if (stats.isDirectory()) {
+                return;
+            } else {
+                throw new Error(`The image destination directory '${imagePath}' is a file.`);
+            }
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                this.extension.logger.addLogMessage(`Image directory ${imagePath} doesn't exist. Trying to create it...`);
+                await fse.ensureDir(imagePath);
+            } else {
+                throw error;
+            }
+        }
+    }
 
-            fs.stat(imageDir, (error, stats) => {
-                if (error === null) {
-                    if (stats.isDirectory()) {
-                        resolve(imagePath);
-                    } else {
-                        reject(new Error(`The image destination directory '${imageDir}' is a file.`));
-                    }
-                } else if (error.code === 'ENOENT') {
-                    fse.ensureDir(imageDir, undefined, err => {
-                        if (err) {
-                            reject(err);
-
-                            return undefined;
-                        }
-                        resolve(imagePath);
-
-                        return undefined;
-                    });
+    private wrapProcessAsPromise (process: ChildProcessWithoutNullStreams) : Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let data = '';
+            process.stdout.on('data', (new_data) => {
+                data += new_data;
+            });
+            // wslPath-disable-next-line @typescript-eslint/no-unused-vars
+            process.on('exit', (_code, _signal) => {
+                if (_code == 0) {
+                    resolve(data);
                 } else {
-                    reject(error);
+                    reject(new Error(`wslpath failed with code ${_code} and signal ${_signal}`));
                 }
+            });
+            process.on('error', e => {
+                reject(e);
             });
         });
     }
 
     // TODO: turn into async function, and raise errors internally
-    private saveClipboardImageToFileAndGetPath(
-        imagePath: string,
-        cb: (imagePath: string, imagePathFromScript: string) => void
-    ) {
+    private async saveClipboardImageToFileAndGetPath(
+        imagePath: string
+    ): Promise<string | null> {
         if (!imagePath) {
-            return;
+            return null;
         }
-
-        const platform = process.platform;
-        if (vscode.env.remoteName === 'wsl') {
-            //  WSL
-            let scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1');
-            // convert scriptPath to windows path
-            const wslpath = spawn('wslpath', [
-                '-w',
-                scriptPath
-            ]);
-            wslpath.stdout.on('data', (data) => {
-                scriptPath = data.toString().trim();
-                // SEE Powershell/powershell#17623
-                scriptPath = scriptPath.replace('\\wsl.localhost', '\\wsl$');
-
+        try {
+            const platform = process.platform;
+            if (vscode.env.remoteName === 'wsl') {
+                //  WSL
+                let scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1');
+                // convert scriptPath to windows path
+                const scriptPathPromise = this.wrapProcessAsPromise(spawn('wslpath', [
+                    '-w',
+                    scriptPath
+                ]));
+                scriptPath = (await scriptPathPromise).toString().trim().replace('\\wsl.localhost', '\\wsl$'); // see Powershell/powershell#17623
                 this.extension.logger.addLogMessage(`saveClipimg-pc.ps1: ${scriptPath}`);
-                const wslPath = spawn('wslpath', [
+
+                const imagePathPromise = this.wrapProcessAsPromise(spawn('wslpath', [
                     '-w',
                     imagePath
-                ]);
-                wslPath.stdout.on('data', (data2) => {
-                    // Yes. callback hell.
-                    // TODO: refactor this.
-                    imagePath = data2.toString().trim();
-                    this.extension.logger.addLogMessage(`imagePath: ${imagePath}`);
+                ]));
+                imagePath = (await imagePathPromise).toString().trim();
+                this.extension.logger.addLogMessage(`imagePath: ${imagePath}`);
 
-                    const command = 'powershell.exe';  // Adding `exe` to run it from wsl
+                const pastePromise = this.wrapProcessAsPromise(spawn('powershell.exe', [
+                    '-noprofile',
+                    '-noninteractive',
+                    '-nologo',
+                    '-sta',
+                    '-executionpolicy',
+                    'unrestricted',
+                    '-windowstyle',
+                    'hidden',
+                    '-file',
+                    scriptPath,
+                    imagePath
+                ]));
+                const data = (await pastePromise).toString().trim();
+                return data;
+            } else if (platform === 'win32') {
+                // Windows
+                const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1');
 
-                    const powershell = spawn(command, [
-                        '-noprofile',
-                        '-noninteractive',
-                        '-nologo',
-                        '-sta',
-                        '-executionpolicy',
-                        'unrestricted',
-                        '-windowstyle',
-                        'hidden',
-                        '-file',
-                        scriptPath,
-                        imagePath
-                    ]);
-                    powershell.on('error', e => {
-                        if (e.name === 'ENOENT') {
-                            vscode.window.showErrorMessage(
-                                'The powershell command is not in you PATH environment variables.Please add it and retry.'
-                            );
-                        } else {
-                            console.log(e);
-                            vscode.window.showErrorMessage(e.message);
-                        }
-                    });
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    powershell.on('exit', (_code, _signal) => {
-                        // console.log('exit', code, signal);
-                    });
-                    powershell.stdout.on('data', (data3: Buffer) => {
-                        cb(imagePath, data3.toString().trim());
-                    });
-                });
-            });
-        } else if (platform === 'win32') {
-            // Windows
-            const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-pc.ps1');
-
-            let command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
-            const powershellExisted = fs.existsSync(command);
-            if (!powershellExisted) {
-                command = 'powershell';
-            }
-
-            const powershell = spawn(command, [
-                '-noprofile',
-                '-noninteractive',
-                '-nologo',
-                '-sta',
-                '-executionpolicy',
-                'unrestricted',
-                '-windowstyle',
-                'hidden',
-                '-file',
-                scriptPath,
-                imagePath
-            ]);
-            powershell.on('error', e => {
-                if (e.name === 'ENOENT') {
-                    vscode.window.showErrorMessage(
-                        'The powershell command is not in you PATH environment variables.Please add it and retry.'
-                    );
-                } else {
-                    console.log(e);
-                    vscode.window.showErrorMessage(e.message);
+                let command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+                try {
+                    fs.access(command, fsconstants.X_OK);
+                } catch (e) {
+                    // powershell.exe doesn't exist;
+                    command = 'powershell';
                 }
-            });
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            powershell.on('exit', (_code, _signal) => {
-                // console.log('exit', code, signal);
-            });
-            powershell.stdout.on('data', (data: Buffer) => {
-                cb(imagePath, data.toString().trim());
-            });
-        } else if (platform === 'darwin') {
-            // Mac
-            const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-mac.applescript');
+                const pastePromise = this.wrapProcessAsPromise(spawn(command, [
+                    '-noprofile',
+                    '-noninteractive',
+                    '-nologo',
+                    '-sta',
+                    '-executionpolicy',
+                    'unrestricted',
+                    '-windowstyle',
+                    'hidden',
+                    '-file',
+                    scriptPath,
+                    imagePath
+                ]));
+                const data = (await pastePromise).toString().trim();
+                return data;
+            } else if (platform === 'darwin') {
+                // Mac
+                const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-mac.applescript');
 
-            const ascript = spawn('osascript', [scriptPath, imagePath]);
-            ascript.on('error', e => {
-                console.log(e);
-                vscode.window.showErrorMessage(e.message);
-            });
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            ascript.on('exit', (_code, _signal) => {
-                // console.log('exit',code,signal);
-            });
-            ascript.stdout.on('data', (data: Buffer) => {
-                cb(imagePath, data.toString().trim());
-            });
-        } else {
-            // Linux
+                const pastePromise = this.wrapProcessAsPromise(spawn('osascript', [scriptPath, imagePath]));
+                const data = (await pastePromise).toString().trim();
+                return data;
+            } else {
+                // Linux
 
-            const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-linux.sh');
+                const scriptPath = path.join(this.extension.extensionRoot, './scripts/saveclipimg-linux.sh');
 
-            const ascript = spawn('sh', [scriptPath, imagePath]);
-            ascript.on('error', e => {
-                console.log(e);
-                vscode.window.showErrorMessage(e.message);
-            });
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            ascript.on('exit', (_code, _signal) => {
-                // console.log('exit',code,signal);
-            });
-            ascript.stdout.on('data', (data: Buffer) => {
-                const result = data.toString().trim();
-                if (result === 'no xclip') {
+                const ascript = spawn('sh', [scriptPath, imagePath]);
+                const data = (await this.wrapProcessAsPromise(ascript)).toString().trim();
+
+                if (data === 'no xclip') {
                     vscode.window.showErrorMessage('You need to install xclip command first.');
-
-                    return;
+                    return null;
                 }
-                cb(imagePath, result);
-            });
+                return data;
+            }
+        } catch (e) {
+            console.log(e);
+            vscode.window.showErrorMessage(`Error occured while trying to paste image. Name: ${e.name}, Message: ${e.message}`);
+            return null;
         }
+        return null;
     }
 
     public renderImagePaste(basePath: string, imageFilePath: string): string {

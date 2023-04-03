@@ -75,12 +75,6 @@
                 "when": "!config.latex-utilities.formattedPaste.useAsDefault && editorTextFocus && editorLangId == 'latex'"
             },
             {
-                "key": "ctrl+shift+v",
-                "mac": "cmd+shift+v",
-                "command": "editor.action.clipboardPasteAction",
-                "when": "config.latex-utilities.formattedPaste.useAsDefault && editorTextFocus && editorLangId == 'latex'"
-            },
-            {
                 "key": "ctrl+v",
                 "mac": "cmd+v",
                 "command": "latex-utilities.formattedPaste",

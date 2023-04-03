@@ -239,7 +239,6 @@ export class Manager {
                 }
             }
         } while (result);
-        this.extension.logger.addLogMessage(`${graphicsPath}`);
         return graphicsPath;
     }
 

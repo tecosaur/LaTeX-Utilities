@@ -187,7 +187,7 @@ export class Extension {
     }
 
     withTelemetry(command: string, callback: () => void) {
-        this.logger.addLogMessage(command);
+        this.logger.addLogMessage('withTelemetry: ' + command);
         try {
             callback();
         } catch (error) {
