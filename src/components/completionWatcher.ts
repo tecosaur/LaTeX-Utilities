@@ -99,7 +99,7 @@ export class CompletionWatcher {
         }
 
         if (
-            e.document.languageId !== 'latex' ||
+            ['latex', 'rsweave', 'jlweave'].findIndex(item => item == e.document.languageId) < 0 ||
             e.contentChanges.length === 0 ||
             this.currentlyExecutingChange ||
             this.sameChanges(e) ||

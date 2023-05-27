@@ -87,6 +87,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'tex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'latex' }, extension.completer),
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'doctex' }, extension.completer),
+        vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'rsweave' }, extension.completer),
+        vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'jlweave' }, extension.completer),
         vscode.languages.registerDefinitionProvider(
             { language: 'latex', scheme: 'file' },
             new MacroDefinitions(extension)

@@ -21,12 +21,16 @@
     "keywords": [
         "latex",
         "tex",
-        "hint"
+        "hint",
+        "rsweave",
+        "jlweave"
     ],
     "activationEvents": [
         "onLanguage:tex",
         "onLanguage:latex",
-        "onLanguage:doctex"
+        "onLanguage:doctex",
+        "onLanguage:rsweave",
+        "onLanguage:jlweave"
     ],
     "main": "./out/main.js",
     "contributes": {
