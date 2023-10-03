@@ -14,7 +14,7 @@ export function stripComments(text: string, commentSign: string): string {
  * @param id document languageId
  */
 export function hasTexId(id: string) {
-    return id === 'tex' || id === 'latex' || id === 'doctex';
+    return id === 'tex' || id === 'latex' || id === 'doctex' || id === 'rsweave' || id === 'jlweave';
 }
 
 export function checkCommandExists(command: string) {
