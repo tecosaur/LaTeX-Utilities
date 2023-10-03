@@ -51,7 +51,7 @@ Got an idea? Make a PR!
 
 ## Requirements
 
--   A LaTeX instillation in your path
+-   A LaTeX installation in your path
 -   The [`texcount`](https://app.uio.no/ifi/texcount/) script (only necessary for the word-count function). Configure using the `latex-utilities.countWord.path` and `latex-utilities.countWord.args` settings.
 -   Zotero with the [Better BibTeX extension](https://retorque.re/zotero-better-bibtex/) (only necessary for Zotero
     functions).
