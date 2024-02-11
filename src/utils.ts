@@ -1,28 +1,28 @@
-import * as vscode from 'vscode';
-import { execSync } from 'child_process';
+import * as vscode from 'vscode'
+import { execSync } from 'child_process'
 
 /**
  * Remove the comments if any
  */
 export function stripComments(text: string, commentSign: string): string {
-    const pattern = '([^\\\\]|^)' + commentSign + '.*$';
-    const reg = RegExp(pattern, 'gm');
-    return text.replace(reg, '$1');
+    const pattern = '([^\\\\]|^)' + commentSign + '.*$'
+    const reg = RegExp(pattern, 'gm')
+    return text.replace(reg, '$1')
 }
 
 /**
  * @param id document languageId
  */
 export function hasTexId(id: string) {
-    return id === 'tex' || id === 'latex' || id === 'doctex' || id === 'rsweave' || id === 'jlweave';
+    return id === 'tex' || id === 'latex' || id === 'doctex' || id === 'rsweave' || id === 'jlweave'
 }
 
 export function checkCommandExists(command: string) {
     try {
-        execSync(`${command} --version`);
+        execSync(`${command} --version`)
     } catch (error) {
         if (error.status === 127) {
-            vscode.window.showErrorMessage(`Command ${command} not found`);
+            vscode.window.showErrorMessage(`Command ${command} not found`)
         }
     }
 }
