@@ -759,7 +759,6 @@ export class Paster {
             vscode.window.showErrorMessage(`Error occured while trying to paste image. Name: ${e.name}, Message: ${e.message}`)
             return null
         }
-        return null
     }
 
     public renderImagePaste(basePath: string, imageFilePath: string): string {
