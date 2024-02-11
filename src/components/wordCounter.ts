@@ -1,11 +1,11 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as cp from 'child_process';
-import * as util from 'util';
+import * as vscode from 'vscode'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as cp from 'child_process'
+import * as util from 'util'
 
-import { Extension } from '../main';
-import { hasTexId } from '../utils';
+import { Extension } from '../main'
+import { hasTexId } from '../utils'
 
 interface TexCount {
     words: {
@@ -29,50 +29,50 @@ interface TexCount {
 }
 
 export class WordCounter {
-    extension: Extension;
-    status: vscode.StatusBarItem;
+    extension: Extension
+    status: vscode.StatusBarItem
 
     constructor(extension: Extension) {
-        this.extension = extension;
-        this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -10002);
-        this.status.command = 'latex-utilities.selectWordcountFormat';
-        this.setStatus();
+        this.extension = extension
+        this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -10002)
+        this.status.command = 'latex-utilities.selectWordcountFormat'
+        this.setStatus()
     }
 
     async counts(merge = true, file = vscode.window.activeTextEditor?.document.fileName): Promise<TexCount|undefined> {
         if (file === undefined) {
-            this.extension.logger.addLogMessage('A valid file was not give for TexCount');
-            return;
+            this.extension.logger.addLogMessage('A valid file was not give for TexCount')
+            return
         }
-        const configuration = vscode.workspace.getConfiguration('latex-utilities.countWord');
-        const args = (configuration.get('args') as string[]).slice();
-        const execFile = util.promisify(cp.execFile);
+        const configuration = vscode.workspace.getConfiguration('latex-utilities.countWord')
+        const args = (configuration.get('args') as string[]).slice()
+        const execFile = util.promisify(cp.execFile)
         if (merge) {
-            args.push('-merge');
+            args.push('-merge')
         }
-        args.push('-brief');
-        let command = configuration.get('path') as string;
+        args.push('-brief')
+        let command = configuration.get('path') as string
         if (configuration.get('docker.enabled')) {
             if (process.platform === 'win32') {
-                command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat');
+                command = path.resolve(this.extension.extensionRoot, './scripts/countword-win.bat')
             } else {
-                command = path.resolve(this.extension.extensionRoot, './scripts/countword-linux.sh');
-                fs.chmodSync(command, 0o755);
+                command = path.resolve(this.extension.extensionRoot, './scripts/countword-linux.sh')
+                fs.chmodSync(command, 0o755)
             }
         }
-        this.extension.logger.addLogMessage(`TexCount args: ${args}`);
-        let stdout; let stderr;
+        this.extension.logger.addLogMessage(`TexCount args: ${args}`)
+        let stdout; let stderr
         try {
             ({stdout, stderr} = await execFile(command, args.concat([path.basename(file)]), {
                 cwd: path.dirname(file)
-            }));
+            }))
 
         } catch (err) {
-            this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`);
+            this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`)
             this.extension.logger.showErrorMessage(
                 'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
-            );
-            return undefined;
+            )
+            return undefined
         }
         // just get the last line, ignoring errors
         const stdoutWord = stdout
@@ -80,38 +80,38 @@ export class WordCounter {
             .split('\n')
             .map(l => l.trim())
             .filter(l => l !== '')
-            .slice(-1)[0];
-        this.extension.logger.addLogMessage(`TeXCount output for word: ${stdout}`);
-        args.push('-char');
-        this.extension.logger.addLogMessage(`TexCount args: ${args}`);
+            .slice(-1)[0]
+        this.extension.logger.addLogMessage(`TeXCount output for word: ${stdout}`)
+        args.push('-char')
+        this.extension.logger.addLogMessage(`TexCount args: ${args}`)
         try {
             ({stdout, stderr} = await execFile(command, args.concat([path.basename(file)]), {
                 cwd: path.dirname(file)
-            }));
+            }))
         } catch (err) {
-            this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`);
+            this.extension.logger.addLogMessage(`Cannot count words: ${err.message}, ${stderr}`)
             this.extension.logger.showErrorMessage(
                 'TeXCount failed. Please refer to LaTeX Utilities Output for details.'
-            );
-            return undefined;
+            )
+            return undefined
         }
         const stdoutChar = stdout
             .replace(/\(errors:\d+\)/, '')
             .split('\n')
             .map(l => l.trim())
             .filter(l => l !== '')
-            .slice(-1)[0];
-        this.extension.logger.addLogMessage(`TeXCount output for char: ${stdout}`);
-        return this.parseTexCount(stdoutWord, stdoutChar);
+            .slice(-1)[0]
+        this.extension.logger.addLogMessage(`TeXCount output for char: ${stdout}`)
+        return this.parseTexCount(stdoutWord, stdoutChar)
     }
 
     parseTexCount(word: string, char: string): TexCount {
         const reMatchWord = /^(?<wordsBody>\d+)\+(?<wordsHeaders>\d+)\+(?<wordsCaptions>\d+) \((?<instancesHeaders>\d+)\/(?<instancesFloats>\d+)\/(?<mathInline>\d+)\/(?<mathDisplayed>\d+)\)/.exec(
             word
-        );
+        )
         const reMatchChar = /^(?<charsBody>\d+)\+(?<charsHeaders>\d+)\+(?<charsCaptions>\d+) \((?<instancesHeaders>\d+)\/(?<instancesFloats>\d+)\/(?<mathInline>\d+)\/(?<mathDisplayed>\d+)\)/.exec(
             char
-        );
+        )
         if (reMatchWord !== null && reMatchChar !== null) {
             const {
                 groups: {
@@ -132,7 +132,7 @@ export class WordCounter {
                     mathDisplayed
                     /* eslint-enable @typescript-eslint/ban-ts-comment */
                 }
-            } = reMatchWord;
+            } = reMatchWord
 
             const {
                 groups: {
@@ -145,7 +145,7 @@ export class WordCounter {
                     charsCaptions,
                     /* eslint-enable @typescript-eslint/ban-ts-comment */
                 }
-            } = reMatchChar;
+            } = reMatchChar
 
             return {
                 words: {
@@ -166,9 +166,9 @@ export class WordCounter {
                         displayed: parseInt(mathDisplayed)
                     }
                 }
-            };
+            }
         } else {
-            throw new Error('String was not valid TexCount output');
+            throw new Error('String was not valid TexCount output')
         }
     }
 
@@ -177,40 +177,40 @@ export class WordCounter {
             vscode.window.activeTextEditor === undefined ||
             !hasTexId(vscode.window.activeTextEditor.document.languageId)
         ) {
-            this.status.hide();
-            return;
+            this.status.hide()
+            return
         } else {
-            const template = vscode.workspace.getConfiguration('latex-utilities.countWord').get('format') as string;
+            const template = vscode.workspace.getConfiguration('latex-utilities.countWord').get('format') as string
             if (template === '') {
-                this.status.hide();
-                return;
+                this.status.hide()
+                return
             }
-            const texCount = await this.counts(undefined, vscode.window.activeTextEditor.document.fileName);
-            this.status.show();
-            this.status.text = this.formatString(texCount, template);
+            const texCount = await this.counts(undefined, vscode.window.activeTextEditor.document.fileName)
+            this.status.show()
+            this.status.text = this.formatString(texCount, template)
         }
     }
 
     async pickFormat() {
-        const texCount = await this.counts();
+        const texCount = await this.counts()
 
         const templates = [
-            '${words} Words', '${wordsBody} Words', '${chars} Chars', '${charsBody} Chars', '${headers} Headers', '${floats} Floats', '${math} Equations', 'custom'];
-        const options: { [template: string]: string } = {};
+            '${words} Words', '${wordsBody} Words', '${chars} Chars', '${charsBody} Chars', '${headers} Headers', '${floats} Floats', '${math} Equations', 'custom']
+        const options: { [template: string]: string } = {}
         for (const template of templates) {
-            options[template] = this.formatString(texCount, template);
+            options[template] = this.formatString(texCount, template)
             if (template.startsWith('${wordsBody}') || template.startsWith('${charsBody}')) {
-                options[template] += ' (body only)';
+                options[template] += ' (body only)'
             }
         }
 
         const choice = await vscode.window.showQuickPick(Object.values(options), {
             placeHolder: 'Select format to use'
-        });
+        })
 
-        let format = choice;
+        let format = choice
         if (choice === 'custom') {
-            const currentFormat = vscode.workspace.getConfiguration('latex-utilities.countWord').get('format') as string;
+            const currentFormat = vscode.workspace.getConfiguration('latex-utilities.countWord').get('format') as string
             format = await vscode.window.showInputBox({
                 placeHolder: 'Template',
                 value: currentFormat,
@@ -220,12 +220,12 @@ export class WordCounter {
                     ${wordsBody}, ${wordsHeaders}, ${wordsCaptions}, ${words}, \
                     ${charsBody}, ${charsHeaders}, ${charsCaptions}, ${chars}, \
                     ${headers}, ${floats}, ${mathInline}, ${mathDisplayed}, ${math}'
-            });
+            })
         } else {
             for (const template in options) {
                 if (options[template] === choice) {
-                    format = template;
-                    break;
+                    format = template
+                    break
                 }
             }
         }
@@ -236,16 +236,17 @@ export class WordCounter {
                 .update('format', format, vscode.ConfigurationTarget.Global)
                 .then(() => {
                     setTimeout(() => {
-                        this.status.text = this.formatString(texCount, format as string);
-                    }, 300);
-                });
+                        this.status.text = this.formatString(texCount, format as string)
+                    }, 300)
+                })
         }
     }
 
     formatString(texCount: TexCount | undefined, template: string) {
         if (texCount === undefined) {
-            return '...';
+            return '...'
         }
+        /* eslint-disable @typescript-eslint/naming-convention */
         const replacements: { [placeholder: string]: number } = {
             '${wordsBody}': texCount.words.body,
             '${wordsHeaders}': texCount.words.headers,
@@ -260,10 +261,11 @@ export class WordCounter {
             '${mathInline}': texCount.instances.math.inline,
             '${mathDisplayed}': texCount.instances.math.displayed,
             '${math}': texCount.instances.math.inline + texCount.instances.math.displayed
-        };
-        for (const placeholder in replacements) {
-            template = template.replace(placeholder, replacements[placeholder].toString());
         }
-        return template;
+        /* eslint-enable @typescript-eslint/naming-convention */
+        for (const placeholder in replacements) {
+            template = template.replace(placeholder, replacements[placeholder].toString())
+        }
+        return template
     }
 }

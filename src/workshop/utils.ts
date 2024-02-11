@@ -1,25 +1,25 @@
 // from James-Yu/LaTeX-Workshop.
 
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
+import * as vscode from 'vscode'
+import * as path from 'path'
+import * as fs from 'fs'
 
-import type {latexParser} from 'latex-utensils';
+import type {latexParser} from 'latex-utensils'
 
 
 export function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export function escapeHtml(s: string): string {
     return s.replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/>/g, '&gt;')
 }
 
 export function escapeRegExp(str: string) {
-    return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+    return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&')
 }
 
 /**
@@ -30,8 +30,8 @@ export function escapeRegExp(str: string) {
  * Note the number lines of the output matches the input
  */
 export function stripComments(text: string): string {
-    const reg = /(^|[^\\]|(?:(?<!\\)(?:\\\\)+))%.*$/gm;
-    return text.replace(reg, '$1');
+    const reg = /(^|[^\\]|(?:(?<!\\)(?:\\\\)+))%.*$/gm
+    return text.replace(reg, '$1')
 }
 
 /**
@@ -43,14 +43,14 @@ export function stripComments(text: string): string {
  *
  */
 export function stripEnvironments(text: string, envs: string[]): string {
-    const envsAlt = envs.join('|');
-    const pattern = `\\\\begin{(${envsAlt})}.*?\\\\end{\\1}`;
-    const reg = RegExp(pattern, 'gms');
+    const envsAlt = envs.join('|')
+    const pattern = `\\\\begin{(${envsAlt})}.*?\\\\end{\\1}`
+    const reg = RegExp(pattern, 'gms')
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return text.replace(reg, (match, ..._args) => {
-        const len = Math.max(match.split('\n').length, 1);
-        return '\n'.repeat(len - 1);
-    });
+        const len = Math.max(match.split('\n').length, 1)
+        return '\n'.repeat(len - 1)
+    })
 }
 
 /**
@@ -61,11 +61,11 @@ export function stripEnvironments(text: string, envs: string[]): string {
  * @return the input text with comments and verbatim content removed.
  */
 export function stripCommentsAndVerbatim(text: string): string {
-    let content = stripComments(text);
-    content = content.replace(/\\verb\*?([^a-zA-Z0-9]).*?\1/g, '');
-    const configuration = vscode.workspace.getConfiguration('latex-workshop');
-    const verbatimEnvs = configuration.get('latex.verbatimEnvs') as string[];
-    return stripEnvironments(content, verbatimEnvs);
+    let content = stripComments(text)
+    content = content.replace(/\\verb\*?([^a-zA-Z0-9]).*?\1/g, '')
+    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+    const verbatimEnvs = configuration.get('latex.verbatimEnvs') as string[]
+    return stripEnvironments(content, verbatimEnvs)
 }
 
 /**
@@ -76,7 +76,7 @@ export function stripCommentsAndVerbatim(text: string): string {
  * @param text a multiline string
  */
 export function trimMultiLineString(text: string): string {
-    return text.replace(/^\s\s*/gm, '').replace(/\s\s*$/gm, '');
+    return text.replace(/^\s\s*/gm, '').replace(/\s\s*$/gm, '')
 }
 
 /**
@@ -86,27 +86,27 @@ export function trimMultiLineString(text: string): string {
  * @param s A string to be searched.
  */
 export function getLongestBalancedString(s: string): string {
-    let nested = s[0] === '{' ? 0 : 1;
-    let i = 0;
+    let nested = s[0] === '{' ? 0 : 1
+    let i = 0
     for (i = 0; i < s.length; i++) {
         switch (s[i]) {
         case '{':
-            nested++;
-            break;
+            nested++
+            break
         case '}':
-            nested--;
-            break;
+            nested--
+            break
         case '\\':
             // skip an escaped character
-            i++;
-            break;
+            i++
+            break
         default:
         }
         if (nested === 0) {
-            break;
+            break
         }
     }
-    return s.substring(s[0] === '{' ? 1 : 0, i);
+    return s.substring(s[0] === '{' ? 1 : 0, i)
 }
 
 
@@ -120,22 +120,22 @@ export type CommandArgument = {
  * @param nth the index of the argument to return
  */
 export function getNthArgument(text: string, nth: number): CommandArgument | undefined {
-    let arg = '';
-    let index = 0; // start of the nth argument
-    let offset = 0; // current offset of the new text to consider
+    let arg = ''
+    let index = 0 // start of the nth argument
+    let offset = 0 // current offset of the new text to consider
     for (let i=0; i<nth; i++) {
-        text = text.slice(offset);
-        index += offset;
-        const start = text.indexOf('{');
+        text = text.slice(offset)
+        index += offset
+        const start = text.indexOf('{')
         if (start === -1) {
-            return undefined;
+            return undefined
         }
-        text = text.slice(start);
-        index += start;
-        arg = getLongestBalancedString(text);
-        offset = arg.length + 2; // 2 counts '{' and '}'
+        text = text.slice(start)
+        index += start
+        arg = getLongestBalancedString(text)
+        offset = arg.length + 2 // 2 counts '{' and '}'
     }
-    return {arg, index};
+    return {arg, index}
 }
 
 /**
@@ -148,21 +148,21 @@ export function getNthArgument(text: string, nth: number): CommandArgument | und
  */
 export function resolveFile(dirs: string[], inputFile: string, suffix = '.tex'): string | undefined {
     if (inputFile.startsWith('/')) {
-        dirs.unshift('');
+        dirs.unshift('')
     }
     for (const d of dirs) {
-        let inputFilePath = path.resolve(d, inputFile);
+        let inputFilePath = path.resolve(d, inputFile)
         if (path.extname(inputFilePath) === '') {
-            inputFilePath += suffix;
+            inputFilePath += suffix
         }
         if (!fs.existsSync(inputFilePath) && fs.existsSync(inputFilePath + suffix)) {
-            inputFilePath += suffix;
+            inputFilePath += suffix
         }
         if (fs.existsSync(inputFilePath)) {
-            return inputFilePath;
+            return inputFilePath
         }
     }
-    return undefined;
+    return undefined
 }
 
 /**
@@ -174,20 +174,20 @@ export function resolveFile(dirs: string[], inputFile: string, suffix = '.tex'):
  */
 export function replaceArgumentPlaceholders(rootFile: string, tmpDir: string): (arg: string) => string {
     return (arg: string) => {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop');
-        const docker = configuration.get('docker.enabled');
+        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const docker = configuration.get('docker.enabled')
 
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-        const workspaceDir = workspaceFolder?.uri.fsPath.split(path.sep).join('/') || '';
-        const rootFileParsed = path.parse(rootFile);
-        const docfile = rootFileParsed.name;
-        const docfileExt = rootFileParsed.base;
-        const dirW32 = path.normalize(rootFileParsed.dir);
-        const dir = dirW32.split(path.sep).join('/');
-        const docW32 = path.join(dirW32, docfile);
-        const doc = docW32.split(path.sep).join('/');
-        const docExtW32 = path.join(dirW32, docfileExt);
-        const docExt = docExtW32.split(path.sep).join('/');
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
+        const workspaceDir = workspaceFolder?.uri.fsPath.split(path.sep).join('/') || ''
+        const rootFileParsed = path.parse(rootFile)
+        const docfile = rootFileParsed.name
+        const docfileExt = rootFileParsed.base
+        const dirW32 = path.normalize(rootFileParsed.dir)
+        const dir = dirW32.split(path.sep).join('/')
+        const docW32 = path.join(dirW32, docfile)
+        const doc = docW32.split(path.sep).join('/')
+        const docExtW32 = path.join(dirW32, docfileExt)
+        const docExt = docExtW32.split(path.sep).join('/')
 
         const expandPlaceHolders = (a: string): string => {
             return a.replace(/%DOC%/g, docker ? docfile : doc)
@@ -201,13 +201,13 @@ export function replaceArgumentPlaceholders(rootFile: string, tmpDir: string): (
                 .replace(/%TMPDIR%/g, tmpDir)
                 .replace(/%WORKSPACE_FOLDER%/g, docker ? './' : workspaceDir)
                 .replace(/%RELATIVE_DIR%/, docker ? './' : path.relative(workspaceDir, dir))
-                .replace(/%RELATIVE_DOC%/, docker ? docfile : path.relative(workspaceDir, doc));
+                .replace(/%RELATIVE_DOC%/, docker ? docfile : path.relative(workspaceDir, doc))
 
-        };
-        const outDirW32 = path.normalize(expandPlaceHolders(configuration.get('latex.outDir') as string));
-        const outDir = outDirW32.split(path.sep).join('/');
-        return expandPlaceHolders(arg).replace(/%OUTDIR%/g, outDir).replace(/%OUTDIR_W32%/g, outDirW32);
-    };
+        }
+        const outDirW32 = path.normalize(expandPlaceHolders(configuration.get('latex.outDir') as string))
+        const outDir = outDirW32.split(path.sep).join('/')
+        return expandPlaceHolders(arg).replace(/%OUTDIR%/g, outDir).replace(/%OUTDIR_W32%/g, outDirW32)
+    }
 }
 
 export type NewCommand = {
@@ -218,9 +218,9 @@ export type NewCommand = {
 }
 
 export function isNewCommand(node: latexParser.Node | undefined): node is NewCommand {
-    const regex = /^(renewcommand|newcommand|providecommand|DeclareMathOperator)(\*)?$/;
+    const regex = /^(renewcommand|newcommand|providecommand|DeclareMathOperator)(\*)?$/
     if (!!node && node.kind === 'command' && node.name.match(regex)) {
-        return true;
+        return true
     }
-    return false;
+    return false
 }

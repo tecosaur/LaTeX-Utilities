@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as utils from './utils';
+import * as vscode from 'vscode'
+import * as path from 'path'
+import * as fs from 'fs'
+import * as utils from './utils'
 
-import type {Extension} from '../main';
+import type {Extension} from '../main'
 
 export enum MatchType {
     Input,
@@ -19,17 +19,17 @@ export interface MatchPath {
 }
 
 export class PathRegExp {
-    private readonly inputRegexp: RegExp;
-    private readonly childRegexp: RegExp;
+    private readonly inputRegexp: RegExp
+    private readonly childRegexp: RegExp
 
     constructor() {
-        this.inputRegexp = /\\(?:input|InputIfFileExists|include|SweaveInput|subfile|loadglsentries|(?:(?:sub)?(?:import|inputfrom|includefrom)\*?{([^}]*)}))(?:\[[^[\]{}]*\])?{([^}]*)}/g;
-        this.childRegexp = /<<(?:[^,]*,)*\s*child='([^']*)'\s*(?:,[^,]*)*>>=/g;
+        this.inputRegexp = /\\(?:input|InputIfFileExists|include|SweaveInput|subfile|loadglsentries|(?:(?:sub)?(?:import|inputfrom|includefrom)\*?{([^}]*)}))(?:\[[^[\]{}]*\])?{([^}]*)}/g
+        this.childRegexp = /<<(?:[^,]*,)*\s*child='([^']*)'\s*(?:,[^,]*)*>>=/g
     }
 
     resetLastIndex() {
-        this.inputRegexp.lastIndex = 0;
-        this.childRegexp.lastIndex = 0;
+        this.inputRegexp.lastIndex = 0
+        this.childRegexp.lastIndex = 0
     }
 
     /**
@@ -38,7 +38,7 @@ export class PathRegExp {
      * @param content the string to match the regex on
      */
     exec(content: string): MatchPath | undefined {
-        let result = this.inputRegexp.exec(content);
+        let result = this.inputRegexp.exec(content)
         if (result) {
             return {
                 type: MatchType.Input,
@@ -46,9 +46,9 @@ export class PathRegExp {
                 directory: result[1],
                 matchedString: result[0],
                 index: result.index
-            };
+            }
         }
-        result = this.childRegexp.exec(content);
+        result = this.childRegexp.exec(content)
         if (result) {
             return {
                 type: MatchType.Child,
@@ -56,9 +56,9 @@ export class PathRegExp {
                 directory: '',
                 matchedString: result[0],
                 index: result.index
-            };
+            }
         }
-        return undefined;
+        return undefined
     }
     /**
      * Compute the resolved file path from matches of this.inputReg or this.childReg
@@ -68,36 +68,36 @@ export class PathRegExp {
      * @param rootFile
      */
     parseInputFilePath(match: MatchPath, currentFile: string, rootFile: string): string | undefined {
-        const texDirs = vscode.workspace.getConfiguration('latex-workshop').get('latex.texDirs') as string[];
+        const texDirs = vscode.workspace.getConfiguration('latex-workshop').get('latex.texDirs') as string[]
         /* match of this.childReg */
         if (match.type === MatchType.Child) {
-            return utils.resolveFile([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path);
+            return utils.resolveFile([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path)
         }
 
         /* match of this.inputReg */
         if (match.type === MatchType.Input) {
             if (match.matchedString.startsWith('\\subimport') || match.matchedString.startsWith('\\subinputfrom') || match.matchedString.startsWith('\\subincludefrom')) {
-                return utils.resolveFile([path.dirname(currentFile)], path.join(match.directory, match.path));
+                return utils.resolveFile([path.dirname(currentFile)], path.join(match.directory, match.path))
             } else if (match.matchedString.startsWith('\\import') || match.matchedString.startsWith('\\inputfrom') || match.matchedString.startsWith('\\includefrom')) {
-                return utils.resolveFile([match.directory, path.join(path.dirname(rootFile), match.directory)], match.path);
+                return utils.resolveFile([match.directory, path.join(path.dirname(rootFile), match.directory)], match.path)
             } else {
-                return utils.resolveFile([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path);
+                return utils.resolveFile([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path)
             }
         }
-        return undefined;
+        return undefined
     }
 
 }
 
 export class PathUtils {
-    private readonly extension: Extension;
+    private readonly extension: Extension
 
     constructor(extension: Extension) {
-        this.extension = extension;
+        this.extension = extension
     }
 
     private getOutDir(texFile: string) {
-        return this.extension.manager.getOutDir(texFile);
+        return this.extension.manager.getOutDir(texFile)
     }
 
     /**
@@ -106,44 +106,44 @@ export class PathUtils {
      * @return The path of the .fls file or undefined
      */
     getFlsFilePath(texFile: string): string | undefined {
-        const rootDir = path.dirname(texFile);
-        const outDir = this.getOutDir(texFile);
-        const baseName = path.parse(texFile).name;
-        const flsFile = path.resolve(rootDir, path.join(outDir, baseName + '.fls'));
+        const rootDir = path.dirname(texFile)
+        const outDir = this.getOutDir(texFile)
+        const baseName = path.parse(texFile).name
+        const flsFile = path.resolve(rootDir, path.join(outDir, baseName + '.fls'))
         if (!fs.existsSync(flsFile)) {
-            this.extension.logger.addLogMessage(`Cannot find fls file: ${flsFile}`);
-            return undefined;
+            this.extension.logger.addLogMessage(`Cannot find fls file: ${flsFile}`)
+            return undefined
         }
-        this.extension.logger.addLogMessage(`Fls file found: ${flsFile}`);
-        return flsFile;
+        this.extension.logger.addLogMessage(`Fls file found: ${flsFile}`)
+        return flsFile
     }
 
     parseFlsContent(content: string, rootDir: string): {input: string[], output: string[]} {
-        const inputFiles: Set<string> = new Set();
-        const outputFiles: Set<string> = new Set();
-        const regex = /^(?:(INPUT)\s*(.*))|(?:(OUTPUT)\s*(.*))$/gm;
+        const inputFiles: Set<string> = new Set()
+        const outputFiles: Set<string> = new Set()
+        const regex = /^(?:(INPUT)\s*(.*))|(?:(OUTPUT)\s*(.*))$/gm
         // regex groups
         // #1: an INPUT entry --> #2 input file path
         // #3: an OUTPUT entry --> #4: output file path
         // eslint-disable-next-line no-constant-condition
         while (true) {
-            const result = regex.exec(content);
+            const result = regex.exec(content)
             if (!result) {
-                break;
+                break
             }
             if (result[1]) {
-                const inputFilePath = path.resolve(rootDir, result[2]);
+                const inputFilePath = path.resolve(rootDir, result[2])
                 if (inputFilePath) {
-                    inputFiles.add(inputFilePath);
+                    inputFiles.add(inputFilePath)
                 }
             } else if (result[3]) {
-                const outputFilePath = path.resolve(rootDir, result[4]);
+                const outputFilePath = path.resolve(rootDir, result[4])
                 if (outputFilePath) {
-                    outputFiles.add(outputFilePath);
+                    outputFiles.add(outputFilePath)
                 }
             }
         }
 
-        return {input: Array.from(inputFiles), output: Array.from(outputFiles)};
+        return {input: Array.from(inputFiles), output: Array.from(outputFiles)}
     }
 }
