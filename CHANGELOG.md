@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.4.12] - 2024-02-11
+### Fixed
+- [#387](https://github.com/tecosaur/LaTeX-Utilities/issues/387) Add support for R Sweave and Julia Sweave Dcouemnts
+- [#389](https://github.com/tecosaur/LaTeX-Utilities/issues/389) Fixes typo
+- [#391](https://github.com/tecosaur/LaTeX-Utilities/issues/391) Updated readme to specify how to install texcount
+- [#394](https://github.com/tecosaur/LaTeX-Utilities/issues/394) migrate live snippets template to VSCode's internal config
+- [#396](https://github.com/tecosaur/LaTeX-Utilities/issues/396) support for searching authors when using vscode as zotero search method
+
+
 ## [0.4.11] - 2023-4-3
 ### Fixed
 - [#383](https://github.com/tecosaur/LaTeX-Utilities/issues/383) Fixes an issue that caused formatted pasting can't paste image on linux.
