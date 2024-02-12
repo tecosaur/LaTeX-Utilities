@@ -107,10 +107,6 @@
         "avoidEscape": true
       }
     ],
-    "@typescript-eslint/semi": [
-      "error",
-      "never"
-    ],
     "@typescript-eslint/member-delimiter-style": [
       "error",
       {

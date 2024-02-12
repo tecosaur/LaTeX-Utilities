@@ -57,7 +57,9 @@ export class Zotero {
             data: {
                 jsonrpc: '2.0',
                 method: 'item.search',
-                params: [terms]
+                params: [
+                    [['ignore_feeds'], ['quicksearch-titleCreatorYear', 'contains', terms]]
+                ],
             },
             responseType: 'json',
             cancelToken: source.token
@@ -65,12 +67,13 @@ export class Zotero {
 
         return [
             req.then(response => {
+                console.log(response)
                 const results = response.data.result as SearchResult[]
                 this.extension.logger.addLogMessage(`Got ${results.length} search results from Zotero for "${terms}"`)
                 return results
             }).catch(error => {
                 this.extension.logger.showErrorMessage(`Searching Zotero failed: ${error.message}`)
-                return []
+                throw error
             }),
             () => source.cancel('request canceled')
         ]
@@ -93,6 +96,7 @@ export class Zotero {
                 disposables.push(
                     input.onDidChangeValue((value: any) => {
                         if (value) {
+                            this.extension.logger.addLogMessage(`${input.busy}`)
                             input.busy = true
 
                             if (cancel) {
@@ -103,7 +107,9 @@ export class Zotero {
                             const [r, c] = this.search(value)
                             cancel = c
                             r.then(results => {
+                                console.log('results')
                                 input.items = results.map(result => new EntryItem(result))
+                                input.busy = false
                             })
                                 .catch(error => {
                                     if (!error.isCanceled) {
@@ -120,7 +126,6 @@ export class Zotero {
                                     }
                                 })
                                 .finally(() => {
-                                    input.busy = false
                                 })
                         } else {
                             input.items = []
