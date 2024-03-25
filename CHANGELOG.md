@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.14] - 2024-03-25
+### Improved
+- [#356](https://github.com/tecosaur/LaTeX-Utilities/issues/356) Allow setting more language for live reformat
+
 ## [0.4.13] - 2024-02-13
 ### Fixed
 - [#397](https://github.com/tecosaur/LaTeX-Utilities/issues/397) Fix configuration name

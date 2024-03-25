@@ -8,7 +8,6 @@ import { Paster } from './components/paster'
 import { WordCounter } from './components/wordCounter'
 import { MacroDefinitions } from './providers/macroDefinitions'
 import { Zotero } from './components/zotero'
-import * as utils from './utils'
 
 import TelemetryReporter from 'vscode-extension-telemetry'
 import { Manager } from './workshop/manager'
@@ -21,6 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
     extension.logger.addLogMessage('LaTeX Utilities Started')
 
     context.subscriptions.push(
+        vscode.commands.registerCommand('latex-utilities.loadPlugin', () =>
+            vscode.window.showInformationMessage(
+                'LaTeX Utilities loaded'
+            )
+        ),
         vscode.commands.registerCommand('latex-utilities.editLiveSnippetsFile', () =>
             extension.withTelemetry('editLiveSnippetsFile', () => {
                 extension.completionWatcher.editSnippetsFile()
@@ -51,9 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(
             (e: vscode.TextDocumentChangeEvent) => {
-                if (utils.hasTexId(e.document.languageId)) {
-                    extension.withTelemetry('onDidChangeTextDocument', () => extension.completionWatcher.watcher(e))
-                }
+                extension.withTelemetry('onDidChangeTextDocument', () => extension.completionWatcher.watcher(e), false)
             }
         ),
         vscode.workspace.onDidSaveTextDocument(() => {
@@ -169,8 +171,10 @@ export class Extension {
         this.manager = new Manager(this)
     }
 
-    withTelemetry(command: string, callback: () => void) {
-        this.logger.addLogMessage('withTelemetry: ' + command)
+    withTelemetry(command: string, callback: () => void, log: boolean = true) {
+        if (log){
+            this.logger.addLogMessage('withTelemetry: ' + command)
+        }
         try {
             callback()
         } catch (error) {

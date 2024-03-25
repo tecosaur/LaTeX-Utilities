@@ -3,7 +3,7 @@
     "displayName": "LaTeX Utilities",
     "description": "An add-on to LaTeX Workshop that provides some fancy features that are less vital to the basic experience editing a LaTeX document, but can be rather nice to have.",
     "icon": "icon.png",
-    "version": "0.4.13",
+    "version": "0.4.14",
     "publisher": "tecosaur",
     "license": "MIT",
     "homepage": "https://github.com/tecosaur/LaTeX-Utilities",
@@ -30,7 +30,8 @@
         "onLanguage:latex",
         "onLanguage:doctex",
         "onLanguage:rsweave",
-        "onLanguage:jlweave"
+        "onLanguage:jlweave",
+        "onCommand:latex-utilities.loadPlugin"
     ],
     "main": "./out/main.js",
     "contributes": {
@@ -68,6 +69,11 @@
             {
                 "command": "latex-utilities.selectWordcountFormat",
                 "title": "Select wordcount format",
+                "category": "LaTeX Utilities"
+            },
+            {
+                "command": "latex-utilities.loadPlugin",
+                "title": "Load the plugin",
                 "category": "LaTeX Utilities"
             }
         ],
@@ -141,6 +147,17 @@
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "Apply live text replacements to make writing latex maths easier (e.g. `xx` → `\\times`). Also see the command \"Edit Live Snippets File\""
+                },
+                "latex-utilities.liveReformat.languages": {
+                    "type": "array",
+                    "default": [
+                        "tex",
+                        "doctex",
+                        "latex",
+                        "rsweave",
+                        "jlweave"
+                    ],
+                    "description": "Languages to apply live snippets to"
                 },
                 "latex-utilities.liveReformat.snippets": {
                     "type": "array",

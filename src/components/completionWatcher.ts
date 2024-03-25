@@ -112,9 +112,9 @@ export class CompletionWatcher {
             this.loadSnippets()
             this.configAge = +new Date()
         }
-
+        const languages = vscode.workspace.getConfiguration('latex-utilities').get('liveReformat.languages') as string[]
         if (
-            ['latex', 'rsweave', 'jlweave'].findIndex(item => item === e.document.languageId) < 0 ||
+            !languages.includes(e.document.languageId) ||
             e.contentChanges.length === 0 ||
             this.currentlyExecutingChange ||
             this.sameChanges(e) ||
